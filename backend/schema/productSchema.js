@@ -34,6 +34,9 @@ const productSchema = new mongoose.Schema({
          ref: 'Variant',
       }
    ],
+   vendor: {
+      type: String,
+   },
    price: {
       type: Number,
       required: [true, 'Price is required'],
