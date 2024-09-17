@@ -104,15 +104,15 @@ const productSchema = new mongoose.Schema({
       enum: ['active', 'inactive', 'archived'],
       default: 'active',
    },
-   // createdBy: {
-   //    type: mongoose.Schema.Types.ObjectId,
-   //    ref: 'Admin',
-   //    required: True
-   // },
-   // updatedBy: {
-   //    type: mongoose.Schema.Types.ObjectId,
-   //    ref: 'Admin'
-   // },
+   createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Admin',
+      required: True
+   },
+   updatedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Admin'
+   },
    deletedAt: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Admin'
