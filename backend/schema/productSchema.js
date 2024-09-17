@@ -30,21 +30,9 @@ const productSchema = new mongoose.Schema({
    },
    variants: [
       {
-         name: {
-            type: String,
-            required: [true, 'Variant name is required'],
-         },
-         images: {
-            type: [String],
-            required: [true, 'Images are required'],
-            validate: {
-               validator: function (arr) {
-                  return arr.length > 0;
-               },
-               message: 'There must be at least one image for each variant',
-            },
-         },
-      },
+         type: mongoose.Schema.Types.ObjectId,
+         ref: 'Variant',
+      }
    ],
    price: {
       type: Number,
