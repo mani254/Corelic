@@ -1,3 +1,15 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+	* {
+		@apply m-0 p-0 box-border text-sm font-normal font-author text-zinc-800;
+	}
+	input::placeholder {
+		@apply text-xs;
+	}
+	nav * {
+		@apply font-medium;
+	}
+}

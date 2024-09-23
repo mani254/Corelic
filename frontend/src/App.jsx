@@ -1,12 +1,17 @@
 import React, { lazy } from "react";
 import { connect } from "react-redux";
 
+import BackendLayout from "./layouts/BackendLayout";
+
 const Modal = lazy(() => import("./components/Modal/Modal"));
 
 function App({ modal }) {
 	return (
 		<React.Fragment>
-			<h1>Hello World</h1>
+			<div className="bg-zinc-100 h-screen">
+				<BackendLayout />
+			</div>
+
 			{modal.showModal && <Modal props={modal.modalProps} component={modal.modalComponent} />}
 		</React.Fragment>
 	);
