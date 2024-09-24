@@ -46,7 +46,7 @@ const productSchema = new mongoose.Schema({
       type: Number,
       set: formatFloat,
    },
-   GST: {
+   gst: {
       type: Number,
       set: formatFloat,
    },

@@ -20,17 +20,30 @@ function AddProduct() {
 		overview: "",
 		status: "draft",
 		vendor: "",
+		price: "",
+		comparePrice: "",
+		gst: "",
 	});
 
 	const [errors, setErrors] = useState({
 		title: "",
 		overview: "",
+		price: "",
+		comparePrice: "",
+		gst: "",
 	});
 
 	function handleChange(event) {
-		const { name, value } = event.target;
-		setProductInfo((prevState) => ({ ...prevState, [name]: value }));
+		let { name, value } = event.target;
 
+		if (name === "price" || name === "comparePrice" || name === "gst") {
+			if (value < 0) {
+				setErrors((prevErrors) => ({ ...prevErrors, [name]: "can't be negetive" }));
+				return;
+			}
+		}
+
+		setProductInfo((prevState) => ({ ...prevState, [name]: value }));
 		let error = validation(name, value);
 		console.log(error);
 		setErrors((prevState) => ({ ...prevState, [name]: error }));
@@ -38,6 +51,12 @@ function AddProduct() {
 
 	function handleImagesChange(images) {
 		console.log(images);
+	}
+
+	function handleOnBlur(event) {
+		let { name, value } = event.target;
+		value = parseFloat(value).toFixed(2);
+		setProductInfo((prevState) => ({ ...prevState, [name]: value }));
 	}
 
 	return (
@@ -67,6 +86,32 @@ function AddProduct() {
 							<div clasName="input-wrapper">
 								<ImageUploaderComponent id="ic" maxImages={5} maxFileSize={1024} onImagesChange={handleImagesChange} />
 							</div>
+						</div>
+						{/* ----------------------- price and SKU ------------------------ */}
+						<div className="outer-box">
+							<h4 className="mb-3">Price & SKU</h4>
+
+							<div className="flex gap-3">
+								<div className="input-wrapper">
+									<label hrmlfor="price">Price</label>
+									<input type="number" id="price" placeholder="Selling Price" name="price" value={productInfo.price} onChange={handleChange} onBlur={handleOnBlur}></input>
+									{errors.price && <p className="error">{errors.price}</p>}
+								</div>
+								<div className="input-wrapper">
+									<label hrmlfor="comparePrice">Compare Price</label>
+									<input type="number" id="comparePrice" placeholder="Compare with" name="comparePrice" value={productInfo.comparePrice} onChange={handleChange} onBlur={handleOnBlur}></input>
+									{errors.comparePrice && <p className="error">{errors.comparePrice}</p>}
+								</div>
+								<div className="input-wrapper">
+									<label hrmlfor="gst">Gst</label>
+									<input type="number" id="gst" placeholder="gst" name="gst" value={productInfo.gst} onChange={handleChange} onBlur={handleOnBlur}></input>
+									{errors.gst && <p className="error">{errors.gst}</p>}
+								</div>
+							</div>
+
+							{/* <div className="input-wrapper">
+                        <label
+                     </div> */}
 						</div>
 					</div>
 					<div className="w-1/4 min-w-[280px]">
