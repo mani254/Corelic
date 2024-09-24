@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import { EditorComponent } from "editorify-dev/editor";
 import "editorify-dev/css/editor";
 
+import { ImageUploaderComponent } from "editorify-dev/imageUploader";
+import "editorify-dev/css/imageUploader";
+
 import OptionsComponent from "./Options";
 import VariantsComponent from "./Variants";
 
@@ -33,6 +36,10 @@ function AddProduct() {
 		setErrors((prevState) => ({ ...prevState, [name]: error }));
 	}
 
+	function handleImagesChange(images) {
+		console.log(images);
+	}
+
 	return (
 		<React.Fragment>
 			<div className="w-full min-h-screen max-w-4xl m-auto">
@@ -57,6 +64,9 @@ function AddProduct() {
 						</div>
 						<div className="outer-box">
 							<h4 className="mb-3">Media</h4>
+							<div clasName="input-wrapper">
+								<ImageUploaderComponent id="ic" maxImages={5} maxFileSize={1024} onImagesChange={handleImagesChange} />
+							</div>
 						</div>
 					</div>
 					<div className="w-1/4 min-w-[280px]">
