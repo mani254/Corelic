@@ -19,13 +19,13 @@ const productSchema = new mongoose.Schema({
       unique: true,
       lowercase: true,
    },
-   shortDescription: {
+   overview: {
       type: String,
-      required: [true, 'Short description is required'],
-      maxlength: [400, 'Short description should be less than 400 characters'],
+      required: [true, 'overview is required'],
+      maxlength: [400, 'overview should be less than 400 characters'],
       trim: true
    },
-   longDescription: {
+   desctiption: {
       type: String,
    },
    variants: [
@@ -92,7 +92,7 @@ const productSchema = new mongoose.Schema({
    ],
    status: {
       type: String,
-      enum: ['active', 'inactive', 'archived'],
+      enum: ['active', 'inactive', 'draft'],
       default: 'active',
    },
    createdBy: {

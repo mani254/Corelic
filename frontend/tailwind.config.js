@@ -24,8 +24,8 @@ export default {
             '3xl': '1560px'
          },
          fontSize: {
-            xs: '16px',
-            sm: '18px',
+            xs: '15px',
+            sm: '17px',
             md: '20px',
             lg: '24px',
             xl: '32px',

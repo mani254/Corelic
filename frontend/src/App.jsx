@@ -3,12 +3,14 @@ import { connect } from "react-redux";
 
 import BackendLayout from "./layouts/BackendLayout";
 
+import "./App.css";
+
 const Modal = lazy(() => import("./components/Modal/Modal"));
 
 function App({ modal }) {
 	return (
 		<React.Fragment>
-			<div className="bg-zinc-100 h-screen">
+			<div className="bg-zinc-100 min-h-screen">
 				<BackendLayout />
 			</div>
 

@@ -1,1 +1,40 @@
+.input-wrapper .error {
+	@apply text-red-400 text-xs;
+}
+.outer-box {
+	@apply mt-4 p-4 bg-white rounded-lg;
+	box-shadow: var(--box-shadow);
+}
 
+label {
+	display: block;
+	margin-bottom: 5px;
+}
+.input-wrapper input,
+.input-wrapper textarea,
+.input-wrapper select {
+	width: 100%;
+	outline: none;
+	border: 0.5px solid rgba(0, 0, 0, 0.5);
+	padding: 0px 8px;
+	border-radius: 5px;
+}
+.input-wrapper select {
+	padding: 3.5px 8px;
+}
+.input-wrapper {
+	margin-bottom: 12px;
+}
+.input-wrapper textarea {
+	height: 80px;
+}
+
+.editor-component {
+	min-height: 260px !important;
+}
+.editor-component .toolbar img {
+	width: 18px !important;
+}
+.editor-component .toggle-button {
+	padding: 2px 15px !important;
+}
