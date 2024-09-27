@@ -12,7 +12,7 @@ import Inventory from "./Inventory";
 import { validation, generate11DigitNumber } from "../../utils";
 
 function AddProduct() {
-	const [productVariants, setProductVariants] = useState([{ name: "variant-1", initial: true }]);
+	const [productVariants, setProductVariants] = useState([{ name: "variant-1", initial: true, options: [] }]);
 	const [productOptions, setProductOptions] = useState([]);
 
 	const [generateSku, setGenerateSku] = useState(false);

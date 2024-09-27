@@ -43,19 +43,19 @@ function Inventory({ variants, setVariants, options }) {
 	}
 
 	useEffect(() => {
-		if (trackInventory) return;
-		function resetStockToZero(variants) {
+		if (trackInventory || !variants) return;
+
+		function resetStockToZero() {
 			const newVariants = variants.map((variant) => {
-				const newOptions = variant.options.map((option) => {
+				const newOptions = variant?.options.map((option) => {
 					return { ...option, stock: 0 };
 				});
 				return { ...variant, stock: 0, options: newOptions };
 			});
-
 			setVariants(newVariants);
 		}
 
-		resetStockToZero(variants);
+		resetStockToZero();
 	}, [trackInventory]);
 
 	return (
