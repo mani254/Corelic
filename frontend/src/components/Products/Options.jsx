@@ -6,6 +6,7 @@ function Options({ state, setState }) {
 	const [optionName, setOptionName] = useState("");
 	const [defaultOptions, setDefaultOptions] = useState(null);
 	const [customOptions, setCustomOptions] = useState(false);
+	const [error, setError] = useState("");
 
 	useEffect(() => {
 		function handleDefaultOptions() {
@@ -20,6 +21,10 @@ function Options({ state, setState }) {
 
 	function handleOptionEntry(event) {
 		if (event.key == "Enter" && optionName) {
+			const existed = state.find((item) => optionName.toLowerCase() == item.toLowerCase());
+			if (existed) {
+				return setError("Already existed");
+			}
 			setState((prev) => [...prev, optionName]);
 			setOptionName("");
 		}
@@ -51,7 +56,17 @@ function Options({ state, setState }) {
 				<>
 					<MultiSelect array={state} setArray={setState} />
 					<div className="input-wrapper">
-						<input type="text" placeholder="Option value" name="optionName" value={optionName} onChange={(e) => setOptionName(e.target.value)} onKeyDown={handleOptionEntry}></input>
+						<input
+							type="text"
+							placeholder="Option value"
+							name="optionName"
+							value={optionName}
+							onChange={(e) => {
+								setOptionName(e.target.value);
+								setError("");
+							}}
+							onKeyDown={handleOptionEntry}></input>
+						{error && <p className="error">{error}</p>}
 					</div>
 				</>
 			) : (

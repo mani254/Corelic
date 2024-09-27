@@ -11,7 +11,7 @@ import VariantsComponent from "./Variants";
 import { validation } from "../../utils";
 
 function AddProduct() {
-	const [productVariants, setProductVariants] = useState([]);
+	const [productVariants, setProductVariants] = useState([{ name: "variant-1", initial: true }]);
 
 	const [productOptions, setProductOptions] = useState([]);
 
@@ -33,6 +33,11 @@ function AddProduct() {
 		gst: "",
 	});
 
+	//useEffect function whenever there is a change in hte vvriants
+	// useEffect(() => {
+
+	// }, [variants]);
+
 	function handleChange(event) {
 		let { name, value } = event.target;
 
@@ -49,8 +54,22 @@ function AddProduct() {
 		setErrors((prevState) => ({ ...prevState, [name]: error }));
 	}
 
-	function handleImagesChange(images) {
-		console.log(images);
+	function handleImagesChange(images, variantName = null) {
+		if (productVariants.length <= 0) {
+			let vName = productInfo.title ? "productInfo.title" : "variant-1";
+			setProductVariants([{ name: vName, images: images }]);
+		} else {
+			console.log("Hello");
+			const updatedVariants = productVariants.map((variant) => {
+				console.log(variant);
+				if (variant.name === variantName) {
+					return { ...variant, images };
+				}
+				return variant;
+			});
+			console.log(updatedVariants, updatedVariants);
+			setProductVariants(updatedVariants);
+		}
 	}
 
 	function handleOnBlur(event) {
@@ -58,6 +77,8 @@ function AddProduct() {
 		value = parseFloat(value).toFixed(2);
 		setProductInfo((prevState) => ({ ...prevState, [name]: value }));
 	}
+
+	console.log(productVariants);
 
 	return (
 		<React.Fragment>
@@ -83,9 +104,12 @@ function AddProduct() {
 						</div>
 						<div className="outer-box">
 							<h4 className="mb-3">Media</h4>
-							<div clasName="input-wrapper">
-								<ImageUploaderComponent id="ic" maxImages={5} maxFileSize={1024} onImagesChange={handleImagesChange} />
-							</div>
+							{productVariants.map((variant, index) => (
+								<div className="input-wrapper" key={index}>
+									{productVariants.length > 1 && <p className="mb-2">Images for the {variant.name}</p>}
+									<ImageUploaderComponent id={`variant-${index}`} maxImages={5} maxFileSize={1024} onImagesChange={(images) => handleImagesChange(images, variant.name)} />
+								</div>
+							))}
 						</div>
 						{/* ----------------------- price and SKU ------------------------ */}
 						<div className="outer-box">
