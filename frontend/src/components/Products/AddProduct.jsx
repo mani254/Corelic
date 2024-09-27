@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { EditorComponent } from "editorify-dev/editor";
 import "editorify-dev/css/editor";
 
@@ -7,13 +7,15 @@ import "editorify-dev/css/imageUploader";
 
 import OptionsComponent from "./Options";
 import VariantsComponent from "./Variants";
+import Inventory from "./Inventory";
 
-import { validation } from "../../utils";
+import { validation, generate11DigitNumber } from "../../utils";
 
 function AddProduct() {
 	const [productVariants, setProductVariants] = useState([{ name: "variant-1", initial: true }]);
-
 	const [productOptions, setProductOptions] = useState([]);
+
+	const [generateSku, setGenerateSku] = useState(false);
 
 	const [productInfo, setProductInfo] = useState({
 		title: "",
@@ -23,6 +25,7 @@ function AddProduct() {
 		price: "",
 		comparePrice: "",
 		gst: "",
+		sku: "",
 	});
 
 	const [errors, setErrors] = useState({
@@ -31,12 +34,8 @@ function AddProduct() {
 		price: "",
 		comparePrice: "",
 		gst: "",
+		sku: "",
 	});
-
-	//useEffect function whenever there is a change in hte vvriants
-	// useEffect(() => {
-
-	// }, [variants]);
 
 	function handleChange(event) {
 		let { name, value } = event.target;
@@ -78,11 +77,26 @@ function AddProduct() {
 		setProductInfo((prevState) => ({ ...prevState, [name]: value }));
 	}
 
-	console.log(productVariants);
+	useEffect(() => {
+		if (!generateSku) return;
+		const number = generate11DigitNumber();
+		setProductInfo((prev) => ({ ...prev, sku: number }));
+		setErrors((prev) => ({ ...prev, sku: "" }));
+	}, [generateSku]);
+
+	useEffect(() => {
+		let optionsObject = productOptions.map((option) => {
+			return { option };
+		});
+		const newVariants = productVariants.map((variant) => {
+			return { ...variant, options: optionsObject };
+		});
+		setProductVariants(newVariants);
+	}, [productOptions]);
 
 	return (
 		<React.Fragment>
-			<div className="w-full min-h-screen max-w-4xl m-auto">
+			<div className="w-full min-h-screen max-w-4xl m-auto mb-10">
 				<h3>Add Product</h3>
 				<div className="flex gap-5">
 					<div className="w-full">
@@ -106,7 +120,7 @@ function AddProduct() {
 							<h4 className="mb-3">Media</h4>
 							{productVariants.map((variant, index) => (
 								<div className="input-wrapper" key={index}>
-									{productVariants.length > 1 && <p className="mb-2">Images for the {variant.name}</p>}
+									{productVariants.length > 1 && <p className="mb-2">Images for the variant - {variant.name}</p>}
 									<ImageUploaderComponent id={`variant-${index}`} maxImages={5} maxFileSize={1024} onImagesChange={(images) => handleImagesChange(images, variant.name)} />
 								</div>
 							))}
@@ -133,10 +147,34 @@ function AddProduct() {
 								</div>
 							</div>
 
-							{/* <div className="input-wrapper">
-                        <label
-                     </div> */}
+							<div className="flex items-center gap-5">
+								<div className="input-wrapper">
+									<label htmlFor="sku">SKU</label>
+									<input type="text" name="sku" id="sku" placeholder="Product SKU" value={productInfo.sku} onChange={handleChange} />
+									{errors.sku && <p className="error">{errors.sku}</p>}
+								</div>
+								<div className="input-wrapper mt-3">
+									<div className="flex items-center  gap-2">
+										<input
+											type="checkbox"
+											className="max-w-3 h-3"
+											id="generate-sku"
+											name="generateSku"
+											checked={generateSku}
+											onChange={() => {
+												setGenerateSku(!generateSku);
+											}}
+										/>
+										<label htmlFor="generate-sku" className="whitespace-nowrap mb-0">
+											Generate SKU
+										</label>
+									</div>
+									<p className="text-xs">Click Here to generate a SKU for the product</p>
+								</div>
+							</div>
 						</div>
+						{/* ----------------------- Inventory ------------------------ */}
+						<Inventory variants={productVariants} setVariants={setProductVariants} options={productOptions} setOptions={setProductOptions} />
 					</div>
 					<div className="w-1/4 min-w-[280px]">
 						<div className="outer-box">
@@ -158,7 +196,7 @@ function AddProduct() {
 						<OptionsComponent state={productOptions} setState={setProductOptions} />
 
 						{/* ----------------------- variants-box ------------------------ */}
-						<VariantsComponent state={productVariants} setState={setProductVariants} />
+						<VariantsComponent state={productVariants} setState={setProductVariants} productOptions={productOptions} />
 					</div>
 				</div>
 			</div>

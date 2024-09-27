@@ -52,11 +52,10 @@ const productSchema = new mongoose.Schema({
    },
    stock: {
       type: Number,
-      required: [true, 'Stock is required'],
       min: [0, 'Stock cannot be negative'],
       default: 0,
    },
-   SKU: {
+   sku: {
       type: Number,
       required: [true, 'SKU is required'],
       unique: [true, 'SKU is already existed'],

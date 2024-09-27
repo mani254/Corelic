@@ -12,6 +12,11 @@ export function validation(action, value) {
             return "Overview should be between 1 and 400 characters";
          }
          return "";
+      case "sku":
+         const sku = /^.{1,20}$/;
+         if (!sku.test(value)) {
+            return "SKU must be less then 1 and 20";
+         }
       default:
          console.log(action);
    }
@@ -46,3 +51,7 @@ export const options = [
    },
 ];
 
+export function generate11DigitNumber() {
+   const number = Math.floor(10000000000 + Math.random() * 90000000000);
+   return number.toString();
+}

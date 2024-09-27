@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from "react";
 import MultiSelect from "../MultiSelect/MultiSelect";
 
-function Variants({ state, setState }) {
+function Variants({ state, setState, productOptions }) {
 	const [variantName, setVariantName] = useState("");
 	const [error, setError] = useState("");
 
 	useEffect(() => {
+		let optionsObject = productOptions.map((option) => {
+			return { option };
+		});
 		if (state.length === 0) {
-			setState([{ name: "variant-1", initial: true }]);
+			setState([{ name: "variant-1", initial: true, options: optionsObject }]);
 		}
 	}, [state]);
 
@@ -19,10 +22,14 @@ function Variants({ state, setState }) {
 				return setVariantName("");
 			}
 			const existed = state.find((item) => variantName.toLowerCase() === item.name.toLowerCase());
+
 			if (existed) {
 				return setError("Already existed");
 			}
-			setState((prev) => [...prev, { name: variantName }]);
+			let optionsObject = productOptions.map((option) => {
+				return { option };
+			});
+			setState((prev) => [...prev, { name: variantName, options: optionsObject }]);
 			setVariantName("");
 		}
 	}
