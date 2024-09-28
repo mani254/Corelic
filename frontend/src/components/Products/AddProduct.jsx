@@ -26,6 +26,8 @@ function AddProduct() {
 		comparePrice: "",
 		gst: "",
 		sku: "",
+		metaTitle: "",
+		metaDescription: "",
 	});
 
 	const [errors, setErrors] = useState({
@@ -175,6 +177,21 @@ function AddProduct() {
 						</div>
 						{/* ----------------------- Inventory ------------------------ */}
 						<Inventory variants={productVariants} setVariants={setProductVariants} options={productOptions} setOptions={setProductOptions} />
+
+						{/* ---------------------------Meta Data----------------------------- */}
+						<div className="outer-box">
+							<h4>Meta Data</h4>
+							<p className="text-xs mb-3">This is the data for the seo Details</p>
+
+							<div className="input-wrapper">
+								<label htmlFor="meta-title">Meta Title</label>
+								<input type="text" placeholder="Meta title" name="metaTitle" id="metaTitle" onChange={handleChange} value={productInfo.metaTitle}></input>
+							</div>
+							<div className="input-wrapper">
+								<label htmlFor="metaDescription">Meta Description</label>
+								<textarea id="metaDescription" name="metaDescription" placeholder="Meta Description" onChange={handleChange} value={productInfo.metaDescription}></textarea>
+							</div>
+						</div>
 					</div>
 					<div className="w-1/4 min-w-[280px]">
 						<div className="outer-box">

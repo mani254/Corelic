@@ -1,9 +1,9 @@
-import React, { lazy } from "react";
+import React from "react";
 
 import BackendHeader from "../components/BackendHeader/BackendHeader";
 import BackendNavbar from "../components/BackendNavbar/BackendNavbar";
 
-const AddProduct = lazy(() => import("../components/Products/AddProduct"));
+import { Outlet } from "react-router-dom";
 
 function BackendLayout() {
 	return (
@@ -16,7 +16,7 @@ function BackendLayout() {
 					<BackendNavbar />
 				</div>
 				<div className="w-full overflow-y-auto pt-16">
-					<AddProduct />
+					<Outlet />
 				</div>
 			</div>
 		</React.Fragment>
