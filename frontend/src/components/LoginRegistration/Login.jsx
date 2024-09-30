@@ -2,7 +2,11 @@ import React, { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { NavLink } from "react-router-dom";
 
-function Login() {
+import { connect } from "react-redux";
+import { showModal } from "../../redux/modal/modalActions";
+import ForgotPassword from "./ForgotPassword";
+
+function Login({ showModal }) {
 	const [showPassword, setShowPassword] = useState(false);
 	return (
 		<>
@@ -36,11 +40,20 @@ function Login() {
 				</div>
 			</div>
 
-			<p className="font-medium text-logo text-end cursor-pointer">Forgot Password?</p>
+			<p className="font-medium text-logo text-end cursor-pointer" onClick={() => showModal(null, ForgotPassword)}>
+				Forgot Password?
+			</p>
 
 			<button className="btn-1"> Sign In</button>
 		</>
 	);
 }
 
-export default Login;
+const mapDispatchToProps = (dispatch) => {
+	return {
+		showModal: (props, component) => {
+			dispatch(showModal(props, component));
+		},
+	};
+};
+export default connect(null, mapDispatchToProps)(Login);

@@ -10,7 +10,7 @@ import Products from "./components/Products/Products";
 import Home from "./pages/Home";
 import LoginRegistration from "./pages/LoginRegistration";
 
-const Modal = lazy(() => import("./components/Modal/Modal"));
+import Modal from "./components/Modal/Modal";
 
 function App({ modal }) {
 	return (
