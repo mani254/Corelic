@@ -11,7 +11,7 @@ export default {
             author: 'Author'
          },
          colors: {
-            logo: ({ opacityValue }) => `rgba(0, 64, 80, ${opacityValue})`,
+            logo: ({ opacityValue }) => `rgba(12, 122, 175, ${opacityValue})`,
          },
          container: {
             center: true,

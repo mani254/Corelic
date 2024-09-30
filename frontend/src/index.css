@@ -21,4 +21,11 @@
 	nav * {
 		@apply font-medium;
 	}
+	span {
+		font-size: inherit;
+		font-family: inherit;
+	}
+	.btn-1 {
+		@apply font-medium text-white bg-logo w-full p-[6px] text-sm rounded-md mt-2;
+	}
 }

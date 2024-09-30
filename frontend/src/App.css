@@ -15,7 +15,7 @@ label {
 .input-wrapper select {
 	width: 100%;
 	outline: none;
-	border: 0.5px solid rgba(0, 0, 0, 0.5);
+	border: 0.5px solid rgba(0, 0, 0, 0.3);
 	padding: 0px 8px;
 	border-radius: 5px;
 }
@@ -27,6 +27,14 @@ label {
 }
 .input-wrapper textarea {
 	height: 80px;
+}
+
+.input-wrapper.variant-2 input {
+	@apply bg-zinc-100;
+	padding: 4px 8px;
+}
+.input-wrapper.variant-2 label {
+	margin-bottom: 6px;
 }
 
 input[type="number"]::-webkit-inner-spin-button,
@@ -43,4 +51,10 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 .editor-component .toggle-button {
 	padding: 2px 15px !important;
+}
+
+.background-cover {
+	background-size: cover;
+	background-position: center;
+	background-repeat: no-repeat;
 }

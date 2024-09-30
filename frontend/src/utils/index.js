@@ -1,3 +1,8 @@
+import google from '../assets/icons/google.svg'
+import apple from '../assets/icons/apple.svg'
+import loginBackground from '../assets/login-background.png'
+export { google, apple, loginBackground }
+
 export function validation(action, value) {
    switch (action) {
       case "title":
@@ -55,3 +60,4 @@ export function generate11DigitNumber() {
    const number = Math.floor(10000000000 + Math.random() * 90000000000);
    return number.toString();
 }
+

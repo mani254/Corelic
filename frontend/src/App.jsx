@@ -8,7 +8,7 @@ import "./App.css";
 import AddProduct from "./components/Products/AddProduct";
 import Products from "./components/Products/Products";
 import Home from "./pages/Home";
-import Login from "./pages/Login";
+import LoginRegistration from "./pages/LoginRegistration";
 
 const Modal = lazy(() => import("./components/Modal/Modal"));
 
@@ -18,7 +18,8 @@ function App({ modal }) {
 			<div className="bg-zinc-100 min-h-screen">
 				<Routes>
 					<Route path="/" element={<Home />} />
-					<Route path="/login" element={<Login />} />
+					<Route path="/login" element={<LoginRegistration />} />
+					<Route path="/register" element={<LoginRegistration />} />
 					<Route element={<BackendLayout />}>
 						<Route path="products">
 							<Route index element={<Products />} />
