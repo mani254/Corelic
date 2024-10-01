@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const path = require('path');
 const cookieParser = require('cookie-parser');
+const { oauth2Client, setCredentials } = require('./utils/oauthConfig.js');
 require('dotenv').config();
 
 
@@ -27,9 +28,26 @@ app.use((err, req, res, next) => {
    res.status(500).send('Something went wrong!');
 });
 
+app.get('/auth', (req, res) => {
+   const authUrl = oauth2Client.generateAuthUrl({
+      access_type: 'offline',
+      scope: ['https://www.googleapis.com/auth/gmail.send'],
+   });
+   res.redirect(authUrl);
+});
+
+app.get('/oauth2callback', async (req, res) => {
+   const { code } = req.query;
+   const { tokens } = await oauth2Client.getToken(code);
+   setCredentials(tokens);
+   console.log('Access Token:', tokens.access_token);
+   console.log('Refresh Token:', tokens.refresh_token);
+   res.redirect('http://localhost:5173');
+});
+
+
 const PORT = process.env.PORT || 8080;
 
 app.listen(PORT, () => {
    console.log(`Server is running on port ${PORT}`);
 });
-
