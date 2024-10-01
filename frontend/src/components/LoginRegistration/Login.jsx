@@ -40,9 +40,11 @@ function Login({ showModal }) {
 				</div>
 			</div>
 
-			<p className="font-medium text-logo text-end cursor-pointer" onClick={() => showModal(null, ForgotPassword)}>
-				Forgot Password?
-			</p>
+			<div className="flex justify-end">
+				<p className="font-medium text-logo text-end cursor-pointer inline-block" onClick={() => showModal(null, ForgotPassword)}>
+					Forgot Password?
+				</p>
+			</div>
 
 			<button className="btn-1"> Sign In</button>
 		</>

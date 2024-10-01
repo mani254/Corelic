@@ -22,6 +22,19 @@ export function validation(action, value) {
          if (!sku.test(value)) {
             return "SKU must be less then 1 and 20";
          }
+         return ""
+      case "email":
+         const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+         if (!emailRegex.test(value)) {
+            return "Invalid email address"
+         }
+         return ""
+      case "password":
+         const passwordRegex = /^(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{6,}$/;
+         if (!passwordRegex.test(value)) {
+            return "At least 6 charecters and 1 special Charecter"
+         }
+         return ""
       default:
          console.log(action);
    }

@@ -24,9 +24,6 @@ const userSchema = new mongoose.Schema({
    phone: {
       number: {
          type: Number,
-         required: [true, 'Phone number is required'],
-         unique: [true, 'Phone number already exists'],
-         trim: true,
       },
       verified: {
          type: Boolean,
@@ -58,9 +55,6 @@ const userSchema = new mongoose.Schema({
 
 userSchema.pre('save', async function (next) {
    if (this.isModified('password') && this.password) {
-      this.password = await bcrypt.hash(this.password, 10);
-   } else if (this.isNew && !this.password) {
-      this.password = crypto.randomBytes(8).toString('hex');
       this.password = await bcrypt.hash(this.password, 10);
    }
    next();

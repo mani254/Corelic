@@ -11,11 +11,13 @@ import Home from "./pages/Home";
 import LoginRegistration from "./pages/LoginRegistration";
 
 import Modal from "./components/Modal/Modal";
+import Notification from "./components/Notifications/Notifications";
 
 function App({ modal }) {
 	return (
 		<React.Fragment>
 			<div className="bg-zinc-100 min-h-screen">
+				<Notification />
 				<Routes>
 					<Route path="/" element={<Home />} />
 					<Route path="/login" element={<LoginRegistration />} />
