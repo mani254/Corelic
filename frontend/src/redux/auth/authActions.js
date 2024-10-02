@@ -61,6 +61,20 @@ export const changePasswordFailure = (error) => ({
    payload: error,
 });
 
+// Action to activate user with link
+export const activateUserRequest = () => ({
+   type: authTypes.ACTIVATE_USER_REQUEST,
+});
+
+export const activateUserSuccess = () => ({
+   type: authTypes.ACTIVATE_USER_SUCCESS,
+});
+
+export const activateUserFailure = (error) => ({
+   type: authTypes.ACTIVATE_USER_FAILURE,
+   payload: error,
+});
+
 // Action creator for logout
 export const logout = () => ({
    type: authTypes.LOGOUT,
@@ -81,6 +95,22 @@ export const register = (userData) => async (dispatch) => {
       return Promise.reject(errMessage)
    }
 };
+
+export const activateUser = (email,activationcode) => async (dispatch) => {
+   dispatch(activateUserRequest());
+   try {
+      await axios.get(`${import.meta.env.VITE_APP_BACKENDURI}/api/auth/activateuser?email=${email}&activationcode=${activationcode}`);
+      dispatch(activateUserSuccess());
+      dispatch(showNotification('Account Activated Sucessfully'))
+      return Promise.resolve()
+   }
+   catch (error) {
+      let errMessage = error.response ? error.response.data.error : 'Something Went wrong'
+      dispatch(activateUserFailure(errMessage));
+      dispatch(showNotification(errMessage));
+      return Promise.reject(errMessage)
+   }
+}
 
 // Example async action for logging in
 export const login = (credentials) => async (dispatch) => {

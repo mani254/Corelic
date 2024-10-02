@@ -89,6 +89,22 @@ const authReducer = (state = initialState, action) => {
             changingPassword: false,
             error: action.payload,
          };
+      case authTypes.ACTIVATE_USER_REQUEST:
+         return {
+            ...state,
+            loading: true,
+         }
+      case authTypes.ACTIVATE_USER_SUCCESS:
+         return {
+            ...state,
+            loading: false,
+         }
+      case authTypes.ACTIVATE_USER_FAILURE:
+         return {
+            ...state,
+            loading: false,
+            error: action.payload
+         }
       default:
          return state;
    }

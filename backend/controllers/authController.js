@@ -57,4 +57,42 @@ const register = async (req, res) => {
    }
 }
 
-module.exports = { register }
+const activateUser = async (req, res) => {
+   try {
+      const { email, activationcode } = req.query;
+
+      if (!email || !activationcode) {
+         return res.status(400).json({ error: 'Invalid Activation Link' });
+      }
+
+      const user = await User.findOne({ 'email.id': email });
+
+      if (!user) {
+         return res.status(404).json({ error: 'User not found. Try creating an account again.' });
+      }
+
+      if (user.email.verified) {
+         return res.status(400).json({ error: 'User already activated.' });
+      }
+
+      const validOtp = user.validateOtp(Number(activationcode));
+      if (!validOtp) {
+         return res.status(400).json({ error: 'Link expired or invalid. Try registering again.' });
+      }
+
+      user.email.verified = true;
+      user.otp = null;
+      await user.save();
+
+      return res.status(200).json({ message: 'Account activated successfully.' });
+
+   } catch (err) {
+      console.error('Error during user activation:', err.message);
+      res.status(500).json({ error: 'Internal server error.' });
+   }
+}
+
+module.exports = { register, activateUser };
+
+
+module.exports = { register, activateUser }

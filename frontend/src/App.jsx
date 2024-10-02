@@ -9,6 +9,7 @@ import AddProduct from "./components/Products/AddProduct";
 import Products from "./components/Products/Products";
 import Home from "./pages/Home";
 import LoginRegistration from "./pages/LoginRegistration";
+import AccountActivation from "./components/AccountAction/AccountActivation";
 
 import Modal from "./components/Modal/Modal";
 import Notification from "./components/Notifications/Notifications";
@@ -22,6 +23,7 @@ function App({ modal }) {
 					<Route path="/" element={<Home />} />
 					<Route path="/login" element={<LoginRegistration />} />
 					<Route path="/register" element={<LoginRegistration />} />
+					<Route path="/accountactivation" element={<AccountActivation />}></Route>
 					<Route element={<BackendLayout />}>
 						<Route path="products">
 							<Route index element={<Products />} />
