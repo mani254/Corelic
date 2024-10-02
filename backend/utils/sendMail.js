@@ -2,7 +2,7 @@ const nodemailer = require('nodemailer');
 const { oauth2Client, getAccessToken } = require('./oauthConfig');
 require('dotenv').config();
 
-async function sendMail({ subject, body, to }) {
+async function sendMail({ subject, html, to }) {
    try {
 
       oauth2Client.setCredentials({
@@ -22,17 +22,12 @@ async function sendMail({ subject, body, to }) {
             accessToken,
          },
       });
-      console.log(process.env.GOOGLE_EMAIL)
-      console.log(process.env.GOOGLE_CLIENT_ID)
-      console.log(process.env.GOOGLE_CLIENT_SECRET)
-      console.log(process.env.GOOGLE_REFRESH_TOKEN)
-      console.log(accessToken)
 
       const mailOptions = {
          from: process.env.GOOGLE_EMAIL,
          to: to,
          subject: subject,
-         text: body,
+         html: html
       };
 
       const result = await transporter.sendMail(mailOptions);

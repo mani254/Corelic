@@ -43,7 +43,7 @@ const userSchema = new mongoose.Schema({
    },
    otp: {
       code: {
-         type: String,
+         type: Number,
       },
       expiresAt: {
          type: Date,
@@ -62,11 +62,10 @@ userSchema.pre('save', async function (next) {
 
 // Method to generate and set a new OTP
 userSchema.methods.generateOtp = async function () {
-   const otpCode = crypto.randomBytes(3).toString('hex');
+   const otpCode = Math.floor(100000 + Math.random() * 9000000)
    const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
 
    this.otp = { code: otpCode, expiresAt };
-   await this.save();
 };
 
 // Method to validate OTP

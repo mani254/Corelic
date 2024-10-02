@@ -112,7 +112,7 @@ function Register({ register }) {
 				<div className="input-wrapper mt-5 variant-2">
 					<label htmlFor="confirmPassword">Confirm Password</label>
 					<div className="relative">
-						<input type={`${showPassword ? "text" : "password"}`} placeholder="Confirm Password" name="confirmPassword" id="confirmPassword" value={registerData.confirmPassword} onChange={handleChange} required />
+						<input type={`${showConfirmPassword ? "text" : "password"}`} placeholder="Confirm Password" name="confirmPassword" id="confirmPassword" value={registerData.confirmPassword} onChange={handleChange} required />
 						<span
 							className="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer"
 							onClick={() => {
