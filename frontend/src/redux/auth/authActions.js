@@ -1,6 +1,7 @@
 import authTypes from "./authActionTypes";
 import axios from 'axios';
 import { showNotification } from "../notification/notificationActions";
+import { hideModal } from "../modal/modalActions";
 
 export const loginRequest = () => ({
    type: authTypes.LOGIN_REQUEST,
@@ -96,7 +97,7 @@ export const register = (userData) => async (dispatch) => {
    }
 };
 
-export const activateUser = (email,activationcode) => async (dispatch) => {
+export const activateUser = (email, activationcode) => async (dispatch) => {
    dispatch(activateUserRequest());
    try {
       await axios.get(`${import.meta.env.VITE_APP_BACKENDURI}/api/auth/activateuser?email=${email}&activationcode=${activationcode}`);
@@ -112,37 +113,46 @@ export const activateUser = (email,activationcode) => async (dispatch) => {
    }
 }
 
-// Example async action for logging in
-export const login = (credentials) => async (dispatch) => {
-   dispatch(loginRequest());
+export const requestOtp = (email) => async (dispatch) => {
    try {
-      const response = await axios.post('/api/auth/login', credentials);
-      dispatch(loginSuccess(response.data.user));
+      await axios.post(`${import.meta.env.VITE_APP_BACKENDURI}/api/auth/requestOtp`, { email });
+      dispatch(showNotification('Otp has been sent to mail'))
+      return Promise.resolve();
    } catch (error) {
-      dispatch(loginFailure(error.response.data.message));
+      let errMessage = error.response ? error.response.data.error : 'Something Went wrong';
+      dispatch(showNotification(errMessage));
+      return Promise.reject(errMessage);
    }
 };
 
-
-
 // Example async action for verifying OTP
-export const verifyOtp = (otp) => async (dispatch) => {
+export const verifyOtp = (email, otp) => async (dispatch) => {
    dispatch(verifyOtpRequest());
    try {
-      await axios.post('/api/verify-otp', { otp });
+      await axios.post(`${import.meta.env.VITE_APP_BACKENDURI}/api/auth/verifyOtp`, { email, otp });
       dispatch(verifyOtpSuccess());
+      return Promise.resolve()
    } catch (error) {
-      dispatch(verifyOtpFailure(error.response.data.message));
+      let errMessage = error.response ? error.response.data.error : 'Something Went wrong';
+      dispatch(verifyOtpFailure(errMessage));
+      dispatch(showNotification(errMessage))
+      return Promise.reject(errMessage)
    }
 };
 
 // Example async action for changing password
-export const changePassword = (newPassword) => async (dispatch) => {
+export const changePassword = (email, otp, password) => async (dispatch) => {
    dispatch(changePasswordRequest());
    try {
-      await axios.post('/api/change-password', { newPassword });
+      await axios.post(`${import.meta.env.VITE_APP_BACKENDURI}/api/auth/changePassword`, { email, otp, password })
       dispatch(changePasswordSuccess());
+      dispatch(showNotification('Password Changed Succesfully'))
+      dispatch(hideModal())
    } catch (error) {
-      dispatch(changePasswordFailure(error.response.data.message));
+      console.log(error)
+      let errMessage = error.response ? error.response.data.error : 'Something Went wrong';
+      dispatch(changePasswordFailure(errMessage));
+      dispatch(showNotification(errMessage))
+      return Promise.reject(errMessage)
    }
 };

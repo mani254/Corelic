@@ -62,7 +62,7 @@ userSchema.pre('save', async function (next) {
 
 // Method to generate and set a new OTP
 userSchema.methods.generateOtp = async function () {
-   const otpCode = Math.floor(100000 + Math.random() * 9000000)
+   const otpCode = Math.floor(100000 + Math.random() * 900000)
    const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
 
    this.otp = { code: otpCode, expiresAt };

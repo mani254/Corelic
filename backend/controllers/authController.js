@@ -92,7 +92,93 @@ const activateUser = async (req, res) => {
    }
 }
 
-module.exports = { register, activateUser };
+const sendPasswordResetEmail = async (user, otp) => {
+   const html = `
+      <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: auto; border: 1px solid #ccc; border-radius: 10px;">
+         <h1 style="color: #333;">Password Reset Request</h1>
+         <p>Hi ${user.name},</p>
+         <p>You requested a password reset for your account. Please use the OTP below to proceed:</p>
+         <p style="font-size: 24px; font-weight: bold; color: #28a745;">${otp}</p>
+         <p>This OTP is valid for the next 10 minutes. If you did not request a password reset, please ignore this email.</p>
+         <p>Best regards,<br>Your Company Name</p>
+      </div>`;
+
+   await sendMail({ to: user.email.id, subject: 'Your OTP for Password Reset', html });
+};
+
+const requestOtp = async (req, res) => {
+   try {
+      const { email } = req.body;
+
+      const user = await User.findOne({ 'email.id': email });
+
+      if (!user) {
+         return res.status(404).json({ error: 'email does not exists' })
+      }
+
+      user.generateOtp()
+      await user.save()
+
+      console.log(user)
+
+      sendPasswordResetEmail(user, user.otp.code)
+
+      res.status(200).send({ message: 'Otp sent Successfully' })
+
+   } catch (err) {
+      console.error('Error while sending otp:', err.message);
+      res.status(500).json({ error: 'Internal server error.' });
+   }
+}
+
+const verifyOtp = async (req, res) => {
+   try {
+      const { email, otp } = req.body;
+
+      const user = await User.findOne({ 'email.id': email });
+
+      if (!user) {
+         return res.status(404).json({ error: 'Email does not exist' });
+      }
+
+      const validOtp = user.validateOtp(Number(otp));
+      if (!validOtp) {
+         return res.status(400).json({ error: "Invalid OTP or expired" });
+      }
+
+      res.status(200).json({ message: 'OTP validated successfully' });
+   } catch (err) {
+      console.error('Error while verifying OTP:', err.message);
+      res.status(500).json({ error: 'Internal server error.' });
+   }
+}
+
+const passwordChange = async (req, res) => {
+   try {
+      const { email, otp, password } = req.body;
+
+      const user = await User.findOne({ 'email.id': email });
+
+      if (!user) {
+         return res.status(404).json({ error: 'Email does not exist' });
+      }
+
+      const validOtp = user.validateOtp(Number(otp));
+      if (!validOtp) {
+         return res.status(400).json({ error: "Invalid OTP or expired" });
+      }
+
+      user.password = password
+      await user.save()
 
 
-module.exports = { register, activateUser }
+      res.status(200).json({ message: 'password changed succesfully' });
+   } catch (err) {
+      console.error('Error while changing passsword:', err.message);
+      res.status(500).json({ error: 'Internal server error.' });
+   }
+}
+
+
+module.exports = { register, activateUser, requestOtp, verifyOtp, passwordChange };
+

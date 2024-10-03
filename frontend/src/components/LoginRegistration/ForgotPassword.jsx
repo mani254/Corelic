@@ -4,7 +4,10 @@ import CloseModelBtn from "../Modal/CloseModelBtn";
 
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
-function ForgotPassword() {
+import { connect } from "react-redux";
+import { changePassword, requestOtp, verifyOtp } from "../../redux/auth/authActions";
+
+function ForgotPassword({ requestOtp, verifyOtp, changePassword }) {
 	const [showOtp, setShowOtp] = useState(false);
 	const [showPassword, setShowPassword] = useState(false);
 	const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -25,7 +28,7 @@ function ForgotPassword() {
 
 	const [timer, setTimer] = useState(30);
 	const [isTimerActive, setIsTimerActive] = useState(false);
-	const [changePassword, setChangePassword] = useState(false);
+	const [passwordChange, setPasswordChange] = useState(false);
 
 	useEffect(() => {
 		let countdown;
@@ -94,19 +97,55 @@ function ForgotPassword() {
 		}
 	};
 
-	function handleGetOtp() {
-		setTimer(30);
-		setIsTimerActive(true);
-		setShowOtp(true);
+	async function handleGetOtp() {
+		console.log(data.email);
+		if (!data.email || error.email) return;
+		try {
+			await requestOtp(data.email);
+			setTimer(30);
+			setIsTimerActive(true);
+			setShowOtp(true);
+		} catch (err) {
+			console.log(err);
+		}
 	}
 
-	function verifyOTP() {
-		setChangePassword(true);
+	async function handleOtpVerify() {
+		const isEmphty = otp.some((value) => value == "");
+		if (isEmphty) return;
+
+		const newOtp = otp.join("");
+		console.log(newOtp);
+
+		try {
+			await verifyOtp(data.email, newOtp);
+			setPasswordChange(true);
+		} catch (err) {
+			console.log(err);
+		}
+	}
+
+	async function handlePasswordChange() {
+		const isEmphty = Object.values(data).some((value) => value == "");
+		const hasError = Object.values(error).some((value) => value);
+
+		console.log(isEmphty, hasError);
+
+		if (isEmphty || hasError) return;
+
+		const newOtp = otp.join("");
+		console.log(newOtp);
+
+		try {
+			await changePassword(data.email, newOtp, data.password);
+		} catch (err) {
+			console.log(err);
+		}
 	}
 
 	return (
 		<div className="relative w-full max-w-md p-7 bg-white rounded-xl shadow-md">
-			{changePassword ? (
+			{passwordChange ? (
 				<>
 					<h3>Set new password</h3>
 					<div className="input-wrapper mt-3 variant-2">
@@ -127,7 +166,7 @@ function ForgotPassword() {
 					<div className="input-wrapper mt-3 variant-2">
 						<label htmlFor="confirmPassword">Confirm Password:</label>
 						<div className="relative">
-							<input type={`${showPassword ? "text" : "password"}`} placeholder="Confirm Password" name="confirmPassword" id="confirmPassword" value={data.confirmPassword} onChange={handleChange} />
+							<input type={`${showConfirmPassword ? "text" : "password"}`} placeholder="Confirm Password" name="confirmPassword" id="confirmPassword" value={data.confirmPassword} onChange={handleChange} />
 							<span
 								className="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer"
 								onClick={() => {
@@ -139,7 +178,9 @@ function ForgotPassword() {
 						{error.confirmPassword && <p className="error">{error.confirmPassword}</p>}
 					</div>
 
-					<button className="btn-1">Set Password</button>
+					<button className="btn-1" onClick={handlePasswordChange}>
+						Set Password
+					</button>
 				</>
 			) : (
 				<>
@@ -162,9 +203,15 @@ function ForgotPassword() {
 									}}>
 									Change email?
 								</p>
-								{timer > 0 ? <p>{timer} seconds left to request OTP.</p> : <p className="text-logo cursor-pointer">Resend OTP</p>}
+								{timer > 0 ? (
+									<p>{timer} seconds left to request OTP.</p>
+								) : (
+									<p className="text-logo cursor-pointer" onClick={() => handleGetOtp()}>
+										Resend OTP
+									</p>
+								)}
 							</div>
-							<button type="button" className="btn-1 mt-6" onClick={verifyOTP}>
+							<button type="button" className="btn-1 mt-6" onClick={handleOtpVerify}>
 								Verify OTP
 							</button>
 						</>
@@ -191,4 +238,12 @@ function ForgotPassword() {
 	);
 }
 
-export default ForgotPassword;
+const mapDispatchToProps = (dispatch) => {
+	return {
+		requestOtp: (email) => dispatch(requestOtp(email)),
+		verifyOtp: (email, otp) => dispatch(verifyOtp(email, otp)),
+		changePassword: (email, otp, password) => dispatch(changePassword(email, otp, password)),
+	};
+};
+
+export default connect(null, mapDispatchToProps)(ForgotPassword);
