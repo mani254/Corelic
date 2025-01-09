@@ -1,0 +1,147 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* === Base Styles === */
+@layer base {
+	:root {
+		--primary-color: #3b82f6; /* Tailwind Blue */
+		--secondary-color: #64748b; /* Tailwind Zinc */
+		--accent: #ef4444; /* Tailwind Red */
+		--success: #22c55e; /* Tailwind Green */
+		--warning-color: #fbbf24; /* Tailwind Amber */
+
+		--dark-white: rgb(161 161 170); /* zinc 400 */
+
+		--box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 6px 0px;
+	}
+
+	body {
+		@apply font-sans text-zinc-800 bg-zinc-200 leading-normal antialiased;
+	}
+
+	h1 {
+		@apply text-4xl font-extrabold;
+	}
+
+	h2 {
+		@apply text-3xl font-bold;
+	}
+
+	h3 {
+		@apply text-2xl font-semibold;
+	}
+
+	h4 {
+		@apply text-md font-medium;
+	}
+	h5 {
+		@apply text-sm font-medium;
+	}
+
+	p {
+		@apply text-base leading-relaxed text-sm;
+	}
+
+	ul,
+	ol {
+		@apply list-inside list-disc pl-5 text-sm;
+	}
+
+	a {
+		@apply text-primary text-sm underline hover:text-primary/80 transition-colors;
+	}
+
+	button {
+		@apply cursor-pointer;
+	}
+
+	/* === Dark Mode === */
+	main.dark {
+		@apply bg-zinc-700 text-zinc-200;
+	}
+
+	main.dark .bg-zinc-200 {
+		@apply bg-zinc-700;
+	}
+
+	main.dark a {
+		@apply text-primary/80 hover:text-primary/60;
+	}
+}
+
+/* === Components === */
+@layer components {
+	/* Buttons */
+	.btn-primary {
+		@apply text-white bg-primary px-4 py-1 rounded-md font-medium shadow-sm transition-colors;
+		box-shadow: var(--box-shadow);
+	}
+
+	.btn-primary:hover {
+		@apply bg-primary/90;
+	}
+
+	.btn-primary:focus {
+		@apply outline-none ring-2 ring-primary ring-opacity-50;
+	}
+
+	.btn-secondary {
+		@apply text-secondary-color border border-secondary-color bg-white px-4 py-2 rounded-md transition-colors;
+	}
+
+	.btn-secondary:hover {
+		@apply bg-secondary-color text-white;
+	}
+
+	.btn-disabled {
+		@apply bg-gray-400 text-gray-600 cursor-not-allowed opacity-70;
+	}
+
+	/* box components  */
+	.outer-box {
+		@apply mt-4 p-4 bg-white rounded-lg;
+		box-shadow: var(--box-shadow);
+	}
+
+	.dark .outer-box {
+		@apply bg-zinc-800;
+	}
+
+	/* Tooltips */
+	.tooltip {
+		@apply relative group;
+	}
+
+	.tooltip::after {
+		content: attr(data-tooltip);
+		@apply absolute hidden group-hover:block bg-zinc-700 text-white text-xs py-1 px-2 rounded-md;
+		top: -1.5rem;
+		left: 50%;
+		transform: translateX(-50%);
+	}
+
+	/* Badges */
+	.badge {
+		@apply inline-block px-2 py-1 text-xs font-medium rounded-md bg-primary-color text-white;
+	}
+
+	.badge-warning {
+		@apply bg-warning-color text-zinc-900;
+	}
+
+	.badge-success {
+		@apply bg-success text-white;
+	}
+}
+
+/* === Utilities === */
+@layer utilities {
+	/* Visibility Helpers */
+	.hidden-scrollbar {
+		@apply overflow-auto;
+	}
+	.hidden-scrollbar::-webkit-scrollbar {
+		display: none;
+	}
+}
