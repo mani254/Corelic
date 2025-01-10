@@ -12,9 +12,9 @@ const MultiSelect = React.memo(({ array = [], setArray, value = null, className 
 	return (
 		<div className={`flex flex-wrap gap-2 mb-4 ${className}`}>
 			{array.map((item, index) => (
-				<div className="flex items-center gap-1 bg-zinc-200 px-3 rounded-md" key={index}>
+				<div className="flex items-center gap-1 bg-main-3 px-3 rounded-md" key={index}>
 					<p className="text-xs">{value ? item[value] : item}</p>
-					<IoClose className="cursor-pointer text-gray-600 hover:text-red-600 transition-colors" onClick={() => handleItemDelete(index)} />
+					<IoClose className="cursor-pointer text-opposite hover:text-red-400 transition-colors" onClick={() => handleItemDelete(index)} />
 				</div>
 			))}
 		</div>

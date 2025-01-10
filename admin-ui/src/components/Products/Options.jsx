@@ -49,7 +49,7 @@ function Options({ options, setOptions }) {
 				<MultiSelect array={options} setArray={setOptions} />
 			</div>
 
-			<div className="mt-4">{customOptions ? <TextInput name="singleOption" id="singleOption" value={singleOption} onChange={(e) => setSingleOption(e.target.value)} onKeyDown={handleKeyPress} /> : <SelectInput options={selectOptions} value={selectedType} onChange={(e) => handleOptionsChange(e.target.value)} />}</div>
+			<div className="mt-4">{customOptions ? <TextInput name="singleOption" id="singleOption" value={singleOption} onChange={(e) => setSingleOption(e.target.value)} onKeyDown={handleKeyPress} placeholder="Option Name" /> : <SelectInput options={selectOptions} value={selectedType} onChange={(e) => handleOptionsChange(e.target.value)} />}</div>
 		</div>
 	);
 }

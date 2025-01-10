@@ -1,6 +1,6 @@
 /* === Input Wrappers === */
 label {
-	@apply block mb-[5px] text-xs text-zinc-900 font-secondary font-light;
+	@apply block mb-[5px] text-sm text-zinc-900 font-secondary font-light;
 }
 .variant-stock label {
 	@apply min-w-[100px];
@@ -137,7 +137,7 @@ main .image-grid .empty-state {
 main.dark .image-grid {
 	background: #272727;
 }
-main.dark svg {
+main.dark .image-grid svg {
 	fill: var(--dark-white);
 }
 main.dark .image-grid * {

@@ -67,7 +67,7 @@ function Inventory({ variants, setVariants, options }) {
 				<div className="flex flex-wrap gap-5 justify-between mt-5">
 					{variants.map((variant, variantIndex) => (
 						<div key={variantIndex}>
-							<p className="py-[2px] px-3 text-xs border border-zinc-400 rounded-md bg-zinc-200 mb-2">Variant - {variant.name}</p>
+							<p className="py-[2px] px-3 text-xs border border-zinc-400 rounded-md bg-main-2 mb-2">Variant - {variant.name}</p>
 
 							{options.length === 0 ? (
 								<div>

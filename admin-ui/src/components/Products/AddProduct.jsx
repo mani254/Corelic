@@ -136,6 +136,24 @@ function AddProduct({ showNotification }) {
 						</div>
 					</div>
 
+					<div className="flex gap-3">
+						<div className="outer-box w-full flex flex-col justify-between">
+							<div>
+								<h5 className="mb-2">Variants</h5>
+								<p className="text-xxs mb-2">Select this option to add multiple variants</p>
+								<MultiSelect array={variants} setArray={setVariants} value="name" />
+							</div>
+							<div>
+								<TextInput name="singleVariant" id="singleVariant" placeholder="Variant Name" value={singleVariant} onChange={({ target: { value } }) => setSingleVariant(value)} onKeyDown={handleVariantEntry} />
+							</div>
+						</div>
+						<div className="outer-box w-full">
+							<h5 className="mb-2">Options</h5>
+							<p className="text-xxs mb-2">Add Options likes Sizes and Types to the Product</p>
+							<Options options={options} setOptions={setOptions} />
+						</div>
+					</div>
+
 					<div className="outer-box">
 						<h5 className="mb-5">Media</h5>
 						<div className="space-y-5">
@@ -191,19 +209,6 @@ function AddProduct({ showNotification }) {
 							<SelectInput options={statusOptions} label="Status" name="status" className="mb-5" value={productDetails.status} onChange={handleInputChange} />
 
 							<TextInput label="Vendor" placeholder="Brand Name" name="vendor" id="vendor" value={productDetails.vendor} onChange={handleInputChange} />
-						</div>
-
-						<div className="outer-box">
-							<h5 className="mb-2">Options</h5>
-							<p className="text-xxs mb-2">Add Options likes Sizes and Types to the Product</p>
-							<Options options={options} setOptions={setOptions} />
-						</div>
-
-						<div className="outer-box">
-							<h5 className="mb-2">Variants</h5>
-							<p className="text-xxs mb-2">Select this option to add multiple variants</p>
-							<MultiSelect array={variants} setArray={setVariants} value="name" />
-							<TextInput name="singleVariant" id="singleVariant" placeholder="Variant Name" value={singleVariant} onChange={({ target: { value } }) => setSingleVariant(value)} onKeyDown={handleVariantEntry} />
 						</div>
 
 						<div className="outer-box">

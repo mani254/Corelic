@@ -5,15 +5,25 @@
 /* === Base Styles === */
 @layer base {
 	:root {
-		--primary-color: #3b82f6; /* Tailwind Blue */
-		--secondary-color: #64748b; /* Tailwind Zinc */
-		--accent: #ef4444; /* Tailwind Red */
-		--success: #22c55e; /* Tailwind Green */
-		--warning-color: #fbbf24; /* Tailwind Amber */
+		--primary-color: 139, 92, 246;
+		--secondary-color: 100, 116, 139;
+		--accent: 239, 68, 68;
+		--success: 34, 197, 94;
+		--warning-color: 251, 191, 36;
 
-		--dark-white: rgb(161 161 170); /* zinc 400 */
+		--dark-white: rgb(161, 161, 170);
+		--bg-main-1: #ffffff;
+		--bg-main-2: #f4f4f5;
+		--bg-main-3: #ede9fe;
 
 		--box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 6px 0px;
+	}
+
+	.dark {
+		--primary-color: 109, 40, 217;
+		--bg-main-1: #27272a;
+		--bg-main-2: #3f3f46;
+		--bg-main-3: #18181b;
 	}
 
 	body {
@@ -49,24 +59,35 @@
 	}
 
 	a {
-		@apply text-primary text-sm underline hover:text-primary/80 transition-colors;
+		@apply transition-colors;
 	}
 
+	.bg-main,
+	.hover-bg-main:hover {
+		background: var(--bg-main-1);
+	}
+
+	.text-opposite {
+		color: #3f3f46;
+	}
+	.dark .text-opposite {
+		color: #d4d4d4;
+	}
+
+	.bg-main-2,
+	.hover-bg-main-2:hover {
+		background: var(--bg-main-2);
+	}
+	.bg-main-3 {
+		background: var(--bg-main-3);
+	}
 	button {
 		@apply cursor-pointer;
 	}
 
 	/* === Dark Mode === */
 	main.dark {
-		@apply bg-zinc-700 text-zinc-200;
-	}
-
-	main.dark .bg-zinc-200 {
-		@apply bg-zinc-700;
-	}
-
-	main.dark a {
-		@apply text-primary/80 hover:text-primary/60;
+		@apply bg-zinc-700 text-zinc-300;
 	}
 }
 
@@ -84,14 +105,6 @@
 
 	.btn-primary:focus {
 		@apply outline-none ring-2 ring-primary ring-opacity-50;
-	}
-
-	.btn-secondary {
-		@apply text-secondary-color border border-secondary-color bg-white px-4 py-2 rounded-md transition-colors;
-	}
-
-	.btn-secondary:hover {
-		@apply bg-secondary-color text-white;
 	}
 
 	.btn-disabled {

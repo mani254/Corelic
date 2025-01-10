@@ -10,11 +10,11 @@ export default {
             secondary: 'Author',
          },
          colors: {
-            primary: '#3b82f6',
-            secondary: '#64748b',
-            accent: '#ef4444',
-            success: '#22c55e',
-            warning: '#fbbf24',
+            primary: 'rgb(var(--primary-color))',
+            secondary: 'rgb(var(--secondary-color))',
+            accent: 'rgb(var(--accent))',
+            success: 'rgb(var(--success))',
+            warning: 'rgb(var(--warning-color))',
          },
          container: {
             center: true,
@@ -28,8 +28,8 @@ export default {
          },
          fontSize: {
             xxs: '14px',
-            xs: '17px',
-            sm: '18px',
+            xs: '16px',
+            sm: '17px',
             md: '20px',
             lg: '24px',
             xl: '32px',

@@ -1,3 +1,7 @@
+import logo from '../assets/images/logo.png'
+
+export { logo }
+
 export function validation(action, value) {
    switch (action) {
       case "title":
