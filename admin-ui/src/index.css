@@ -12,22 +12,27 @@
 		--warning-color: 251, 191, 36;
 
 		--dark-white: rgb(161, 161, 170);
-		--bg-main-1: #ffffff;
-		--bg-main-2: #f4f4f5;
-		--bg-main-3: #ede9fe;
+
+		--main-1: 251, 249, 251;
+		--main-2: 236, 236, 238;
+		--main-3: 237, 233, 254;
+		--main-4: 63, 63, 70;
 
 		--box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 6px 0px;
 	}
 
 	.dark {
 		--primary-color: 109, 40, 217;
-		--bg-main-1: #27272a;
-		--bg-main-2: #3f3f46;
-		--bg-main-3: #18181b;
+
+		--main-1: 39, 39, 42;
+		--main-2: 63, 63, 70;
+		--main-3: 24, 24, 27;
+		--main-4: 161, 161, 170;
 	}
 
 	body {
-		@apply font-sans text-zinc-800 bg-zinc-200 leading-normal antialiased;
+		@apply font-sans text-zinc-800 leading-normal antialiased;
+		background: #f3f3f3;
 	}
 
 	h1 {
@@ -45,6 +50,7 @@
 	h4 {
 		@apply text-md font-medium;
 	}
+
 	h5 {
 		@apply text-sm font-medium;
 	}
@@ -62,32 +68,21 @@
 		@apply transition-colors;
 	}
 
-	.bg-main,
-	.hover-bg-main:hover {
-		background: var(--bg-main-1);
-	}
-
 	.text-opposite {
-		color: #3f3f46;
-	}
-	.dark .text-opposite {
-		color: #d4d4d4;
+		color: var(--main-4);
 	}
 
-	.bg-main-2,
-	.hover-bg-main-2:hover {
-		background: var(--bg-main-2);
+	.dark .text-opposite {
+		color: var(--main-4);
 	}
-	.bg-main-3 {
-		background: var(--bg-main-3);
-	}
+
 	button {
 		@apply cursor-pointer;
 	}
 
 	/* === Dark Mode === */
-	main.dark {
-		@apply bg-zinc-700 text-zinc-300;
+	.dark {
+		@apply bg-zinc-900 text-zinc-300;
 	}
 }
 
@@ -111,14 +106,10 @@
 		@apply bg-gray-400 text-gray-600 cursor-not-allowed opacity-70;
 	}
 
-	/* box components  */
+	/* Boxes */
 	.outer-box {
-		@apply mt-4 p-4 bg-white rounded-lg;
+		@apply mt-4 p-4 rounded-lg bg-main;
 		box-shadow: var(--box-shadow);
-	}
-
-	.dark .outer-box {
-		@apply bg-zinc-800;
 	}
 
 	/* Tooltips */
@@ -136,7 +127,7 @@
 
 	/* Badges */
 	.badge {
-		@apply inline-block px-2 py-1 text-xs font-medium rounded-md bg-primary-color text-white;
+		@apply inline-block px-2 py-1 text-xs font-medium rounded-md bg-primary text-white;
 	}
 
 	.badge-warning {
@@ -154,6 +145,7 @@
 	.hidden-scrollbar {
 		@apply overflow-auto;
 	}
+
 	.hidden-scrollbar::-webkit-scrollbar {
 		display: none;
 	}

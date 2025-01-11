@@ -121,7 +121,7 @@ function AddProduct({ showNotification }) {
 	};
 
 	return (
-		<div className="max-w-[1000px] m-auto mt-5 mb-10">
+		<div className="max-w-6xl m-auto mt-5 mb-10">
 			<h4>Add Product</h4>
 			<div className="flex gap-3">
 				<div className="w-4/6">
