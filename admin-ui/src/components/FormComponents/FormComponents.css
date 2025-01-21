@@ -1,6 +1,6 @@
 /* === Input Wrappers === */
 label {
-	@apply block mb-[5px] text-sm text-zinc-900 font-secondary font-light;
+	@apply block mb-[5px] text-sm text-zinc-900 font-secondary font-light whitespace-nowrap;
 }
 .variant-stock label {
 	@apply min-w-[100px];

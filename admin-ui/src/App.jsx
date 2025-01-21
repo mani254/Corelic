@@ -10,7 +10,7 @@ import Dashboard from "./components/Dashboard/Dashboard";
 
 function App() {
 	return (
-		<main className="">
+		<main className="dark">
 			<Notifications />
 			<Routes>
 				<Route path="/" element={<BaseLayout />}>

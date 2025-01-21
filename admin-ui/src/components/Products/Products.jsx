@@ -1,9 +1,11 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { CheckboxInput } from "../FormComponents/FormComponents";
 import ProductActions from "./ProductActions";
+import ProductsFilter from "./ProductsFilter";
+import { useSearchParams } from "react-router-dom";
+import Pagination from "../Pagination/Pagination";
 
 const ProductTable = () => {
-	// Products data
 	const [products, setProducts] = useState([
 		{
 			_id: 1,
@@ -87,31 +89,42 @@ const ProductTable = () => {
 		},
 	]);
 
-	// Selected products
+	const [searchParams] = useSearchParams();
+	const initialRender = useRef(true);
+
 	const [selectedProducts, setSelectedProducts] = useState([]);
 
-	// Select all products
 	const handleSelectAll = useCallback(
 		(e) => {
-			setSelectedProducts(e.target.checked ? products.map((product) => product._id) : []);
+			setSelectedProducts(e.target.checked ? products.map((p) => p._id) : []);
 		},
 		[products]
 	);
 
-	// Toggle product selection
 	const handleCheckboxChange = useCallback((id) => {
-		setSelectedProducts((prevSelected) => (prevSelected.includes(id) ? prevSelected.filter((productId) => productId !== id) : [...prevSelected, id]));
+		setSelectedProducts((prev) => (prev.includes(id) ? prev.filter((productId) => productId !== id) : [...prev, id]));
 	}, []);
 
+	useEffect(() => {
+		if (initialRender.current) {
+			initialRender.current = false;
+			return;
+		}
+		if (searchParams.size !== 0) {
+			console.log("Request sent to backend with params:", Object.fromEntries(searchParams.entries()));
+		}
+	}, [searchParams]);
+
 	return (
-		<div className="p-6 max-w-6xl m-auto bg-main rounded-lg overflow-hidden">
+		<div className="p-6 max-w-6xl m-auto bg-main rounded-lg overflow-hidden mt-2">
 			<h4 className="mb-5">Products</h4>
+			<ProductsFilter />
 			<div className="overflow-x-auto">
 				<table className="w-full border-collapse">
 					<thead>
 						<tr className="bg-main-2">
 							<th className="px-6 py-3 text-left font-medium w-10">
-								<CheckboxInput onChange={handleSelectAll} checked={selectedProducts.length === products.length} />
+								<CheckboxInput onChange={handleSelectAll} checked={products.length > 0 && selectedProducts.length === products.length} />
 							</th>
 							<th className="px-6 py-3 text-left font-medium">Image</th>
 							<th className="px-6 py-3 text-left font-medium w-1/3">Title</th>
@@ -121,14 +134,14 @@ const ProductTable = () => {
 							<th className="px-6 py-3 text-left font-medium">Actions</th>
 						</tr>
 					</thead>
-					<tbody>
+					<tbody className="">
 						{products.map((product) => (
 							<tr key={product._id} className="border-t border-main-2 hover:bg-opacity-50 hover:bg-main-2 cursor-pointer">
 								<td className="px-6 py-2">
 									<CheckboxInput checked={selectedProducts.includes(product._id)} onChange={() => handleCheckboxChange(product._id)} />
 								</td>
 								<td className="px-6 py-2 w-10">
-									<div className="realtive h-10 w-10 overflow-hidden rounded-lg bg-main-3">
+									<div className="relative h-10 w-10 overflow-hidden rounded-lg bg-main-3">
 										<img src={product.image} alt={product.title} className="w-full h-full object-cover object-center" />
 									</div>
 								</td>
@@ -136,16 +149,15 @@ const ProductTable = () => {
 								<td className="px-6 py-2">{product.price}</td>
 								<td className="px-6 py-2">{product.stock}</td>
 								<td className="px-6 py-2">
-									<span className={`inline-block px-3 py-1 rounded-full text-xxs  ${product.status === "Active" ? "bg-green-100 text-green-800" : product.status === "Inactive" ? "bg-red-100 text-red-800" : "bg-yellow-100 text-yellow-800"}`}>{product.status}</span>
+									<span className={`inline-block px-3 py-1 rounded-full text-xxs ${product.status === "Active" ? "bg-green-100 text-green-800" : product.status === "Inactive" ? "bg-red-100 text-red-800" : "bg-yellow-100 text-yellow-800"}`}>{product.status}</span>
 								</td>
-								<td className="px-6 py-2">
-									<ProductActions />
-								</td>
+								<td className="px-6 py-2">{selectedProducts.length > 1 ? <ProductActions multiSelect /> : <ProductActions />}</td>
 							</tr>
 						))}
 					</tbody>
 				</table>
 			</div>
+			<Pagination totalItems={500} />
 		</div>
 	);
 };
