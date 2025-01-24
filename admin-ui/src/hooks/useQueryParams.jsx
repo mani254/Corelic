@@ -5,8 +5,13 @@ export const useQueryParams = (defaults = {}) => {
 	const [searchParams, setSearchParams] = useSearchParams();
 
 	useEffect(() => {
-		setSearchParams(defaults);
-	}, []);
+		const needsUpdate = Object.keys(defaults).some((key) => !searchParams.has(key) || searchParams.get(key) === "");
+
+		if (needsUpdate) {
+			const mergedParams = { ...Object.fromEntries(searchParams), ...defaults };
+			setSearchParams(mergedParams);
+		}
+	}, [searchParams]);
 
 	const getParam = (key) => searchParams.get(key) || "";
 

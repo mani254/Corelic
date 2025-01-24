@@ -42,17 +42,27 @@ export const CheckboxInput = ({ className, variant, id, label, checked, ...props
 	);
 };
 
-export const SelectInput = ({ className, variant, label, options, ...props }) => {
+export const SelectInput = ({ className, variant, id, label, options, ...props }) => {
 	return (
 		<div className={`input-wrapper variant-${variant} ${className || ""}`}>
-			<label>{label}</label>
-			<select {...props}>
+			<label htmlFor={id}>{label}</label>
+			<select {...props} id={id}>
 				{options.map((option, index) => (
 					<option key={index} value={option.value}>
 						{option.label}
 					</option>
 				))}
 			</select>
+		</div>
+	);
+};
+
+export const DateInput = ({ className, variant, id, label, error, ...props }) => {
+	return (
+		<div className={`input-wrapper variant-${variant} ${className || ""} ${error && "error"}`}>
+			{label && <label htmlFor={id}>{label}</label>}
+			<input type="date" id={id} {...props} />
+			{error && <p className="text-xxs mt-[2px] text-accent">{error}</p>}
 		</div>
 	);
 };
