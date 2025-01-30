@@ -39,7 +39,7 @@ const Pagination = ({ totalItems = 1000 }) => {
 
 	return (
 		<div className="flex items-center justify-center gap-2 mt-10">
-			<button onClick={() => changePage(currentPage - 1)} disabled={currentPage === 1} className={`px-4 py-2 rounded-full ${currentPage === 1 ? "bg-main-2 bg-opacity-60 text-gray-500" : "bg-main-2 bg-opacity-65 hover:bg-opacity-100"}`}>
+			<button onClick={() => changePage(currentPage - 1)} disabled={currentPage === 1} className={`px-3 py-1 rounded-full ${currentPage === 1 ? "bg-main-2 bg-opacity-60 text-gray-500" : "bg-main-2 bg-opacity-65 hover:bg-opacity-100"}`}>
 				Previous
 			</button>
 
@@ -50,14 +50,14 @@ const Pagination = ({ totalItems = 1000 }) => {
 							...
 						</span>
 					) : (
-						<button key={page} onClick={() => changePage(page)} className={`px-4 py-2 rounded-full ${page === currentPage ? "bg-primary bg-opacity-80 text-white" : "bg-main-2 bg-opacity-65 hover:bg-opacity-100"}`}>
+						<button key={page} onClick={() => changePage(page)} className={`px-3 py-1 rounded-full ${page === currentPage ? "bg-primary bg-opacity-80 text-white" : "bg-main-2 bg-opacity-65 hover:bg-opacity-100"}`}>
 							{page}
 						</button>
 					)
 				)}
 			</div>
 
-			<button onClick={() => changePage(currentPage + 1)} disabled={currentPage === totalPages} className={`px-4 py-2 rounded-full ${currentPage === totalPages ? "bg-main-2 bg-opacity-60 text-gray-500" : "bg-main-2 bg-opacity-65 hover:bg-opacity-100"}`}>
+			<button onClick={() => changePage(currentPage + 1)} disabled={currentPage === totalPages} className={`px-3 py-1 rounded-full ${currentPage === totalPages ? "bg-main-2 bg-opacity-60 text-gray-500" : "bg-main-2 bg-opacity-65 hover:bg-opacity-100"}`}>
 				Next
 			</button>
 

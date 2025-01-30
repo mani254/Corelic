@@ -9,10 +9,13 @@ import BaseLayout from "./Layouts/BaseLayout";
 import Dashboard from "./components/Dashboard/Dashboard";
 import OrdersWrapper from "./components/Orders/OrdersWrapper";
 import Orders from "./components/Orders/Orders";
+import Collections from "./components/Collections/Collections";
+import CollectionsWrapper from "./components/Collections/CollectionsWrapper";
+import AddCollection from "./components/Collections/AddCollection";
 
 function App() {
 	return (
-		<main className="">
+		<main className=" max-w-[1800px] mx-auto">
 			<Notifications />
 			<Routes>
 				<Route path="/" element={<BaseLayout />}>
@@ -23,7 +26,10 @@ function App() {
 					</Route>
 					<Route path="/orders" element={<OrdersWrapper />}>
 						<Route index element={<Orders />}></Route>
-						{/* <Route path="add" element={<AddProduct />}></Route> */}
+					</Route>
+					<Route path="/collections" element={<CollectionsWrapper />}>
+						<Route index element={<Collections />}></Route>
+						<Route path="add" element={<AddCollection />}></Route>
 					</Route>
 				</Route>
 			</Routes>

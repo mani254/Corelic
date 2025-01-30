@@ -27,7 +27,7 @@ const OrderActions = ({ multiSelect = false }) => {
 	return (
 		<div className="" ref={dropdownRef}>
 			<button className="p-2 rounded-full bg-main-2 border border-main-4 border-opacity-40" onClick={handleOptions}>
-				<FiMoreVertical size={16} />
+				<FiMoreVertical size={14} />
 			</button>
 
 			{showOptions && (

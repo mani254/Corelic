@@ -32,14 +32,14 @@ export default {
          },
          fontSize: {
             xxs: '14px',
-            xs: '16px',
-            sm: '17px',
+            xs: '15px',
+            sm: '16px',
             md: '20px',
             lg: '24px',
-            xl: '32px',
-            '2xl': '48px',
-            '3xl': '58px',
-            '4xl': '96px',
+            xl: '28px',
+            '2xl': '32px',
+            '3xl': '38px',
+            '4xl': '42px',
          },
          keyframes: {
             shrink: {

@@ -28,10 +28,13 @@ function AddProduct({ showNotification }) {
 	});
 
 	const [options, setOptions] = useState([]);
+
 	const [singleVariant, setSingleVariant] = useState("");
 	const [variants, setVariants] = useState([{ id: uuidv4(), name: "Main", images: [] }]);
-	const [singleCategory, setSingleCategory] = useState("");
-	const [categories, setCategories] = useState([]);
+
+	const [singleCollection, setSingleCollection] = useState("");
+	const [collections, setCollections] = useState([]);
+
 	const [errors, setErrors] = useState({
 		title: "",
 		overview: "",
@@ -70,14 +73,14 @@ function AddProduct({ showNotification }) {
 		[singleVariant]
 	);
 
-	const handleCategoryEntry = useCallback(
+	const handleCollectionEntry = useCallback(
 		(e) => {
 			if (e.key === "Enter") {
-				setCategories((prev) => [...prev, singleCategory]);
-				setSingleCategory("");
+				setCollections((prev) => [...prev, singleCollection]);
+				setSingleCollection("");
 			}
 		},
-		[singleCategory]
+		[singleCollection]
 	);
 
 	const handleBlur = (title, value) => {
@@ -212,10 +215,10 @@ function AddProduct({ showNotification }) {
 						</div>
 
 						<div className="outer-box">
-							<h5 className="mb-2">Categories</h5>
-							<p className="text-xxs mb-2">Select Under Which Category this product should comes under</p>
-							<MultiSelect array={categories} setArray={setCategories} />
-							<TextInput name="singleCategory" id="singleCategory" placeholder="Category Name" value={singleCategory} onChange={({ target: { value } }) => setSingleCategory(value)} onKeyDown={handleCategoryEntry} />
+							<h5 className="mb-2">Collections</h5>
+							<p className="text-xxs mb-2">Select Under Which Collection this product should comes under</p>
+							<MultiSelect array={collections} setArray={setCollections} />
+							<TextInput name="singleCollection" id="singleCollection" placeholder="Collection Name" value={singleCollection} onChange={({ target: { value } }) => setSingleCollection(value)} onKeyDown={handleCollectionEntry} />
 						</div>
 
 						<button className="btn-primary w-full mt-4" onClick={handleSubmit}>
