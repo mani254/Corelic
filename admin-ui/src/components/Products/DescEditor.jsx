@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Editor } from "@tinymce/tinymce-react";
+import SkeletonDescription from "../Loaders/SkeletonDescription";
 
 function DescEditor({ productDetails, setProductDetails }) {
 	const [isLoading, setIsLoading] = useState(true);
@@ -10,7 +11,11 @@ function DescEditor({ productDetails, setProductDetails }) {
 
 	return (
 		<div className="min-h-[350px]">
-			{isLoading && <div className="loader">Loading Editor...</div>}
+			{isLoading && (
+				<div>
+					<SkeletonDescription />
+				</div>
+			)}
 			<Editor
 				apiKey="bv4vkpuxs4ekwdo7tqyw32knbe4dqdzdzbv08de4m32pe2q6"
 				init={{

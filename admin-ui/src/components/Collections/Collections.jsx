@@ -5,6 +5,7 @@ import Pagination from "../Pagination/Pagination";
 import CollectionsFilter from "./CollectionFilter";
 import Actions from "../Actions/Actions";
 import CollectionActions from "../Actions/CollectionActions";
+import SkeletonTable from "../Loaders/SkeletonTable";
 
 const Collections = () => {
 	const [collections, setCollections] = useState([
@@ -89,11 +90,19 @@ const Collections = () => {
 			image: "https://source.unsplash.com/200x200/?luxury",
 		},
 	]);
-
 	const [searchParams] = useSearchParams();
 	const initialRender = useRef(true);
 
 	const [selectedCollections, setSelectedCollections] = useState([]);
+
+	const [loader, setLoader] = useState(true);
+	useEffect(() => {
+		const timeout = setTimeout(() => {
+			setLoader(false);
+		}, 1000);
+
+		return () => clearTimeout(timeout);
+	}, []);
 
 	// useEffect to send the data to the backend when ever there is a chage in search params
 	useEffect(() => {
@@ -125,39 +134,43 @@ const Collections = () => {
 			<CollectionsFilter />
 			<div>
 				<div>
-					<table className="w-full border-collapse">
-						<thead>
-							<tr className="bg-main-2">
-								<th className="px-6 py-3 text-left font-medium w-10">
-									<CheckboxInput onChange={handleSelectAll} checked={collections.length > 0 && selectedCollections.length === collections.length} />
-								</th>
-								<th className="px-6 py-3 text-left font-medium">Title</th>
-								<th className="px-6 py-3 text-left font-medium w-1/3">Description</th>
-								<th className="px-6 py-3 text-left font-medium">Status</th>
-								<th className="px-6 py-3 text-left font-medium">Actions</th>
-							</tr>
-						</thead>
-						<tbody>
-							{collections.map((collection) => (
-								<tr key={collection._id} className="border-t border-main-2 hover:bg-opacity-50 hover:bg-main-2 cursor-pointer">
-									<td className="px-6 py-2">
-										<CheckboxInput checked={selectedCollections.includes(collection._id)} onChange={() => handleCheckboxChange(collection._id)} />
-									</td>
-									<td className="px-6 py-2">{collection.title}</td>
-									<td className="px-6 py-2">{collection.description}</td>
-									<td className="px-6 py-2">
-										<span className={`inline-block px-3 py-1 rounded-full text-xxs ${collection.status === "Active" ? "bg-green-100 text-green-800" : collection.status === "Inactive" ? "bg-red-100 text-red-800" : "bg-yellow-100 text-yellow-800"}`}>{collection.status}</span>
-									</td>
-									<td className="px-6 py-2">
-										<Actions>
-											<CollectionActions multiSelect={selectedCollections.length > 1} />
-										</Actions>
-									</td>
-									{/* <td className="px-6 py-2">Actions</td> */}
+					{loader ? (
+						<SkeletonTable />
+					) : (
+						<table className="w-full border-collapse">
+							<thead>
+								<tr className="bg-main-2">
+									<th className="px-6 py-3 text-left font-medium w-10">
+										<CheckboxInput onChange={handleSelectAll} checked={collections.length > 0 && selectedCollections.length === collections.length} />
+									</th>
+									<th className="px-6 py-3 text-left font-medium">Title</th>
+									<th className="px-6 py-3 text-left font-medium w-1/3">Description</th>
+									<th className="px-6 py-3 text-left font-medium">Status</th>
+									<th className="px-6 py-3 text-left font-medium">Actions</th>
 								</tr>
-							))}
-						</tbody>
-					</table>
+							</thead>
+							<tbody>
+								{collections.map((collection) => (
+									<tr key={collection._id} className="border-t border-main-2 hover:bg-opacity-50 hover:bg-main-2 cursor-pointer">
+										<td className="px-6 py-2">
+											<CheckboxInput checked={selectedCollections.includes(collection._id)} onChange={() => handleCheckboxChange(collection._id)} />
+										</td>
+										<td className="px-6 py-2">{collection.title}</td>
+										<td className="px-6 py-2">{collection.description}</td>
+										<td className="px-6 py-2">
+											<span className={`inline-block px-3 py-1 rounded-full text-xxs ${collection.status === "Active" ? "bg-green-100 text-green-800" : collection.status === "Inactive" ? "bg-red-100 text-red-800" : "bg-yellow-100 text-yellow-800"}`}>{collection.status}</span>
+										</td>
+										<td className="px-6 py-2">
+											<Actions>
+												<CollectionActions multiSelect={selectedCollections.length > 1} />
+											</Actions>
+										</td>
+										{/* <td className="px-6 py-2">Actions</td> */}
+									</tr>
+								))}
+							</tbody>
+						</table>
+					)}
 
 					<Pagination totalItems={100} />
 				</div>

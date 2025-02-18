@@ -7,6 +7,7 @@ import { useSearchParams } from "react-router-dom";
 import Pagination from "../Pagination/Pagination";
 import ProductsFilter from "./ProductsFilter";
 import ImageComponent from "../Images/ImageComponent";
+import SkeletonTable from "../Loaders/SkeletonTable";
 
 const Products = () => {
 	const [products, setProducts] = useState([
@@ -93,6 +94,7 @@ const Products = () => {
 	]);
 
 	const [searchParams] = useSearchParams();
+	const [loader, setLoader] = useState(true);
 	const initialRender = useRef(true);
 
 	const [selectedProducts, setSelectedProducts] = useState([]);
@@ -107,6 +109,14 @@ const Products = () => {
 			console.log("Request sent to backend with params:", Object.fromEntries(searchParams.entries()));
 		}
 	}, [searchParams]);
+
+	useEffect(() => {
+		const timeout = setTimeout(() => {
+			setLoader(false);
+		}, 1000);
+
+		return () => clearTimeout(timeout);
+	}, []);
 
 	//function to select all the items _id that are in the products to the selected products state
 	const handleSelectAll = useCallback(
@@ -125,52 +135,57 @@ const Products = () => {
 		<div className="overflow-x-auto">
 			<h4 className="mb-5">Products</h4>
 			<ProductsFilter />
-			<table className="w-full border-collapse">
-				<thead>
-					<tr className="bg-main-2">
-						<th className="px-6 py-3 text-left font-medium w-10">
-							<CheckboxInput onChange={handleSelectAll} checked={products.length > 0 && selectedProducts.length === products.length} />
-						</th>
-						<th className="px-6 py-3 text-left font-medium">Image</th>
-						<th className="px-6 py-3 text-left font-medium w-1/3">Title</th>
-						<th className="px-6 py-3 text-left font-medium">Price</th>
-						<th className="px-6 py-3 text-left font-medium">Stock</th>
-						<th className="px-6 py-3 text-left font-medium">Status</th>
-						<th className="px-6 py-3 text-left font-medium">Actions</th>
-					</tr>
-				</thead>
-				<tbody>
-					{products.map((product) => (
-						<tr key={product._id} className="border-t border-main-2 hover:bg-opacity-50 hover:bg-main-2 cursor-pointer">
-							<td className="px-6 py-2">
-								<CheckboxInput checked={selectedProducts.includes(product._id)} onChange={() => handleCheckboxChange(product._id)} />
-							</td>
-							<td className="px-6 py-2 w-10">
-								<div className="relative h-10 w-10 overflow-hidden rounded-lg bg-main-3">
-									<ImageComponent path={product.image} alt={product.title} className="w-full h-full object-cover object-center" />
-								</div>
-							</td>
-							<td className="px-6 py-2">{product.title}</td>
-							<td className="px-6 py-2">{product.price}</td>
-							<td className="px-6 py-2">{product.stock}</td>
-							<td className="px-6 py-2">
-								<span className={`inline-block px-3 py-1 rounded-full text-xxs ${product.status === "Active" ? "bg-green-100 text-green-800" : product.status === "Inactive" ? "bg-red-100 text-red-800" : "bg-yellow-100 text-yellow-800"}`}>{product.status}</span>
-							</td>
-							<td className="px-6 py-2">
-								{selectedProducts.length > 1 ? (
-									<Actions>
-										<ProductActions />
-									</Actions>
-								) : (
-									<Actions>
-										<ProductActions />
-									</Actions>
-								)}
-							</td>
+			{loader ? (
+				<SkeletonTable />
+			) : (
+				<table className="w-full border-collapse">
+					<thead>
+						<tr className="bg-main-2">
+							<th className="px-6 py-3 text-left font-medium w-10">
+								<CheckboxInput onChange={handleSelectAll} checked={products.length > 0 && selectedProducts.length === products.length} />
+							</th>
+							<th className="px-6 py-3 text-left font-medium">Image</th>
+							<th className="px-6 py-3 text-left font-medium w-1/3">Title</th>
+							<th className="px-6 py-3 text-left font-medium">Price</th>
+							<th className="px-6 py-3 text-left font-medium">Stock</th>
+							<th className="px-6 py-3 text-left font-medium">Status</th>
+							<th className="px-6 py-3 text-left font-medium">Actions</th>
 						</tr>
-					))}
-				</tbody>
-			</table>
+					</thead>
+					<tbody>
+						{products.map((product) => (
+							<tr key={product._id} className="border-t border-main-2 hover:bg-opacity-50 hover:bg-main-2 cursor-pointer">
+								<td className="px-6 py-2">
+									<CheckboxInput checked={selectedProducts.includes(product._id)} onChange={() => handleCheckboxChange(product._id)} />
+								</td>
+								<td className="px-6 py-2 w-10">
+									<div className="relative h-10 w-10 overflow-hidden rounded-lg bg-main-3">
+										<ImageComponent path={product.image} alt={product.title} className="w-full h-full object-cover object-center" />
+									</div>
+								</td>
+								<td className="px-6 py-2">{product.title}</td>
+								<td className="px-6 py-2">{product.price}</td>
+								<td className="px-6 py-2">{product.stock}</td>
+								<td className="px-6 py-2">
+									<span className={`inline-block px-3 py-1 rounded-full text-xxs ${product.status === "Active" ? "bg-green-100 text-green-800" : product.status === "Inactive" ? "bg-red-100 text-red-800" : "bg-yellow-100 text-yellow-800"}`}>{product.status}</span>
+								</td>
+								<td className="px-6 py-2">
+									{selectedProducts.length > 1 ? (
+										<Actions>
+											<ProductActions />
+										</Actions>
+									) : (
+										<Actions>
+											<ProductActions />
+										</Actions>
+									)}
+								</td>
+							</tr>
+						))}
+					</tbody>
+				</table>
+			)}
+
 			<Pagination totalItems={100} />
 		</div>
 	);
