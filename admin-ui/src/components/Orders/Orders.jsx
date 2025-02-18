@@ -6,7 +6,7 @@ import Pagination from "../Pagination/Pagination";
 import { useSearchParams } from "react-router-dom";
 import OrdersFilter from "./OrdersFilter";
 import SkeletonTable from "../Loaders/SkeletonTable";
-const Orders = () => {
+const Orders = ({ recent }) => {
 	const [orders, setOrders] = useState([
 		{
 			_id: 101,
@@ -238,9 +238,9 @@ const Orders = () => {
 			initialRender.current = false;
 			return;
 		}
-		if (searchParams.size !== 0) {
-			console.log("Request sent to backend with params:", Object.fromEntries(searchParams.entries()));
-		}
+		// if (searchParams.size !== 0) {
+		console.log("Request sent to backend with params:", Object.fromEntries(searchParams.entries()));
+		// }
 	}, [searchParams]);
 
 	// function to select all orders
@@ -257,9 +257,9 @@ const Orders = () => {
 	}, []);
 
 	return (
-		<div className="overflow-x-auto">
-			<h4 className="mb-5">Orders</h4>
-			<OrdersFilter />
+		<div className={`overflow-x-auto ${recent}`}>
+			{recent ? <h5 className="mb-5">Recent Orders</h5> : <h4 className="mb-5">Orders</h4>}
+			{!recent && <OrdersFilter />}
 			{loader ? (
 				<SkeletonTable />
 			) : (
@@ -304,7 +304,7 @@ const Orders = () => {
 					</tbody>
 				</table>
 			)}
-			<Pagination totalItems={100} />
+			{!recent && <Pagination totalItems={100} />}
 		</div>
 	);
 };

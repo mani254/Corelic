@@ -15,6 +15,7 @@ export default {
             accent: ({ opacityValue }) => `rgba(var(--accent), ${opacityValue})`,
             success: ({ opacityValue }) => `rgba(var(--success), ${opacityValue})`,
             warning: ({ opacityValue }) => `rgba(var(--warning-color), ${opacityValue})`,
+            bright: ({ opacityValue }) => `rgba(var(--bright), ${opacityValue})`,
             main: ({ opacityValue }) => `rgba(var(--main-1), ${opacityValue})`,
             "main-2": ({ opacityValue }) => `rgba(var(--main-2), ${opacityValue})`,
             "main-3": ({ opacityValue }) => `rgba(var(--main-3), ${opacityValue})`,

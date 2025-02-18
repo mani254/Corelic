@@ -119,8 +119,8 @@ main.dark .tox-statusbar {
 }
 main.dark .tox-toolbar svg,
 main.dark .tox-statusbar * {
-	fill: var(--dark-white) !important;
-	color: var(--dark-white) !important;
+	fill: rgb(161, 161, 170) !important;
+	color: rgb(161, 161, 170) !important;
 }
 
 /* ======================================
@@ -138,8 +138,8 @@ main.dark .image-grid {
 	background: #272727;
 }
 main.dark .image-grid svg {
-	fill: var(--dark-white);
+	fill: rgb(161, 161, 170);
 }
 main.dark .image-grid * {
-	color: var(--dark-white);
+	color: rgb(161, 161, 170);
 }

@@ -15,7 +15,7 @@ import AddCollection from "./components/Collections/AddCollection";
 
 function App() {
 	return (
-		<main className=" max-w-[1800px] mx-auto">
+		<main className="max-w-[1800px] mx-auto">
 			<Notifications />
 			<Routes>
 				<Route path="/" element={<BaseLayout />}>
