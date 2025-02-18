@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useRef, useEffect } from "react";
 import { CheckboxInput } from "../FormComponents/FormComponents";
-import OrderActions from "./OrderActions";
+import Actions from "../Actions/Actions";
+import OrderActions from "../Actions/OrderActions";
 import Pagination from "../Pagination/Pagination";
 import { useSearchParams } from "react-router-dom";
 import OrdersFilter from "./OrdersFilter";
@@ -223,6 +224,7 @@ const Orders = () => {
 	const initialRender = useRef(true);
 	const [selectedOrders, setSelectedOrders] = useState([]);
 
+	// useEffect to send the request to the backend when ever there is a change in the search params
 	useEffect(() => {
 		if (initialRender.current) {
 			initialRender.current = false;
@@ -233,6 +235,7 @@ const Orders = () => {
 		}
 	}, [searchParams]);
 
+	// function to select all orders
 	const handleSelectAll = useCallback(
 		(e) => {
 			setSelectedOrders(e.target.checked ? orders.map((o) => o._id) : []);
@@ -240,6 +243,7 @@ const Orders = () => {
 		[orders]
 	);
 
+	// function to handle order select
 	const handleCheckboxChange = useCallback((id) => {
 		setSelectedOrders((prev) => (prev.includes(id) ? prev.filter((orderId) => orderId !== id) : [...prev, id]));
 	}, []);
@@ -280,7 +284,9 @@ const Orders = () => {
 							</td>
 
 							<td className="px-6 py-2">
-								<OrderActions multiSelect={selectedOrders.length > 1} />
+								<Actions>
+									<OrderActions multiSelect={selectedOrders.length > 1} />
+								</Actions>
 							</td>
 						</tr>
 					))}

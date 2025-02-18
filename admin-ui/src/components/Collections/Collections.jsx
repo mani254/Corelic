@@ -1,9 +1,10 @@
 import React, { useState, useCallback, useRef, useEffect } from "react";
 import { CheckboxInput } from "../FormComponents/FormComponents";
-import CollectionActions from "./CollectionActions";
 import { useSearchParams } from "react-router-dom";
 import Pagination from "../Pagination/Pagination";
 import CollectionsFilter from "./CollectionFilter";
+import Actions from "../Actions/Actions";
+import CollectionActions from "../Actions/CollectionActions";
 
 const Collections = () => {
 	const [collections, setCollections] = useState([
@@ -94,6 +95,7 @@ const Collections = () => {
 
 	const [selectedCollections, setSelectedCollections] = useState([]);
 
+	// useEffect to send the data to the backend when ever there is a chage in search params
 	useEffect(() => {
 		if (initialRender.current) {
 			initialRender.current = false;
@@ -104,6 +106,7 @@ const Collections = () => {
 		}
 	}, [searchParams]);
 
+	// function to select all
 	const handleSelectAll = useCallback(
 		(e) => {
 			setSelectedCollections(e.target.checked ? collections.map((c) => c._id) : []);
@@ -111,6 +114,7 @@ const Collections = () => {
 		[collections]
 	);
 
+	// function to select the single item
 	const handleCheckboxChange = useCallback((id) => {
 		setSelectedCollections((prev) => (prev.includes(id) ? prev.filter((collectionId) => collectionId !== id) : [...prev, id]));
 	}, []);
@@ -144,7 +148,11 @@ const Collections = () => {
 									<td className="px-6 py-2">
 										<span className={`inline-block px-3 py-1 rounded-full text-xxs ${collection.status === "Active" ? "bg-green-100 text-green-800" : collection.status === "Inactive" ? "bg-red-100 text-red-800" : "bg-yellow-100 text-yellow-800"}`}>{collection.status}</span>
 									</td>
-									<td className="px-6 py-2">{selectedCollections.length > 1 ? <CollectionActions multiSelect /> : <CollectionActions />}</td>
+									<td className="px-6 py-2">
+										<Actions>
+											<CollectionActions multiSelect={selectedCollections.length > 1} />
+										</Actions>
+									</td>
 									{/* <td className="px-6 py-2">Actions</td> */}
 								</tr>
 							))}

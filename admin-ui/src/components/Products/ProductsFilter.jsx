@@ -2,16 +2,7 @@ import React, { useState, useCallback, useRef } from "react";
 import { useQueryParams } from "../../hooks/useQueryParams";
 import SearchComponent from "../FormComponents/SearchComponent";
 import { SelectInput } from "../FormComponents/FormComponents";
-
-function debounce(func, delay) {
-	let timer;
-	return (...args) => {
-		clearTimeout(timer);
-		timer = setTimeout(() => {
-			func(...args);
-		}, delay);
-	};
-}
+import { debounce } from "../../utils/functions";
 
 function ProductsFilter() {
 	const { getParam, setParam, resetParams } = useQueryParams({
@@ -21,6 +12,7 @@ function ProductsFilter() {
 
 	const [searchValue, setSearchValue] = useState(getParam("search"));
 
+	// a debounce funation to set the search value in the params with some time
 	const debouncedSearchChange = useRef(
 		debounce((searchText) => {
 			setParam("search", searchText);
@@ -28,6 +20,7 @@ function ProductsFilter() {
 		}, 500)
 	).current;
 
+	// function to update the search value
 	const handleSearchChange = useCallback(
 		(e) => {
 			const searchText = e.target.value;
@@ -37,6 +30,7 @@ function ProductsFilter() {
 		[debouncedSearchChange]
 	);
 
+	// function to handle the staus change
 	const handleStatusChange = useCallback(
 		(e) => {
 			setParam("status", e.target.value);
@@ -45,6 +39,7 @@ function ProductsFilter() {
 		[setParam]
 	);
 
+	// function to handle items per page change
 	const handleItemsPerPageChange = useCallback(
 		(e) => {
 			setParam("itemsPerPage", e.target.value);

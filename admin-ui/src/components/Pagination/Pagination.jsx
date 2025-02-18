@@ -7,10 +7,12 @@ const Pagination = ({ totalItems = 1000 }) => {
 	const totalPages = Math.ceil(totalItems / itemsPerPage);
 	const [currentPage, setCurrentPage] = useState(parseInt(searchParams.get("page")) || 1);
 
+	//  useEffect to keep page in searchparms in sync with current page
 	useEffect(() => {
 		setCurrentPage(parseInt(searchParams.get("page") || 1));
 	}, [searchParams]);
 
+	//function to handle the page change
 	const changePage = (page) => {
 		if (page >= 1 && page <= totalPages) {
 			searchParams.set("page", page);
@@ -19,6 +21,7 @@ const Pagination = ({ totalItems = 1000 }) => {
 		}
 	};
 
+	//function to render the pages
 	const renderPageNumbers = () => {
 		const pages = [];
 		if (totalPages <= 7) {

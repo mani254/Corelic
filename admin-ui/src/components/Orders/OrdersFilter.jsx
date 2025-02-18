@@ -2,16 +2,7 @@ import React, { useState, useCallback, useRef } from "react";
 import { useQueryParams } from "../../hooks/useQueryParams";
 import SearchComponent from "../FormComponents/SearchComponent";
 import { SelectInput, DateInput } from "../FormComponents/FormComponents";
-
-function debounce(func, delay) {
-	let timer;
-	return (...args) => {
-		clearTimeout(timer);
-		timer = setTimeout(() => {
-			func(...args);
-		}, delay);
-	};
-}
+import { debounce } from "../../utils/functions";
 
 function OrdersFilter() {
 	const { getParam, setParam, resetParams } = useQueryParams({
@@ -23,6 +14,7 @@ function OrdersFilter() {
 	const [startDate, setStartDate] = useState(getParam("startDate"));
 	const [endDate, setEndDate] = useState(getParam("endDate"));
 
+	// a debounce funation to set the search value in the params with some time
 	const debouncedSearchChange = useRef(
 		debounce((searchText) => {
 			setParam("search", searchText);
@@ -30,6 +22,7 @@ function OrdersFilter() {
 		}, 500)
 	).current;
 
+	//function to update search value
 	const handleSearchChange = useCallback(
 		(e) => {
 			const searchText = e.target.value;
@@ -39,6 +32,7 @@ function OrdersFilter() {
 		[debouncedSearchChange]
 	);
 
+	// function handle the status change
 	const handleStatusChange = useCallback(
 		(e) => {
 			setParam("status", e.target.value);
@@ -47,6 +41,7 @@ function OrdersFilter() {
 		[setParam]
 	);
 
+	// function to handle the items for change
 	const handleItemsPerPageChange = useCallback(
 		(e) => {
 			setParam("itemsPerPage", e.target.value);
@@ -55,6 +50,7 @@ function OrdersFilter() {
 		[setParam]
 	);
 
+	// function to handle the start date change
 	const handleStartDateChange = useCallback(
 		(e) => {
 			setStartDate(e.target.value);
@@ -64,6 +60,7 @@ function OrdersFilter() {
 		[setParam]
 	);
 
+	// function to handle the end date change
 	const handleEndDateChange = useCallback(
 		(e) => {
 			setEndDate(e.target.value);
