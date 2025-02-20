@@ -2,7 +2,7 @@ import React, { useState, useMemo, useCallback } from "react";
 import { TextInput, TextArea, SelectInput } from "../FormComponents/FormComponents";
 import { ImageUploaderComponent } from "editorify-dev/imageUploader";
 import { connect } from "react-redux";
-import { showNotification } from "../../redux/notification/notificationActions";
+import { showNotification } from "../../redux/actions/notificationActions";
 
 function CollectionAddComponent({ showNotification }) {
 	const [collectionDetails, setCollectionDetails] = useState({

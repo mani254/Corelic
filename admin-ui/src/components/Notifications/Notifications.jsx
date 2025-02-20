@@ -5,7 +5,7 @@ import { MdOutlineErrorOutline } from "react-icons/md";
 import { AiOutlineCheckCircle } from "react-icons/ai";
 import { IoClose } from "react-icons/io5";
 
-import { hideNotification } from "../../redux/notification/notificationActions";
+import { hideNotification } from "../../redux/actions/notificationActions";
 
 function Notification({ notifications, hideNotification }) {
 	const [timeouts, setTimeouts] = useState([]);

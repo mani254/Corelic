@@ -9,7 +9,7 @@ import Inventory from "./Inventory";
 import Options from "./Options";
 import { v4 as uuidv4 } from "uuid";
 import { validation } from "../../utils";
-import { showNotification } from "../../redux/notification/notificationActions";
+import { showNotification } from "../../redux/actions/notificationActions.js";
 import { connect } from "react-redux";
 
 function AddProduct({ showNotification }) {
