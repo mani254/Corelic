@@ -59,3 +59,58 @@ export function validation(action, value) {
          console.log(action);
    }
 }
+
+export const defaultOptions = [
+   { type: "None", sizes: [] },
+   {
+      type: "Clothing",
+      sizes: [
+         { name: "XS", stock: 0 },
+         { name: "S", stock: 0 },
+         { name: "M", stock: 0 },
+         { name: "L", stock: 0 },
+         { name: "XL", stock: 0 },
+         { name: "XXL", stock: 0 },
+         { name: "XXXL", stock: 0 },
+      ],
+   },
+   {
+      type: "Footwear",
+      sizes: [
+         { name: "8", stock: 0 },
+         { name: "9", stock: 0 },
+         { name: "10", stock: 0 },
+         { name: "11", stock: 0 },
+         { name: "12", stock: 0 },
+         { name: "13", stock: 0 },
+      ],
+   },
+   {
+      type: "Ornaments",
+      sizes: [
+         { name: "5", stock: 0 },
+         { name: "6", stock: 0 },
+         { name: "7", stock: 0 },
+         { name: "8", stock: 0 },
+         { name: "9", stock: 0 },
+         { name: "10", stock: 0 },
+         { name: "11", stock: 0 },
+      ],
+   },
+   { type: "Accessories", sizes: [{ name: "One Size", stock: 0 }] },
+   {
+      type: "Bags",
+      sizes: [
+         { name: "Small", stock: 0 },
+         { name: "Medium", stock: 0 },
+         { name: "Large", stock: 0 },
+      ],
+   },
+   {
+      type: "Hats",
+      sizes: [
+         { name: "S/M", stock: 0 },
+         { name: "L/XL", stock: 0 },
+      ],
+   },
+];

@@ -2,17 +2,20 @@ import React, { useState, useCallback, useMemo } from "react";
 import { CheckboxInput, NumberInput, SelectInput, TextArea, TextInput } from "../FormComponents/FormComponents";
 import MultiSelect from "../MultiSelect/MultiSelect";
 import "editorify-dev/css/imageUploader";
-
 import { ImageUploaderComponent } from "editorify-dev/imageUploader";
+
 import DescEditor from "./DescEditor";
 import Inventory from "./Inventory";
 import Options from "./Options";
-import { v4 as uuidv4 } from "uuid";
 import { validation } from "../../utils";
-import { showNotification } from "../../redux/actions/notificationActions.js";
 import { connect } from "react-redux";
+import { showNotification } from "../../redux/actions/notificationActions.js";
+import { addProduct } from "../../redux/actions/productActions.js";
+import { useNavigate } from "react-router-dom";
 
-function AddProduct({ showNotification }) {
+function AddProduct({ showNotification, addProduct }) {
+	const navigate = useNavigate();
+
 	const [productDetails, setProductDetails] = useState({
 		title: "",
 		overview: "",
@@ -23,14 +26,17 @@ function AddProduct({ showNotification }) {
 		sku: "",
 		status: "Draft",
 		vendor: "",
+	});
+
+	const [metaData, setMetaData] = useState({
 		metaTitle: "",
 		metaDescription: "",
 	});
 
+	const [trackInventory, setTrackInventory] = useState(false);
+	const [images, setImages] = useState([]);
 	const [options, setOptions] = useState([]);
-
-	const [singleVariant, setSingleVariant] = useState("");
-	const [variants, setVariants] = useState([{ id: uuidv4(), name: "Main", images: [] }]);
+	const [stock, setStock] = useState(0);
 
 	const [singleCollection, setSingleCollection] = useState("");
 	const [collections, setCollections] = useState([]);
@@ -45,15 +51,19 @@ function AddProduct({ showNotification }) {
 	});
 
 	const handleInputChange = useCallback(({ target: { name, value } }) => {
-		setProductDetails((prev) => ({ ...prev, [name]: value }));
+		if (name == "metaTitle" || name == "metaDescription") {
+			setMetaData((prev) => ({ ...prev, [name]: value }));
+		} else {
+			setProductDetails((prev) => ({ ...prev, [name]: value }));
+		}
 
 		let error = validation(name, value);
 		setErrors((prevState) => ({ ...prevState, [name]: error }));
 	}, []);
 
-	const handleImagesChange = useCallback((images, index) => {
-		setVariants((prev) => prev.map((variant, i) => (index === i ? { ...variant, images } : variant)));
-	}, []);
+	const handleImagesChange = (images) => {
+		setImages(images);
+	};
 
 	const generateSKU = useCallback(({ target: { checked } }) => {
 		setProductDetails((prev) => ({
@@ -62,16 +72,6 @@ function AddProduct({ showNotification }) {
 		}));
 		setErrors((prev) => ({ ...prev, sku: "" }));
 	}, []);
-
-	const handleVariantEntry = useCallback(
-		(e) => {
-			if (e.key === "Enter") {
-				setVariants((prev) => [...prev, { id: uuidv4(), name: singleVariant, images: [] }]);
-				setSingleVariant("");
-			}
-		},
-		[singleVariant]
-	);
 
 	const handleCollectionEntry = useCallback(
 		(e) => {
@@ -101,25 +101,63 @@ function AddProduct({ showNotification }) {
 		[]
 	);
 
-	const handleSubmit = () => {
-		const required = ["title", "overview", "price", "sku"];
-		const emptyFeild = required.find((item) => productDetails[item] === "");
-		if (emptyFeild) {
-			setErrors((prev) => ({ ...prev, [emptyFeild]: "feild is required" }));
-			showNotification(`The feild ${emptyFeild} is required`, "warning");
-			return;
+	const handleSubmit = async () => {
+		const requiredFields = ["title", "overview", "price", "sku"];
+
+		// Validate required fields
+		const emptyField = requiredFields.find((field) => {
+			console.log(productDetails[field]);
+			return !productDetails[field];
+		});
+
+		if (emptyField) {
+			setErrors((prev) => ({ ...prev, [emptyField]: "Field is required" }));
+			return showNotification(`The field "${emptyField}" is required`, "warning");
 		}
 
-		const hasErrors = Object.values(errors).some((error) => error !== "" && error !== undefined);
-
-		if (hasErrors) {
-			showNotification("Please fix all errors before submitting.", "warning");
-			return;
+		// Check if there are any existing errors
+		if (Object.values(errors).some((error) => error?.trim())) {
+			return showNotification("Please fix all errors before submitting.", "warning");
 		}
 
-		if (variants.length === 0) {
-			showNotification("Add atleast One Variant", "warning");
-			return;
+		if (images.length <= 0) {
+			return showNotification("Please add images", "warning");
+		}
+
+		// Inventory validation
+		if (trackInventory) {
+			const isStockEmpty = options.length > 0 ? options.some((option) => option.stock === "" || option.stock === null || option.stock === undefined) : stock === "" || stock === null || stock === undefined;
+
+			if (isStockEmpty) {
+				return showNotification("Stock cannot be empty", "warning");
+			}
+		}
+
+		const formData = new FormData();
+
+		Object.keys(productDetails).forEach((key) => {
+			formData.append(key, productDetails[key]);
+		});
+
+		images.forEach((image) => {
+			formData.append(`images`, image);
+		});
+
+		formData.append("trackInventory", trackInventory);
+		formData.append("stock", stock);
+
+		formData.append("options", JSON.stringify(options));
+
+		formData.append("metaData", JSON.stringify(metaData));
+
+		try {
+			const data = await addProduct(formData);
+			if (data) {
+				console.log("product added succesfully", data);
+				navigate("/products");
+			}
+		} catch (err) {
+			console.log(err);
 		}
 	};
 
@@ -139,34 +177,12 @@ function AddProduct({ showNotification }) {
 						</div>
 					</div>
 
-					<div className="flex gap-3">
-						<div className="outer-box w-full flex flex-col justify-between">
-							<div>
-								<h5 className="mb-2">Variants</h5>
-								<p className="text-xxs mb-2">Select this option to add multiple variants</p>
-								<MultiSelect array={variants} setArray={setVariants} value="name" />
-							</div>
-							<div>
-								<TextInput name="singleVariant" id="singleVariant" placeholder="Variant Name" value={singleVariant} onChange={({ target: { value } }) => setSingleVariant(value)} onKeyDown={handleVariantEntry} />
-							</div>
-						</div>
-						<div className="outer-box w-full">
-							<h5 className="mb-2">Options</h5>
-							<p className="text-xxs mb-2">Add Options likes Sizes and Types to the Product</p>
-							<Options options={options} setOptions={setOptions} />
-						</div>
-					</div>
-
 					<div className="outer-box">
 						<h5 className="mb-5">Media</h5>
 						<div className="space-y-5">
-							{variants.length === 0 && <p className="text-xs">Add Atleast One Variant to Upload Images</p>}
-							{variants.map((variant, index) => (
-								<div key={variant.id} className="input-wrapper ">
-									{variants.length > 1 && <label className="text-center">-------- {variant.name} images --------</label>}
-									<ImageUploaderComponent id={`variant-${index}`} maxImages={5} onImagesChange={(images) => handleImagesChange(images, index)} />
-								</div>
-							))}
+							<div className="input-wrapper ">
+								<ImageUploaderComponent id="12345" maxImages={8} onImagesChange={(images) => handleImagesChange(images)} />
+							</div>
 						</div>
 					</div>
 
@@ -174,9 +190,9 @@ function AddProduct({ showNotification }) {
 						<h5 className="mb-5">Price & SKU</h5>
 
 						<div className="flex gap-3 mb-5">
-							<NumberInput label="Price" id="price" name="price" value={productDetails.price} placeholder="Selling Price" onChange={handleInputChange} onBlur={(e) => handleBlur("price", e.target.value)} />
-							<NumberInput label="Compare Price" id="comparePrice" name="comparePrice" value={productDetails.comparePrice} placeholder="Compare Price" onChange={handleInputChange} onBlur={(e) => handleBlur("comparePrice", e.target.value)} />
-							<NumberInput label="GST" id="gst" name="gst" value={productDetails.gst} placeholder="GST Price" onChange={handleInputChange} onBlur={(e) => handleBlur("gst", e.target.value)} />
+							<NumberInput label="Price" id="price" name="price" value={productDetails.price} error={errors.price || ""} placeholder="Selling Price" onChange={handleInputChange} onBlur={(e) => handleBlur("price", e.target.value)} />
+							<NumberInput label="Compare Price" id="comparePrice" name="comparePrice" value={productDetails.comparePrice} error={errors.comparePrice || ""} placeholder="Compare Price" onChange={handleInputChange} onBlur={(e) => handleBlur("comparePrice", e.target.value)} />
+							<NumberInput label="GST" id="gst" name="gst" value={productDetails.gst} placeholder="GST Price" error={errors.gst || ""} onChange={handleInputChange} onBlur={(e) => handleBlur("gst", e.target.value)} />
 						</div>
 
 						<div className="flex gap-3 items-end">
@@ -195,14 +211,14 @@ function AddProduct({ showNotification }) {
 						<h5 className="mb-2">Inventory</h5>
 						<p className="text-xxs mb-2">Track inventory to keep track of no.of products available</p>
 
-						<Inventory variants={variants} setVariants={setVariants} options={options} />
+						<Inventory options={options} setOptions={setOptions} stock={stock} setStock={setStock} trackInventory={trackInventory} setTrackInventory={setTrackInventory} />
 					</div>
 
 					<div className="outer-box">
 						<h5 className="mb-1">Meta Details</h5>
 						<p className="text-xxs mb-4">This is the data for the seo Details</p>
-						<TextInput label="Meta Title" placeholder="Meta Title" name="metaTitle" id="metaTitle" className="mb-4" error={errors.metaTitle || ""} value={productDetails.metaTitle} onChange={handleInputChange} />
-						<TextArea label="Meta Description" placeholder="Meta Description" name="metaDescription" id="metaDescription" error={errors.metaDescription || ""} className="mb-4" rows={3} value={productDetails.metaDescription} onChange={handleInputChange} />
+						<TextInput label="Meta Title" placeholder="Meta Title" name="metaTitle" id="metaTitle" className="mb-4" error={errors.metaTitle || ""} value={metaData.metaTitle} onChange={handleInputChange} />
+						<TextArea label="Meta Description" placeholder="Meta Description" name="metaDescription" id="metaDescription" error={errors.metaDescription || ""} className="mb-4" rows={3} value={metaData.metaDescription} onChange={handleInputChange} />
 					</div>
 				</div>
 
@@ -221,6 +237,14 @@ function AddProduct({ showNotification }) {
 							<TextInput name="singleCollection" id="singleCollection" placeholder="Collection Name" value={singleCollection} onChange={({ target: { value } }) => setSingleCollection(value)} onKeyDown={handleCollectionEntry} />
 						</div>
 
+						<div className="outer-box">
+							<div className="outer-box w-full">
+								<h5 className="mb-2">Options</h5>
+								<p className="text-xxs mb-2">Add Options likes Sizes and Types to the Product</p>
+								<Options options={options} setOptions={setOptions} />
+							</div>
+						</div>
+
 						<button className="btn-primary w-full mt-4" onClick={handleSubmit}>
 							Upload Product
 						</button>
@@ -234,6 +258,7 @@ function AddProduct({ showNotification }) {
 const mapDispatchToProps = (dispatch) => {
 	return {
 		showNotification: (message, type) => dispatch(showNotification(message, type)),
+		addProduct: (productData) => dispatch(addProduct(productData)),
 	};
 };
 

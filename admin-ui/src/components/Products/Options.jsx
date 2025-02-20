@@ -1,16 +1,7 @@
 import React, { useState, useMemo, useCallback } from "react";
 import { CheckboxInput, SelectInput, TextInput } from "../FormComponents/FormComponents";
 import MultiSelect from "../MultiSelect/MultiSelect";
-
-const defaultOptions = [
-	{ type: "None", sizes: [] },
-	{ type: "Clothing", sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"] },
-	{ type: "Footwear", sizes: ["8", "9", "10", "11", "12", "13"] },
-	{ type: "Ornaments", sizes: ["5", "6", "7", "8", "9", "10", "11"] },
-	{ type: "Accessories", sizes: ["One Size"] },
-	{ type: "Bags", sizes: ["Small", "Medium", "Large"] },
-	{ type: "Hats", sizes: ["S/M", "L/XL"] },
-];
+import { defaultOptions } from "../../utils";
 
 function Options({ options, setOptions }) {
 	const [customOptions, setCustomOptions] = useState(false);
@@ -34,7 +25,7 @@ function Options({ options, setOptions }) {
 	const handleKeyPress = useCallback(
 		(e) => {
 			if (e.key === "Enter" && singleOption.trim()) {
-				setOptions((prev) => [...prev, singleOption.trim()]);
+				setOptions((prev) => [...prev, { name: singleOption.trim(), stock: 0 }]);
 				setSingleOption("");
 			}
 		},
@@ -46,7 +37,7 @@ function Options({ options, setOptions }) {
 			<CheckboxInput label="Custom Options" className="flex items-center gap-2" name="customOptions" checked={customOptions} onChange={(e) => setCustomOptions(e.target.checked)} />
 
 			<div className="mt-4">
-				<MultiSelect array={options} setArray={setOptions} />
+				<MultiSelect array={options} setArray={setOptions} value="name" />
 			</div>
 
 			<div className="mt-4">{customOptions ? <TextInput name="singleOption" id="singleOption" value={singleOption} onChange={(e) => setSingleOption(e.target.value)} onKeyDown={handleKeyPress} placeholder="Option Name" /> : <SelectInput options={selectOptions} value={selectedType} onChange={(e) => handleOptionsChange(e.target.value)} />}</div>
