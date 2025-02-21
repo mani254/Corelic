@@ -57,7 +57,7 @@ const productSchema = mongoose.Schema({
    },
    status: {
       type: String,
-      enum: ["Draft", "Active", "Inactive"],
+      enum: ["draft", "active", "inactive"],
       default: "Draft"
    },
 

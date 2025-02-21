@@ -12,5 +12,6 @@ const uploadProductImages = createFileUploadMiddleware({
 });
 
 router.post('/', uploadProductImages, productController.addProduct)
+router.get('/', productController.fetchProducts)
 
 module.exports = router

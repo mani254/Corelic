@@ -22,6 +22,17 @@ const productController = {
          res.status(500).json({ message: err.message });
       }
    },
+
+   async fetchProducts(req, res) {
+      try {
+         const data = await productService.fetchProducts(req.query)
+         res.status(201).json(data);
+      }
+      catch (err) {
+         console.log(err)
+         res.status(500).json({ message: err.message })
+      }
+   }
 };
 
 module.exports = productController;

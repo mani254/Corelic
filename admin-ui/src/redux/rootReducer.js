@@ -5,7 +5,6 @@ import notificationReducer from "./reducers/notificationReducer";
 import productReducer from "./reducers/productReducer";
 
 const rootReducer = combineReducers({
-   // modal: modalReducer,
    notification: notificationReducer,
    product: productReducer
 })
