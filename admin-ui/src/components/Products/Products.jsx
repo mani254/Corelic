@@ -54,7 +54,7 @@ const Products = ({ productData, fetchProducts }) => {
 	// Check if all items are selected
 	const allSelected = products.length > 0 && selectedProducts.length === products.length;
 
-	const itemsPerPage = parseInt(searchParams.get("itemsPerPage"), 10) || 10;
+	const limit = parseInt(searchParams.get("limit"), 10) || 10;
 
 	return (
 		<div className="overflow-x-auto">
@@ -88,7 +88,7 @@ const Products = ({ productData, fetchProducts }) => {
 				<h2>No Products available</h2>
 			)}
 
-			{totalItems > itemsPerPage && <Pagination totalItems={totalItems} />}
+			{totalItems > limit && <Pagination totalItems={totalItems} />}
 		</div>
 	);
 };

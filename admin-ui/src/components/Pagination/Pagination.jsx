@@ -3,8 +3,8 @@ import { useSearchParams } from "react-router-dom";
 
 const Pagination = ({ totalItems = 1000 }) => {
 	const [searchParams, setSearchParams] = useSearchParams();
-	const itemsPerPage = parseInt(searchParams.get("itemsPerPage")) || 10;
-	const totalPages = Math.ceil(totalItems / itemsPerPage);
+	const limit = parseInt(searchParams.get("limit")) || 10;
+	const totalPages = Math.ceil(totalItems / limit);
 	const [currentPage, setCurrentPage] = useState(parseInt(searchParams.get("page")) || 1);
 
 	//  useEffect to keep page in searchparms in sync with current page
@@ -65,7 +65,7 @@ const Pagination = ({ totalItems = 1000 }) => {
 			</button>
 
 			<span className="ml-4 text-gray-600">
-				Showing {Math.min(currentPage * itemsPerPage, totalItems)} of {totalItems} results
+				Showing {Math.min(currentPage * limit, totalItems)} of {totalItems} results
 			</span>
 		</div>
 	);

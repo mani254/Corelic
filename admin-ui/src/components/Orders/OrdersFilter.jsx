@@ -7,7 +7,7 @@ import { debounce } from "../../utils/functions";
 function OrdersFilter() {
 	const { getParam, setParam, resetParams } = useQueryParams({
 		page: 1,
-		itemsPerPage: 10,
+		limit: 10,
 	});
 
 	const [searchValue, setSearchValue] = useState(getParam("search"));
@@ -44,7 +44,7 @@ function OrdersFilter() {
 	// function to handle the items for change
 	const handleItemsPerPageChange = useCallback(
 		(e) => {
-			setParam("itemsPerPage", e.target.value);
+			setParam("limit", e.target.value);
 			setParam("page", 1);
 		},
 		[setParam]
@@ -77,7 +77,7 @@ function OrdersFilter() {
 					<SelectInput
 						label="Items per page:"
 						className="flex gap-2"
-						value={getParam("itemsPerPage")}
+						value={getParam("limit")}
 						onChange={handleItemsPerPageChange}
 						options={[
 							{ label: "10", value: 10 },
