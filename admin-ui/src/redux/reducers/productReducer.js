@@ -3,6 +3,7 @@ const initialState = {
    singleProduct: {},
    loading: false,
    error: null,
+   triggerFetch: false,
 };
 
 const productReducer = (state = initialState, action) => {
@@ -12,13 +13,23 @@ const productReducer = (state = initialState, action) => {
          return { ...state, loading: true };
       case "PRODUCTS_FAILURE":
          return { ...state, loading: false, error: action.payload };
+      case "TRIGGER_FETCH":
+         return { ...state, triggerFetch: true }
 
       case "ADD_PRODUCT_SUCCESS":
          return { ...state, products: [...state.products, action.payload], loading: false, error: null };
 
       case "FETCH_PRODUCTS_SUCCESS":
-         return { ...state, products: action.payload, loading: false, error: null }
+         return { ...state, products: action.payload, loading: false, error: null, triggerFetch: false }
 
+      case "DELETE_PRODUCT_SUCCESS":
+         return { ...state, products: state.products.filter((product) => product._id !== action.payload), loading: false, error: null }
+
+      case "DELETE_MULTIPLE_PRODUCTS_SUCCESS":
+         return {
+            ...state,
+            products: state.products.filter((product) => !action.payload.includes(product._id)), loading: false, error: null
+         };
       default:
          return state;
    }

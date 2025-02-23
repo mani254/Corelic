@@ -44,3 +44,50 @@ export const fetchProducts = (params) => async (dispatch) => {
    }
 
 }
+
+export const deleteProduct = (id) => async (dispatch) => {
+   try {
+      dispatch({ type: "DELETE_PRODUCT_SUCCESS", payload: id });
+      const response = await axios.delete(
+         `${import.meta.env.VITE_API_BACKEND_URI}/api/products/${id}`,
+         {
+            headers: {
+               "Content-Type": "application/json",
+            },
+         }
+      );
+      dispatch({ type: "TRIGGER_FETCH" })
+      dispatch(showNotification('product deleted succesfully', "success"))
+      return Promise.resolve(response.data);
+   } catch (err) {
+      console.log(err)
+      let errorMessage = err.response?.data?.message || "Failed to delete Product";
+      dispatch(showNotification(errorMessage, "error"));
+      return Promise.reject(errorMessage);
+   }
+};
+
+
+export const deleteMultipleProducts = (selectedProducts) => async (dispatch) => {
+   try {
+      dispatch({ type: "DELETE_MULTIPLE_PRODUCTS_SUCCESS", payload: selectedProducts });
+
+      const response = await axios.delete(
+         `${import.meta.env.VITE_API_BACKEND_URI}/api/products`,
+         {
+            data: { ids: selectedProducts },
+            headers: {
+               "Content-Type": "application/json",
+            },
+         }
+      );
+
+      dispatch({ type: "TRIGGER_FETCH" });
+      dispatch(showNotification('products deleted succesfull', "success"))
+      return Promise.resolve(response.data);
+   } catch (err) {
+      let errorMessage = err.response?.data?.message || "Failed to delete Products";
+      dispatch(showNotification(errorMessage, "error"));
+      return Promise.reject(errorMessage);
+   }
+};

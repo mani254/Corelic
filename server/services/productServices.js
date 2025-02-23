@@ -1,3 +1,4 @@
+const { deleteProduct } = require('../controllers/productController');
 const Product = require('../schema/productSchema');
 
 class ProductService {
@@ -79,6 +80,53 @@ class ProductService {
          throw new Error(error.message);
       }
    }
+
+   async checkProductById(id) {
+      try {
+         const product = await Product.findById(id);
+         return product ? true : false;
+      } catch (error) {
+         throw new Error(error.message);
+      }
+   }
+
+   // Service function to delete a product
+   async deleteProductById(id) {
+      try {
+         const deletedProduct = await Product.findByIdAndDelete(id);
+         return deletedProduct;
+      } catch (error) {
+         throw new Error(error.message);
+      }
+   }
+
+   async checkMultipleProductsById(ids) {
+      try {
+         const products = await Product.find({ _id: { $in: ids } }, { title: 1, _id: 1 });
+         return products
+      } catch (error) {
+         throw new Error(error.message);
+      }
+   };
+
+   async deleteMultipleProducts(ids) {
+      try {
+         const validProducts = await this.checkMultipleProductsById(ids);
+         const validProductIds = validProducts.map(product => product._id.toString());
+
+         const invalidProductIds = ids.filter(id => !validProductIds.includes(id));
+
+         if (validProductIds.length === 0) {
+            return { products: [], invalidProducts: invalidProductIds };
+         }
+
+         await Product.deleteMany({ _id: { $in: validProductIds } });
+
+         return { products: validProducts, invalidProducts: invalidProductIds };
+      } catch (error) {
+         throw new Error(error.message);
+      }
+   };
 }
 
 module.exports = new ProductService();

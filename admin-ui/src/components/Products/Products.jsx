@@ -13,7 +13,6 @@ import { fetchProducts } from "../../redux/actions/productActions";
 
 const Products = ({ productData, fetchProducts }) => {
 	const products = productData.products;
-
 	const [searchParams] = useSearchParams();
 	const [loader, setLoader] = useState(true);
 	const initialRender = useRef(true);
@@ -45,6 +44,12 @@ const Products = ({ productData, fetchProducts }) => {
 	const handleCheckboxChange = useCallback((id) => {
 		setSelectedProducts((prev) => (prev.includes(id) ? prev.filter((productId) => productId !== id) : [...prev, id]));
 	}, []);
+
+	useEffect(() => {
+		if (productData.triggerFetch) {
+			fetchProductsData();
+		}
+	}, [productData.triggerFetch]);
 
 	// Function to handle "Select All" checkbox
 	const handleSelectAll = useCallback(() => {
@@ -91,11 +96,11 @@ const Products = ({ productData, fetchProducts }) => {
 
 				{totalItems > limit && <Pagination totalItems={totalItems} />}
 			</div>
-			{selectedProducts.length && (
+			{selectedProducts.length ? (
 				<div className="w-[163px] fixed right-[100px] top-1/2 -translate-y-1/2 bg-main border border-main-2 rounded-lg shadow-lg">
-					<ProductActions multiSelect={true}></ProductActions>
+					<ProductActions multiSelect={true} selectedProducts={selectedProducts} setSelectedProducts={setSelectedProducts}></ProductActions>
 				</div>
-			)}
+			) : null}
 		</div>
 	);
 };
@@ -119,7 +124,7 @@ const ProductRow = React.memo(({ product, isSelected, onCheckboxChange, selected
 		</td>
 		<td className="px-6 py-2">
 			<Actions disable={selectedProducts.length}>
-				<ProductActions />
+				<ProductActions id={product._id} />
 			</Actions>
 		</td>
 	</tr>

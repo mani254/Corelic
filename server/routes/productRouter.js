@@ -13,5 +13,7 @@ const uploadProductImages = createFileUploadMiddleware({
 
 router.post('/', uploadProductImages, productController.addProduct)
 router.get('/', productController.fetchProducts)
+router.delete('/:id', productController.deleteProduct)
+router.delete('/', productController.deleteMultipleProducts)
 
 module.exports = router

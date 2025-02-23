@@ -1,6 +1,7 @@
 const productService = require('../services/productServices');
 
 const productController = {
+
    async addProduct(req, res) {
       try {
          const product = req.body
@@ -32,7 +33,58 @@ const productController = {
          console.log(err)
          res.status(500).json({ message: err.message })
       }
+   },
+
+   async deleteProduct(req, res) {
+      try {
+         const { id } = req.params;
+
+         // Check if the product exists
+         const isProductExist = await productService.checkProductById(id);
+         if (!isProductExist) {
+            return res.status(404).json({ message: "Product does not exist" });
+         }
+
+         // Delete the product
+         const deletedProduct = await productService.deleteProductById(id);
+         if (!deletedProduct) {
+            return res.status(500).json({ message: "Failed to delete product" });
+         }
+
+         res.status(200).json({
+            message: "Product deleted successfully",
+            product: deletedProduct,
+         });
+
+      } catch (err) {
+         console.log(err);
+         res.status(500).json({ message: err.message });
+      }
+   },
+
+   async deleteMultipleProducts(req, res) {
+      try {
+         const { ids } = req.body;
+
+
+         if (!Array.isArray(ids) || ids.length === 0) {
+            return res.status(400).json({ message: "Invalid request. Provide an array of product IDs." });
+         }
+
+         const { products, invalidProducts } = await productService.deleteMultipleProducts(ids);
+
+         res.status(200).json({
+            message: "Products deletion process completed.",
+            products,
+            invalidProducts
+         });
+
+      } catch (err) {
+         console.error(err);
+         res.status(500).json({ message: err.message });
+      }
    }
+
 };
 
 module.exports = productController;

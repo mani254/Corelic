@@ -1,7 +1,41 @@
-import React, { useState } from "react";
-import { FiEdit, FiTrash, FiEye, FiDownload, FiChevronRight, FiChevronLeft } from "react-icons/fi";
-function ProductActions({ multiSelect = false }) {
+import React, { useState, useCallback } from "react";
+import { FiEdit, FiTrash, FiEye, FiDownload, FiChevronLeft } from "react-icons/fi";
+
+import { connect } from "react-redux";
+import ConfirmationAlert from "../Alerts/ConfirmationAlert";
+import { showModal } from "../../redux/actions/modalActions";
+import { deleteProduct, deleteMultipleProducts } from "../../redux/actions/productActions";
+
+function ProductActions({ multiSelect = false, id = null, selectedProducts, setSelectedProducts, showModal, deleteProduct, deleteMultipleProducts }) {
 	const [showStatusMenu, setShowStatusMenu] = useState(false);
+
+	const deleteProductInfo = {
+		title: "Are You sure?",
+		info: "If you Delete this Product, It can't be undone",
+		confirmFunction: (id) => {
+			deleteProduct(id);
+		},
+	};
+
+	const deleteProductsInfo = {
+		title: "Are You sure?",
+		info: "This action cannot be undone",
+		confirmFunction: (selectedProducts) => {
+			deleteMultipleProducts(selectedProducts);
+			setSelectedProducts([]);
+		},
+	};
+
+	const handleDelete = useCallback(
+		(id) => {
+			if (multiSelect) {
+				showModal({ ...deleteProductsInfo, id: selectedProducts }, ConfirmationAlert);
+			} else {
+				showModal({ ...deleteProductInfo, id }, ConfirmationAlert);
+			}
+		},
+		[showModal, selectedProducts, multiSelect]
+	);
 
 	return (
 		<ul className="p-2">
@@ -9,7 +43,7 @@ function ProductActions({ multiSelect = false }) {
 				<FiEdit size={18} />
 				<span>{multiSelect ? " Bulk Edit" : "Edit"}</span>
 			</li>
-			<li className="text-xs flex items-center gap-2 px-3 py-2 hover:bg-main-2 hover:bg-opacity-80 cursor-pointer" onClick={() => console.log("Delete Clicked")}>
+			<li className="text-xs flex items-center gap-2 px-3 py-2 hover:bg-main-2 hover:bg-opacity-80 cursor-pointer" onClick={() => handleDelete(id)}>
 				<FiTrash size={18} />
 				<span>Delete</span>
 			</li>
@@ -45,4 +79,12 @@ function ProductActions({ multiSelect = false }) {
 	);
 }
 
-export default ProductActions;
+const mapDispatchToProps = (dispatch) => {
+	return {
+		showModal: (props, component) => dispatch(showModal(props, component)),
+		deleteProduct: (id) => dispatch(deleteProduct(id)),
+		deleteMultipleProducts: (selectedProducts) => dispatch(deleteMultipleProducts(selectedProducts)),
+	};
+};
+
+export default connect(null, mapDispatchToProps)(ProductActions);
