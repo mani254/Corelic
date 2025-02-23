@@ -5,7 +5,7 @@ import { SelectInput } from "../FormComponents/FormComponents";
 import { debounce } from "../../utils/functions";
 
 function ProductsFilter() {
-	const { getParam, setParam, resetParams } = useQueryParams({
+	const { getParam, setParam, resetParams, searchParams } = useQueryParams({
 		page: 1,
 		limit: 10,
 	});
@@ -13,12 +13,13 @@ function ProductsFilter() {
 	const [searchValue, setSearchValue] = useState(getParam("search"));
 
 	// a debounce funation to set the search value in the params with some time
-	const debouncedSearchChange = useRef(
+	const debouncedSearchChange = useCallback(
 		debounce((searchText) => {
 			setParam("search", searchText);
 			setParam("page", 1);
-		}, 500)
-	).current;
+		}, 500),
+		[searchParams]
+	);
 
 	// function to update the search value
 	const handleSearchChange = useCallback(

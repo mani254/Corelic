@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { FiMoreVertical } from "react-icons/fi";
 
-function Actions({ children }) {
+function Actions({ children, disable }) {
 	const [showOptions, setShowOptions] = useState(false);
 	const dropdownRef = useRef(null);
 
@@ -20,6 +20,7 @@ function Actions({ children }) {
 	}, []);
 
 	const handleOptions = useCallback(() => {
+		if (disable) return;
 		setShowOptions(!showOptions);
 	}, [showOptions]);
 

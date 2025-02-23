@@ -57,44 +57,51 @@ const Products = ({ productData, fetchProducts }) => {
 	const limit = parseInt(searchParams.get("limit"), 10) || 10;
 
 	return (
-		<div className="overflow-x-auto">
-			<h4 className="mb-5">Products</h4>
-			<ProductsFilter />
+		<div className="min-h-screen relative">
+			<div className="overflow-x-auto ">
+				<h4 className="mb-5">Products</h4>
+				<ProductsFilter />
 
-			{loader ? (
-				<SkeletonTable />
-			) : products.length ? (
-				<table className="w-full border-collapse">
-					<thead>
-						<tr className="bg-main-2">
-							<th className="px-6 py-3 text-left font-medium w-10">
-								<CheckboxInput onChange={handleSelectAll} checked={allSelected} />
-							</th>
-							<th className="px-6 py-3 text-left font-medium">Image</th>
-							<th className="px-6 py-3 text-left font-medium w-1/3">Title</th>
-							<th className="px-6 py-3 text-left font-medium">Price</th>
-							<th className="px-6 py-3 text-left font-medium">Stock</th>
-							<th className="px-6 py-3 text-left font-medium">Status</th>
-							<th className="px-6 py-3 text-left font-medium">Actions</th>
-						</tr>
-					</thead>
-					<tbody>
-						{products.map((product) => (
-							<ProductRow key={product._id} product={product} isSelected={selectedProducts.includes(product._id)} onCheckboxChange={handleCheckboxChange} />
-						))}
-					</tbody>
-				</table>
-			) : (
-				<h2>No Products available</h2>
+				{loader ? (
+					<SkeletonTable />
+				) : products.length ? (
+					<table className="w-full border-collapse">
+						<thead>
+							<tr className="bg-main-2">
+								<th className="px-6 py-3 text-left font-medium w-10">
+									<CheckboxInput onChange={handleSelectAll} checked={allSelected} />
+								</th>
+								<th className="px-6 py-3 text-left font-medium">Image</th>
+								<th className="px-6 py-3 text-left font-medium w-1/3">Title</th>
+								<th className="px-6 py-3 text-left font-medium">Price</th>
+								<th className="px-6 py-3 text-left font-medium">Stock</th>
+								<th className="px-6 py-3 text-left font-medium">Status</th>
+								<th className="px-6 py-3 text-left font-medium">Actions</th>
+							</tr>
+						</thead>
+						<tbody>
+							{products.map((product) => (
+								<ProductRow key={product._id} product={product} isSelected={selectedProducts.includes(product._id)} onCheckboxChange={handleCheckboxChange} selectedProducts={selectedProducts} />
+							))}
+						</tbody>
+					</table>
+				) : (
+					<h2>No Products available</h2>
+				)}
+
+				{totalItems > limit && <Pagination totalItems={totalItems} />}
+			</div>
+			{selectedProducts.length && (
+				<div className="w-[163px] fixed right-[100px] top-1/2 -translate-y-1/2 bg-main border border-main-2 rounded-lg shadow-lg">
+					<ProductActions multiSelect={true}></ProductActions>
+				</div>
 			)}
-
-			{totalItems > limit && <Pagination totalItems={totalItems} />}
 		</div>
 	);
 };
 
 // Optimized ProductRow Component
-const ProductRow = React.memo(({ product, isSelected, onCheckboxChange }) => (
+const ProductRow = React.memo(({ product, isSelected, onCheckboxChange, selectedProducts }) => (
 	<tr className="border-t border-main-2 hover:bg-opacity-50 hover:bg-main-2 cursor-pointer">
 		<td className="px-6 py-2">
 			<CheckboxInput checked={isSelected} onChange={() => onCheckboxChange(product._id)} />
@@ -111,7 +118,7 @@ const ProductRow = React.memo(({ product, isSelected, onCheckboxChange }) => (
 			<span className={`inline-block px-3 py-1 rounded-full text-xxs ${product.status === "active" ? "bg-green-100 text-green-800" : product.status === "inactive" ? "bg-red-100 text-red-800" : "bg-yellow-100 text-yellow-800"}`}>{product.status}</span>
 		</td>
 		<td className="px-6 py-2">
-			<Actions>
+			<Actions disable={selectedProducts.length}>
 				<ProductActions />
 			</Actions>
 		</td>

@@ -24,10 +24,14 @@ export const useQueryParams = (defaults = {}) => {
 		setSearchParams(searchParams);
 	};
 
+	const setBulk = (params) => {
+		setSearchParams({ ...Object.fromEntries(searchParams), ...params });
+	};
+
 	const resetParams = () => {
 		// console.log(defaults);
 		setSearchParams(defaults);
 	};
 
-	return { getParam, setParam, resetParams, searchParams };
+	return { getParam, setParam, resetParams, searchParams, setBulk };
 };

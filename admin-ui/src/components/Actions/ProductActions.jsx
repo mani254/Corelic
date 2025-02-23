@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { FiEdit, FiTrash, FiEye, FiDownload, FiChevronRight } from "react-icons/fi";
+import { FiEdit, FiTrash, FiEye, FiDownload, FiChevronRight, FiChevronLeft } from "react-icons/fi";
 function ProductActions({ multiSelect = false }) {
 	const [showStatusMenu, setShowStatusMenu] = useState(false);
 
@@ -14,11 +14,11 @@ function ProductActions({ multiSelect = false }) {
 				<span>Delete</span>
 			</li>
 			<li className="text-xs relative flex items-center gap-2 px-3 py-2 hover:bg-main-2 hover:bg-opacity-80 cursor-pointer" onMouseEnter={() => setShowStatusMenu(true)} onMouseLeave={() => setShowStatusMenu(false)}>
-				<FiChevronRight size={18} className="ml-auto" />
+				<FiChevronLeft size={18} className="ml-auto" />
 				<span>Change Status</span>
 				{/* Status Submenu */}
 				{showStatusMenu && (
-					<ul className="p-2 list-none absolute top-0 left-full ml-2 bg-main border border-main-2 rounded-lg shadow-lg z-20">
+					<ul className="p-2 list-none absolute top-0 right-full ml-2 bg-main border border-main-2 rounded-lg shadow-lg z-20">
 						<li className="text-xs px-3 py-2 hover:bg-main-2 hover:bg-opacity-80 cursor-pointer" onClick={() => console.log("Draft Selected")}>
 							Draft
 						</li>
