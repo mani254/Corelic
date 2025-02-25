@@ -15,5 +15,7 @@ router.post('/', uploadProductImages, productController.addProduct)
 router.get('/', productController.fetchProducts)
 router.delete('/:id', productController.deleteProduct)
 router.delete('/', productController.deleteMultipleProducts)
+router.put('/status/:id', productController.changeProductStatus)
+router.put('/status', productController.changeMultipleProductStatus)
 
 module.exports = router

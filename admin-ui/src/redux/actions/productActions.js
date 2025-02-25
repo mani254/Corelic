@@ -91,3 +91,29 @@ export const deleteMultipleProducts = (selectedProducts) => async (dispatch) => 
       return Promise.reject(errorMessage);
    }
 };
+
+
+export const updateProductStatus = (ids, status) => async (dispatch) => {
+   try {
+      dispatch({
+         type: "UPDATE_PRODUCT_STATUS_SUCCESS",
+         payload: { ids, status }
+      });
+
+      let response;
+      if (ids.length == 1) {
+         response = await axios.put(`${import.meta.env.VITE_API_BACKEND_URI}/api/products/status/${ids[0]}`, { status });
+      }
+      else {
+         response = await axios.put(`${import.meta.env.VITE_API_BACKEND_URI}/api/products/status`, { ids, status });
+      }
+      dispatch(showNotification(response?.data?.message || "Status updated successfully", "success"));
+      return Promise.resolve(response.data);
+   } catch (err) {
+      console.log(err)
+      let errorMessage = err.response?.data?.message || "Failed to update product status";
+      dispatch(showNotification(errorMessage, "error"));
+      return Promise.reject(errorMessage);
+   }
+};
+

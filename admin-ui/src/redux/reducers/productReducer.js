@@ -6,6 +6,7 @@ const initialState = {
    triggerFetch: false,
 };
 
+
 const productReducer = (state = initialState, action) => {
    switch (action.type) {
 
@@ -30,6 +31,12 @@ const productReducer = (state = initialState, action) => {
             ...state,
             products: state.products.filter((product) => !action.payload.includes(product._id)), loading: false, error: null
          };
+      case "UPDATE_PRODUCT_STATUS_SUCCESS":
+         return {
+            ...state,
+            products: state.products.map((product) => action.payload.ids.includes(product._id) ? { ...product, status: action.payload.status } : product)
+         };
+
       default:
          return state;
    }

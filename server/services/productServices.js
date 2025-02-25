@@ -1,4 +1,3 @@
-const { deleteProduct } = require('../controllers/productController');
 const Product = require('../schema/productSchema');
 
 class ProductService {
@@ -90,6 +89,15 @@ class ProductService {
       }
    }
 
+   async checkMultipleProductsById(ids) {
+      try {
+         const products = await Product.find({ _id: { $in: ids } }, { title: 1, _id: 1 });
+         return products
+      } catch (error) {
+         throw new Error(error.message);
+      }
+   };
+
    // Service function to delete a product
    async deleteProductById(id) {
       try {
@@ -100,14 +108,6 @@ class ProductService {
       }
    }
 
-   async checkMultipleProductsById(ids) {
-      try {
-         const products = await Product.find({ _id: { $in: ids } }, { title: 1, _id: 1 });
-         return products
-      } catch (error) {
-         throw new Error(error.message);
-      }
-   };
 
    async deleteMultipleProducts(ids) {
       try {
@@ -127,6 +127,31 @@ class ProductService {
          throw new Error(error.message);
       }
    };
+
+   async updateProductStatus(id, status) {
+      try {
+         const updatedProduct = await Product.updateOne({ _id: id }, { $set: { status } })
+         return updatedProduct
+      } catch (error) {
+         throw new Error(error.message);
+      }
+   };
+
+   async changeMultipleProductStatus(ids, status) {
+      const validProducts = await this.checkMultipleProductsById(ids);
+      const validProductIds = validProducts.map(product => product._id.toString());
+
+      const invalidProductIds = ids.filter(id => !validProductIds.includes(id));
+
+
+      if (validProductIds.length === 0) {
+         return { products: [], invalidProducts: invalidProductIds };
+      }
+
+      await Product.updateMany({ _id: { $in: validProductIds } }, { $set: { status } })
+
+      return { products: validProductIds, invalidProducts: invalidProductIds }
+   }
 }
 
 module.exports = new ProductService();

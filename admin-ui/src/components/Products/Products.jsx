@@ -14,21 +14,19 @@ import { fetchProducts } from "../../redux/actions/productActions";
 const Products = ({ productData, fetchProducts }) => {
 	const products = productData.products;
 	const [searchParams] = useSearchParams();
-	const [loader, setLoader] = useState(true);
 	const initialRender = useRef(true);
 	const [totalItems, setTotalItems] = useState(0);
 	const [selectedProducts, setSelectedProducts] = useState([]);
 
 	// Function to fetch products
 	const fetchProductsData = useCallback(async () => {
-		setLoader(true);
 		try {
-			const res = await fetchProducts(searchParams);
-			setTotalItems(res.totalItems);
+			const data = await fetchProducts(searchParams);
+			setTotalItems(data.totalItems);
+			setSelectedProducts([]);
 		} catch (err) {
 			console.error("Error fetching products:", err);
 		}
-		setLoader(false);
 	}, [fetchProducts, searchParams]);
 
 	// Fetch products when searchParams change
@@ -67,7 +65,7 @@ const Products = ({ productData, fetchProducts }) => {
 				<h4 className="mb-5">Products</h4>
 				<ProductsFilter />
 
-				{loader ? (
+				{productData.loading ? (
 					<SkeletonTable />
 				) : products.length ? (
 					<table className="w-full border-collapse">
@@ -98,7 +96,7 @@ const Products = ({ productData, fetchProducts }) => {
 			</div>
 			{selectedProducts.length ? (
 				<div className="w-[163px] fixed right-[100px] top-1/2 -translate-y-1/2 bg-main border border-main-2 rounded-lg shadow-lg">
-					<ProductActions multiSelect={true} selectedProducts={selectedProducts} setSelectedProducts={setSelectedProducts}></ProductActions>
+					<ProductActions selectedProducts={selectedProducts} setSelectedProducts={setSelectedProducts}></ProductActions>
 				</div>
 			) : null}
 		</div>
