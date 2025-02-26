@@ -13,7 +13,7 @@ export const addProduct = (productData) => async (dispatch) => {
          },
       });
 
-      dispatch({ type: "ADD_PRODUCT_SUCCESS", payload: response.data });
+      dispatch({ type: "ADD_PRODUCT_SUCCESS", payload: response.data.product });
       dispatch(showNotification("Product Added Successfully", "success"));
 
       return Promise.resolve(response.data);

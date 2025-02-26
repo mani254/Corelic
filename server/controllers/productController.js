@@ -2,36 +2,63 @@ const productService = require('../services/productServices');
 
 const productController = {
 
-   async addProduct(req, res) {
+   async fetchProducts(req, res) {
       try {
-         const product = req.body
+         const { sortBy, sortOrder, page = 1, limit = 10, minPrice, maxPrice } = req.query;
 
-         if (!req.files || req.files.length === 0) {
-            return res.status(400).json({ message: "No files were uploaded" });
+         // Validation for sorting field
+         const allowedSortFields = ['createdAt', 'price', 'title', 'stock'];
+         if (sortBy && !allowedSortFields.includes(sortBy)) {
+            return res.status(400).json({ message: "Invalid sort field. Allowed fields: createdAt, price, title, stock." });
          }
-         const images = req.files.map(image => ({ path: image.path, alt: product.title }))
 
-         product.options = JSON.parse(product.options)
-         product.metaData = JSON.parse(product.metaData)
-         product.images = images
+         // Validation for sorting order
+         if (sortOrder && !['asc', 'desc'].includes(sortOrder)) {
+            return res.status(400).json({ message: "Invalid sort order. Allowed values: asc, desc." });
+         }
 
+         // Pagination validation
+         const pageNumber = parseInt(page, 10);
+         const pageSize = parseInt(limit, 10);
+         if (isNaN(pageNumber) || pageNumber < 1 || isNaN(pageSize) || pageSize < 1) {
+            return res.status(400).json({ message: "Page and limit must be valid positive numbers." });
+         }
 
-         const data = await productService.addProduct(product)
-         res.status(201).json(data);
+         // Price range validation
+         if ((minPrice && isNaN(parseFloat(minPrice))) || (maxPrice && isNaN(parseFloat(maxPrice)))) {
+            return res.status(400).json({ message: "MinPrice and MaxPrice should be valid numbers." });
+         }
+
+         const data = await productService.fetchProducts(req.query);
+         res.status(200).json({ message: "Products fetched successfully", products: data.products, totalItems: data.totalItems });
       } catch (err) {
-         console.log(err)
-         res.status(500).json({ message: err.message });
+         console.error("Error fetching products:", err);
+         res.status(500).json({ message: "Internal server error", error: err.message });
       }
    },
 
-   async fetchProducts(req, res) {
+   async addProduct(req, res) {
       try {
-         const data = await productService.fetchProducts(req.query)
-         res.status(201).json(data);
-      }
-      catch (err) {
-         console.log(err)
-         res.status(500).json({ message: err.message })
+         const productData = req.body;
+
+
+
+         // Handle missing image uploads
+         if (!req.files || req.files.length === 0) {
+            return res.status(400).json({ message: "At least one image must be uploaded" });
+         }
+
+         // Map images to proper format
+         const images = req.files.map(image => ({ path: image.path, alt: productData.title }));
+         productData.images = images;
+
+         // Call service to add product
+         const newProduct = await productService.addProduct(productData);
+
+         res.status(201).json({ message: "Product added successfully", product: newProduct });
+      } catch (error) {
+         console.error("Error adding product:", error);
+         res.status(500).json({ message: "Internal server error", error: error.message });
       }
    },
 
@@ -40,24 +67,17 @@ const productController = {
          const { id } = req.params;
 
          // Check if the product exists
-         const isProductExist = await productService.checkProductById(id);
-         if (!isProductExist) {
+         const product = await productService.checkProductById(id);
+         if (!product) {
             return res.status(404).json({ message: "Product does not exist" });
          }
 
          // Delete the product
-         const deletedProduct = await productService.deleteProductById(id);
-         if (!deletedProduct) {
-            return res.status(500).json({ message: "Failed to delete product" });
-         }
+         await productService.deleteProductById(id);
 
-         res.status(200).json({
-            message: "Product deleted successfully",
-            product: deletedProduct,
-         });
-
+         res.status(204).send(); // No Content on successful deletion
       } catch (err) {
-         console.log(err);
+         console.error("Error deleting product:", err);
          res.status(500).json({ message: err.message });
       }
    },
@@ -66,21 +86,20 @@ const productController = {
       try {
          const { ids } = req.body;
 
-
          if (!Array.isArray(ids) || ids.length === 0) {
             return res.status(400).json({ message: "Invalid request. Provide an array of product IDs." });
          }
 
-         const { products, invalidProducts } = await productService.deleteMultipleProducts(ids);
+         const { deletedProducts, invalidProducts } = await productService.deleteMultipleProducts(ids);
 
-         res.status(200).json({
+         res.status(207).json({
             message: "Products deletion process completed.",
-            products,
+            deletedProducts,
             invalidProducts
          });
 
       } catch (err) {
-         console.error(err);
+         console.error("Error deleting multiple products:", err);
          res.status(500).json({ message: err.message });
       }
    },
@@ -88,19 +107,24 @@ const productController = {
    async changeProductStatus(req, res) {
       try {
          const { id } = req.params;
-         const { status } = req.body
+         const { status } = req.body;
 
-         const isProductExist = await productService.checkProductById(id)
-         if (!isProductExist) {
+         // Check if product exists
+         const product = await productService.checkProductById(id);
+         if (!product) {
             return res.status(404).json({ message: "Product does not exist" });
          }
 
-         const updateProduct = await productService.updateProductStatus(id, status)
-         return res.status(200).json({ product: updateProduct, message: 'Product status update succesfull' })
+         // Update product status
+         const updatedProduct = await productService.updateProductStatus(id, status);
+         return res.status(200).json({
+            message: "Product status updated successfully",
+            product: updatedProduct
+         });
 
       } catch (err) {
-         console.error(err)
-         res.status(500).json({ message: err.message })
+         console.error("Error updating product status:", err);
+         res.status(500).json({ message: err.message });
       }
    },
 
@@ -112,18 +136,17 @@ const productController = {
             return res.status(400).json({ message: "Invalid request. Provide an array of product IDs." });
          }
 
-         const { products, invalidProducts } = await productService.changeMultipleProductStatus(ids, status)
+         const { updatedProducts, invalidProducts } = await productService.changeMultipleProductStatus(ids, status);
 
-         res.status(200).json({
-            message: "Products Status updated succesfully",
-            products,
+         res.status(207).json({
+            message: "Products status update completed.",
+            updatedProducts,
             invalidProducts
          });
 
-
       } catch (err) {
-         console.error(err)
-         res.status(500).json({ message: err.message })
+         console.error("Error updating multiple product statuses:", err);
+         res.status(500).json({ message: err.message });
       }
    }
 

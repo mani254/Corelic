@@ -24,7 +24,7 @@ app.use('/api', require('./routes/index.js'));
 
 app.use((err, req, res, next) => {
    console.error(err.stack);
-   res.status(500).send('Something went wrong!');
+   res.status(500).send({ message: 'something went wrong', error: err.message });
 });
 
 

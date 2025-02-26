@@ -54,7 +54,7 @@ function ProductActions({ id = null, selectedProducts, setSelectedProducts, hand
 
 	return (
 		<ul className="p-2">
-			<li className="text-xs flex items-center gap-2 px-3 py-2 hover:bg-main-2 hover:bg-opacity-80 cursor-pointer" onClick={() => console.log("Edit Clicked")}>
+			<li className="text-xs flex items-center gap-2 px-3 py-2 hover:bg-main-2 hover:bg-opacity-80 cursor-pointer" onClick={() => window.alert('Option will be available soon')}>
 				<FiEdit size={18} />
 				<span className="whitespace-nowrap">{multiSelect ? " Bulk Edit" : "Edit"}</span>
 			</li>
@@ -80,12 +80,12 @@ function ProductActions({ id = null, selectedProducts, setSelectedProducts, hand
 					</ul>
 				)}
 			</li>
-			<li className="text-xs flex items-center gap-2 px-3 py-2 hover:bg-main-2 hover:bg-opacity-80 cursor-pointer" onClick={() => console.log("Export JSON Clicked")}>
+			<li className="text-xs flex items-center gap-2 px-3 py-2 hover:bg-main-2 hover:bg-opacity-80 cursor-pointer" onClick={() => window.alert('Option will be available soon')}>
 				<FiDownload size={18} />
 				<span className="whitespace-nowrap">Export JSON</span>
 			</li>
 			{!multiSelect && (
-				<li className="text-xs flex items-center gap-2 px-3 py-2 hover:bg-main-2 hover:bg-opacity-80 cursor-pointer" onClick={() => console.log("View Details Clicked")}>
+				<li className="text-xs flex items-center gap-2 px-3 py-2 hover:bg-main-2 hover:bg-opacity-80 cursor-pointer" onClick={() => window.alert('Option will be available soon')}>
 					<FiEye size={18} />
 					<span className="whitespace-nowrap">View Details</span>
 				</li>

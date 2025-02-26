@@ -6,16 +6,16 @@ function OrderActions({ multiSelect = false }) {
 
 	return (
 		<ul className="p-2">
-			<li className="text-xs flex items-center gap-2 px-3 py-2 hover:bg-main-2 hover:bg-opacity-80 cursor-pointer" onClick={() => console.log("Edit Order Clicked")}>
+			<li className="text-xs flex items-center gap-2 px-3 py-2 hover:bg-main-2 hover:bg-opacity-80 cursor-pointer" onClick={() => window.alert('Option will be available soon')}>
 				<FiEdit size={18} />
 				<span>{multiSelect ? "Bulk Edit" : "Edit"}</span>
 			</li>
-			<li className="text-xs flex items-center gap-2 px-3 py-2 hover:bg-main-2 hover:bg-opacity-80 cursor-pointer" onClick={() => console.log("Delete Order Clicked")}>
+			<li className="text-xs flex items-center gap-2 px-3 py-2 hover:bg-main-2 hover:bg-opacity-80 cursor-pointer" onClick={() => window.alert('Option will be available soon')}>
 				<FiTrash size={18} />
 				<span>Delete</span>
 			</li>
 			{!multiSelect && (
-				<li className="text-xs flex items-center gap-2 px-3 py-2 hover:bg-main-2 hover:bg-opacity-80 cursor-pointer" onClick={() => console.log("View Order Clicked")}>
+				<li className="text-xs flex items-center gap-2 px-3 py-2 hover:bg-main-2 hover:bg-opacity-80 cursor-pointer" onClick={() => window.alert('Option will be available soon')}>
 					<FiEye size={18} />
 					<span>View Order</span>
 				</li>
@@ -26,26 +26,26 @@ function OrderActions({ multiSelect = false }) {
 				{/* Status Submenu */}
 				{showStatusMenu && (
 					<ul className="p-2 list-none absolute top-0 left-full ml-2 bg-main border border-main-2 rounded-lg shadow-lg z-20">
-						<li className="text-xs px-3 py-2 hover:bg-main-2 hover:bg-opacity-80 cursor-pointer" onClick={() => console.log("Pending Selected")}>
+						<li className="text-xs px-3 py-2 hover:bg-main-2 hover:bg-opacity-80 cursor-pointer" onClick={() => window.alert('Option will be available soon')}>
 							Pending
 						</li>
-						<li className="text-xs px-3 py-2 hover:bg-main-2 hover:bg-opacity-80 cursor-pointer" onClick={() => console.log("Processing Selected")}>
+						<li className="text-xs px-3 py-2 hover:bg-main-2 hover:bg-opacity-80 cursor-pointer" onClick={() => window.alert('Option will be available soon')}>
 							Processing
 						</li>
-						<li className="text-xs px-3 py-2 hover:bg-main-2 hover:bg-opacity-80 cursor-pointer" onClick={() => console.log("Shipped Selected")}>
+						<li className="text-xs px-3 py-2 hover:bg-main-2 hover:bg-opacity-80 cursor-pointer" onClick={() => window.alert('Option will be available soon')}>
 							Shipped
 						</li>
-						<li className="text-xs px-3 py-2 hover:bg-main-2 hover:bg-opacity-80 cursor-pointer" onClick={() => console.log("Completed Selected")}>
+						<li className="text-xs px-3 py-2 hover:bg-main-2 hover:bg-opacity-80 cursor-pointer" onClick={() => window.alert('Option will be available soon')}>
 							Completed
 						</li>
-						<li className="text-xs px-3 py-2 hover:bg-main-2 hover:bg-opacity-80 cursor-pointer" onClick={() => console.log("Cancelled Selected")}>
+						<li className="text-xs px-3 py-2 hover:bg-main-2 hover:bg-opacity-80 cursor-pointer" onClick={() => window.alert('Option will be available soon')}>
 							Cancelled
 						</li>
 					</ul>
 				)}
 			</li>
 
-			<li className="text-xs flex items-center gap-2 px-3 py-2 hover:bg-main-2 hover:bg-opacity-80 cursor-pointer" onClick={() => console.log("Export Clicked")}>
+			<li className="text-xs flex items-center gap-2 px-3 py-2 hover:bg-main-2 hover:bg-opacity-80 cursor-pointer" onClick={() => window.alert('Option will be available soon')}>
 				<FiDownload size={18} />
 				<span>{multiSelect ? "Export to CSV" : "Export PDF"}</span>
 			</li>

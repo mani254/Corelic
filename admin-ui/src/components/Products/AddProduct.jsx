@@ -106,7 +106,7 @@ function AddProduct({ showNotification, addProduct }) {
 
 		// Validate required fields
 		const emptyField = requiredFields.find((field) => {
-			console.log(productDetails[field]);
+
 			return !productDetails[field];
 		});
 
