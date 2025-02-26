@@ -117,19 +117,6 @@
 		box-shadow: 0px 0px 1px 1.5px rgba(45, 45, 45, 0.1);
 	}
 
-	/* Tooltips */
-	.tooltip {
-		@apply relative group;
-	}
-
-	.tooltip::after {
-		content: attr(data-tooltip);
-		@apply absolute hidden group-hover:block bg-zinc-700 text-white text-xs py-1 px-2 rounded-md;
-		top: -1.5rem;
-		left: 50%;
-		transform: translateX(-50%);
-	}
-
 	/* Badges */
 	.badge {
 		@apply inline-block px-2 py-1 text-xs font-medium rounded-md bg-primary text-white;

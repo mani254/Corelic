@@ -60,19 +60,21 @@ const navItems = [
 
 function Navbar() {
 	return (
-		<div className="layout-content-container flex flex-col min-w-[260px]">
+		<div className="layout-content-container flex flex-col  xl:min-w-[260px]">
 			<div className="flex h-screen flex-col justify-between bg-main p-4 rounded-tr-xl rounded-br-xl sticky top-0">
 				<div className="flex flex-col gap-2">
 					<div className="flex px-2">
-						<img src={logo} className="w-10 h-10" alt="corelic-logo" />
-						<h4 className="text-lg font-bold mt-1 tracking-wide bg-gradient-to-br from-blue-500 to-purple-500 text-transparent bg-clip-text">Orellic</h4>
+						<img src={logo} className="w-10 aspect-square" alt="corelic-logo" />
+						<h4 className="text-lg font-bold mt-1 tracking-wide bg-gradient-to-br from-blue-500 to-purple-500 text-transparent bg-clip-text hidden xl:block">Orellic</h4>
 					</div>
 					<div className="w-full h-[2px] rounded-full bg-main-2"></div>
 					{navItems.map(({ label, icon: Icon, link }) => (
-						<NavLink key={label} to={link} className={({ isActive }) => `flex items-center gap-3 px-3 py-[6px] rounded-xl ${isActive ? "bg-main-3 text-primary" : "hover:bg-main-2"} transition-colors font-medium`} role="menuitem" aria-label={label}>
-							<Icon />
-							<p className="text-xs">{label}</p>
-						</NavLink>
+						<div className="tooltip inline-block" data-tooltip={label} key={label}>
+							<NavLink to={link} className={({ isActive }) => `flex items-center gap-3 px-3 py-[6px] rounded-xl ${isActive ? "bg-main-3 text-primary" : "hover:bg-main-2"} transition-colors font-medium`} role="menuitem" aria-label={label}>
+								<Icon />
+								<p className="text-xs hidden xl:block">{label}</p>
+							</NavLink>
+						</div>
 					))}
 				</div>
 			</div>
