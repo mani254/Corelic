@@ -58,7 +58,7 @@ const productSchema = mongoose.Schema({
    status: {
       type: String,
       enum: ["draft", "active", "inactive"],
-      default: "Draft"
+      default: "draft"
    },
 
    images: {

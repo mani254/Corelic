@@ -7,7 +7,7 @@ const validateProduct = require('../middleware/validateProduct');
 
 const uploadProductImages = createFileUploadMiddleware({
    storagePath: "./public/uploads/products",
-   fileSize: 5 * 1024 * 1024,
+   fileSize: 3 * 1024 * 1024,
    single: false,
    fieldName: "images",
    allowedTypes: ["image/jpeg", "image/png", "image/webp", "image/gif"],

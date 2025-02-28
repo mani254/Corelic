@@ -73,9 +73,9 @@ const productController = {
          }
 
          // Delete the product
-         await productService.deleteProductById(id);
+         const delProduct = await productService.deleteProductById(id);
 
-         res.status(204).send(); // No Content on successful deletion
+         res.status(204).json({ message: "Product deleted successfull", product: delProduct }); 
       } catch (err) {
          console.error("Error deleting product:", err);
          res.status(500).json({ message: err.message });
