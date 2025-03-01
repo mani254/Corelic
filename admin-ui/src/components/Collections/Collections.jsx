@@ -6,103 +6,37 @@ import CollectionsFilter from "./CollectionFilter";
 import Actions from "../Actions/Actions";
 import CollectionActions from "../Actions/CollectionActions";
 import SkeletonTable from "../Loaders/SkeletonTable";
+import ImageComponent from "../Images/ImageComponent";
 
-const Collections = () => {
-	const [collections, setCollections] = useState([
-		{
-			_id: 1,
-			title: "Summer Collection",
-			description: "Summer clothing for the sunny days.",
-			keywords: "Summer, Clothing, Fashion",
-			status: "Active",
-			image: "https://source.unsplash.com/200x200/?summer",
-		},
-		{
-			_id: 2,
-			title: "Winter Collection",
-			description: "Warm clothing for cold weather.",
-			keywords: "Winter, Warm, Fashion",
-			status: "Inactive",
-			image: "https://source.unsplash.com/200x200/?winter",
-		},
-		{
-			_id: 3,
-			title: "Casual Collection",
-			description: "Casual outfits for everyday wear.",
-			keywords: "Casual, Fashion, Everyday",
-			status: "Active",
-			image: "https://source.unsplash.com/200x200/?casual",
-		},
-		{
-			_id: 4,
-			title: "Sports Collection",
-			description: "Athletic wear for active lifestyles.",
-			keywords: "Sports, Fitness, Fashion",
-			status: "Active",
-			image: "https://source.unsplash.com/200x200/?sports",
-		},
-		{
-			_id: 5,
-			title: "Formal Collection",
-			description: "Professional outfits for business events.",
-			keywords: "Formal, Business, Fashion",
-			status: "Inactive",
-			image: "https://source.unsplash.com/200x200/?formal",
-		},
-		{
-			_id: 6,
-			title: "Party Collection",
-			description: "Outfits for special occasions and parties.",
-			keywords: "Party, Fashion, Celebration",
-			status: "Active",
-			image: "https://source.unsplash.com/200x200/?party",
-		},
-		{
-			_id: 7,
-			title: "Beach Collection",
-			description: "Swimwear and beach essentials for sunny vacations.",
-			keywords: "Beach, Swimwear, Fashion",
-			status: "Inactive",
-			image: "https://source.unsplash.com/200x200/?beach",
-		},
-		{
-			_id: 8,
-			title: "Spring Collection",
-			description: "Light and airy clothing for the spring season.",
-			keywords: "Spring, Fashion, Fresh",
-			status: "Active",
-			image: "https://source.unsplash.com/200x200/?spring",
-		},
-		{
-			_id: 9,
-			title: "Autumn Collection",
-			description: "Layered clothing for the fall weather.",
-			keywords: "Autumn, Fashion, Cozy",
-			status: "Inactive",
-			image: "https://source.unsplash.com/200x200/?autumn",
-		},
-		{
-			_id: 10,
-			title: "Luxury Collection",
-			description: "High-end, luxury clothing for the elite.",
-			keywords: "Luxury, Fashion, Premium",
-			status: "Active",
-			image: "https://source.unsplash.com/200x200/?luxury",
-		},
-	]);
+import { connect } from "react-redux";
+import { fetchCollections } from "../../redux/actions/collectionActions";
+
+const Collections = ({ collectionData, fetchCollections }) => {
+	const collections = collectionData.collections;
 	const [searchParams] = useSearchParams();
 	const initialRender = useRef(true);
-
+	const [totalItems, setTotalItems] = useState(0);
 	const [selectedCollections, setSelectedCollections] = useState([]);
 
-	const [loader, setLoader] = useState(true);
-	useEffect(() => {
-		const timeout = setTimeout(() => {
-			setLoader(false);
-		}, 1000);
+	// Function to fetch collections
+	const fetchCollectionsData = useCallback(async () => {
+		try {
+			const data = await fetchCollections(searchParams);
+			setTotalItems(data.totalItems);
+			setSelectedCollections([]);
+		} catch (err) {
+			console.error("Error fetching collections:", err);
+		}
+	}, [fetchCollections, searchParams]);
 
-		return () => clearTimeout(timeout);
-	}, []);
+	// Fetch collection when searchParams change
+	useEffect(() => {
+		if (initialRender.current) {
+			initialRender.current = false;
+			return;
+		}
+		fetchCollectionsData();
+	}, [fetchCollectionsData]);
 
 	// useEffect to send the data to the backend when ever there is a chage in search params
 	useEffect(() => {
@@ -115,6 +49,17 @@ const Collections = () => {
 		}
 	}, [searchParams]);
 
+	useEffect(() => {
+		if (collectionData.triggerFetch) {
+			fetchCollectionsData();
+		}
+	}, [collectionData.triggerFetch]);
+
+	// Function to handle checkbox click
+	const handleCheckboxChange = useCallback((id) => {
+		setSelectedCollections((prev) => (prev.includes(id) ? prev.filter((collectionId) => collectionId !== id) : [...prev, id]));
+	}, []);
+
 	// function to select all
 	const handleSelectAll = useCallback(
 		(e) => {
@@ -123,60 +68,89 @@ const Collections = () => {
 		[collections]
 	);
 
-	// function to select the single item
-	const handleCheckboxChange = useCallback((id) => {
-		setSelectedCollections((prev) => (prev.includes(id) ? prev.filter((collectionId) => collectionId !== id) : [...prev, id]));
-	}, []);
+	// Check if all items are selected
+	const allSelected = collections.length > 0 && selectedCollections.length === collections.length;
+
+	const limit = parseInt(searchParams.get("limit"), 10) || 10;
 
 	return (
-		<div className="overflow-x-auto">
-			<h4 className="mb-5">Collections</h4>
-			<CollectionsFilter />
-			<div>
+		<div className=" relative">
+			<div className="overflow-x-auto min-h-screen">
+				<h4 className="mb-5">Collections</h4>
+				<CollectionsFilter />
 				<div>
-					{loader ? (
-						<SkeletonTable />
-					) : (
-						<table className="w-full border-collapse">
-							<thead>
-								<tr className="bg-main-2">
-									<th className="px-6 py-3 text-left font-medium w-10">
-										<CheckboxInput onChange={handleSelectAll} checked={collections.length > 0 && selectedCollections.length === collections.length} />
-									</th>
-									<th className="px-6 py-3 text-left font-medium">Title</th>
-									<th className="px-6 py-3 text-left font-medium w-1/3">Description</th>
-									<th className="px-6 py-3 text-left font-medium">Status</th>
-									<th className="px-6 py-3 text-left font-medium">Actions</th>
-								</tr>
-							</thead>
-							<tbody>
-								{collections.map((collection) => (
-									<tr key={collection._id} className="border-t border-main-2 hover:bg-opacity-50 hover:bg-main-2 cursor-pointer">
-										<td className="px-6 py-2">
-											<CheckboxInput checked={selectedCollections.includes(collection._id)} onChange={() => handleCheckboxChange(collection._id)} />
-										</td>
-										<td className="px-6 py-2">{collection.title}</td>
-										<td className="px-6 py-2">{collection.description}</td>
-										<td className="px-6 py-2">
-											<span className={`inline-block px-3 py-1 rounded-full text-xxs ${collection.status === "Active" ? "bg-green-100 text-green-800" : collection.status === "Inactive" ? "bg-red-100 text-red-800" : "bg-yellow-100 text-yellow-800"}`}>{collection.status}</span>
-										</td>
-										<td className="px-6 py-2">
-											<Actions>
-												<CollectionActions multiSelect={selectedCollections.length > 1} />
-											</Actions>
-										</td>
-										{/* <td className="px-6 py-2">Actions</td> */}
+					<div>
+						{collectionData.loading ? (
+							<SkeletonTable />
+						) : collections.length ? (
+							<table className="w-full border-collapse">
+								<thead>
+									<tr className="bg-main-2">
+										<th className="px-6 py-3 text-left font-medium w-10">
+											<CheckboxInput onChange={handleSelectAll} checked={allSelected} />
+										</th>
+										<th className="px-6 py-3 text-left font-medium">Image</th>
+										<th className="px-6 py-3 text-left font-medium">Title</th>
+										<th className="px-6 py-3 text-left font-medium">Status</th>
+										<th className="px-6 py-3 text-left font-medium">Actions</th>
 									</tr>
-								))}
-							</tbody>
-						</table>
-					)}
+								</thead>
+								<tbody>
+									{collections.map((collection) => (
+										<CollectionRow key={collection._id} collection={collection} isSlected={selectedCollections.includes(collection._id)} onCheckboxChange={handleCheckboxChange} selectedCollections={selectedCollections} />
+									))}
+								</tbody>
+							</table>
+						) : (
+							<div className="flex flex-col items-center justify-center text-gray-500 p-8 rounded-lg border border-dashed border-gray-300 bg-gray-50">
+								<svg xmlns="http://www.w3.org/2000/svg" className="w-14 h-14 text-gray-400 mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+									<path d="M3 9.5V17a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9.5" />
+									<path d="M3 9.5 12 4l9 5.5" />
+									<path d="M12 4v13" />
+								</svg>
+								<h3 className="font-semibold">No Collections Found</h3>
+								<p className="text-sm text-gray-500 text-center">Start by adding a new collection to manage and display items.</p>
+							</div>
+						)}
 
-					<Pagination totalItems={100} />
+						{totalItems > limit && <Pagination totalItems={totalItems} />}
+					</div>
 				</div>
 			</div>
+			{selectedCollections.length ? (
+				<div className="w-[163px] fixed right-[100px] top-1/2 -translate-y-1/2 bg-main border border-main-2 rounded-lg shadow-lg">
+					<CollectionActions selectedCollections={selectedCollections} setSelectedCollections={setSelectedCollections}></CollectionActions>
+				</div>
+			) : null}
 		</div>
 	);
 };
 
-export default Collections;
+const CollectionRow = React.memo(({ collection, isSlected, onCheckboxChange, selectedCollections }) => (
+	<tr key={collection._id} className="border-t border-main-2 hover:bg-opacity-50 hover:bg-main-2 cursor-pointer">
+		<td className="px-6 py-2">
+			<CheckboxInput checked={isSlected} onChange={() => onCheckboxChange(collection._id)} />
+		</td>
+		<td className="px-6 py-2 w-10">
+			<div className="relative h-10 w-10 overflow-hidden rounded-lg bg-main-3">
+				<ImageComponent path={collection.image?.path} alt={collection.image?.alt} className="w-full h-full object-cover object-center" />
+			</div>
+		</td>
+		<td className="px-6 py-2">{collection.title}</td>
+		<td className="px-6 py-2">
+			<span className={`inline-block px-3 py-1 rounded-full text-xxs ${collection.status === "active" ? "bg-green-100 text-green-800" : collection.status === "inactive" ? "bg-red-100 text-red-800" : "bg-yellow-100 text-yellow-800"}`}>{collection.status}</span>
+		</td>
+		<td className="px-6 py-2">
+			<Actions disable={selectedCollections.length}>
+				<CollectionActions id={collection._id} />
+			</Actions>
+		</td>
+	</tr>
+));
+
+const mapStateToProps = (state) => ({ collectionData: state.collection });
+const mapDispatchToProps = (dispatch) => ({
+	fetchCollections: (params) => dispatch(fetchCollections(params)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Collections);

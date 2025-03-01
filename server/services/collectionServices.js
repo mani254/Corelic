@@ -25,6 +25,7 @@ class CollectionService {
             title: 1,
             status: 1,
             image: 1,
+            description: 1,
             createdAt: 1,
             updatedAt: 1,
             showInHome: 1
@@ -101,9 +102,9 @@ class CollectionService {
 
    async deleteCollectionById(id) {
       try {
-         return await Product.findByIdAndDelete(id);
+         return await Collection.findByIdAndDelete(id);
       } catch (error) {
-         console.error("Error deleting product:", error);
+         console.error("Error deleting collection:", error);
          throw new Error(error.message);
       }
    }
@@ -111,14 +112,14 @@ class CollectionService {
    async deleteMultipleCollectionsById(ids) {
       try {
          const validCollections = await this.checkMultipleCollectionsById(ids)
-         const validCollectionIds = validProducts.map(product => product._id.toString());
+         const validCollectionIds = validCollections.map(collection => collection._id.toString());
          const invalidCollectionIds = ids.filter(id => !validCollectionIds.includes(id));
 
          if (validCollectionIds.length > 0) {
-            await Product.deleteMany({ _id: { $in: validCollectionIds } });
+            await Collection.deleteMany({ _id: { $in: validCollectionIds } });
          }
 
-         return { deletedCollections: validCollections, invalidProducts: invalidCollectionIds };
+         return { deletedCollections: validCollections, invalidCollections: invalidCollectionIds };
 
       } catch (error) {
          console.error("Error deleting multiple collections:", error);

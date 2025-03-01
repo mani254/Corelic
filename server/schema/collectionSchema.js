@@ -52,7 +52,7 @@ const collectionSchema = mongoose.Schema({
 )
 
 collectionSchema.pre('validate', function (next) {
-   if (this.modified('title')) {
+   if (this.isModified('title')) {
       this.slug = slugify(this.title, { lower: true, strict: true })
    }
    if (this.image) {
@@ -61,4 +61,6 @@ collectionSchema.pre('validate', function (next) {
    next()
 });
 
-module.exports = collectionSchema
+const Collection = mongoose.model('Collection', collectionSchema)
+
+module.exports = Collection

@@ -1,4 +1,3 @@
-const collectionSchema = require("../schema/collectionSchema");
 const collectionServices = require("../services/collectionServices");
 
 const collectionsController = {
@@ -22,7 +21,7 @@ const collectionsController = {
             return res.status(400).json({ message: "Page and limit must be valid positive numbers." });
          }
 
-         if (!['active', 'inactive'].includes(status)) {
+         if (status && !['active', 'inactive'].includes(status)) {
             return res.status(400).json({ message: "Invalid status" });
          }
 
@@ -88,7 +87,7 @@ const collectionsController = {
             return res.status(400).json({ message: "Invalid request. Provide an array of collection IDs." });
          }
 
-         const { deletedCollections, invalidCollections } = await collectionServices.deleteMultipleCollections(ids);
+         const { deletedCollections, invalidCollections } = await collectionServices.deleteMultipleCollectionsById(ids);
 
          res.status(207).json({
             message: "Collections deletion process completed.",

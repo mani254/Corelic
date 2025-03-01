@@ -11,6 +11,10 @@ function validateCollection(req, res, next) {
       }
 
       req.body.status = status.toLowerCase()
+      req.body.metaData = {
+         metaTitle: req.body.metaTitle,
+         metaDescription: req.body.metaDesscription
+      }
 
       next()
 

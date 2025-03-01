@@ -8,7 +8,7 @@ const uploadCollectionImage = createFileUploadMiddleware({
    storagePath: "./public/uploads/collections",
    fileSize: 3 * 1024 * 1024,
    single: true,
-   fieldName: "images",
+   fieldName: "image",
    allowedTypes: ["image/jpeg", "image/png", "image/webp", "image/gif"],
 });
 

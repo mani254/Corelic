@@ -61,7 +61,7 @@ const Products = ({ productData, fetchProducts }) => {
 
 	return (
 		<div className="min-h-screen relative">
-			<div className="overflow-x-auto ">
+			<div className="overflow-x-auto">
 				<h4 className="mb-5">Products</h4>
 				<ProductsFilter />
 
@@ -89,7 +89,15 @@ const Products = ({ productData, fetchProducts }) => {
 						</tbody>
 					</table>
 				) : (
-					<h2>No Products available</h2>
+					<div className="flex flex-col items-center justify-center text-gray-500 p-8 rounded-lg border border-dashed border-gray-300 bg-gray-50">
+						<svg xmlns="http://www.w3.org/2000/svg" className="w-14 h-14 text-gray-400 mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+							<path d="M3 9.5V17a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9.5" />
+							<path d="M3 9.5 12 4l9 5.5" />
+							<path d="M12 4v13" />
+						</svg>
+						<h3 className="font-semibold">No Products Found</h3>
+						<p className="text-sm text-gray-500 text-center">If No Products Added try adding some Products</p>
+					</div>
 				)}
 
 				{totalItems > limit && <Pagination totalItems={totalItems} />}

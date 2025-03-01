@@ -3,13 +3,16 @@ import { TextInput, TextArea, SelectInput } from "../FormComponents/FormComponen
 import { ImageUploaderComponent } from "editorify-dev/imageUploader";
 import { connect } from "react-redux";
 import { showNotification } from "../../redux/actions/notificationActions";
+import { addCollection } from "../../redux/actions/collectionActions";
 
-function CollectionAddComponent({ showNotification }) {
+function CollectionAddComponent({ showNotification, addCollection }) {
 	const [collectionDetails, setCollectionDetails] = useState({
 		title: "",
+		description: "",
+		status: "active",
+		showInHome: false,
 		metaTitle: "",
 		metaDescription: "",
-		status: "Active",
 	});
 
 	const [image, setImage] = useState(null);
@@ -17,6 +20,7 @@ function CollectionAddComponent({ showNotification }) {
 	const [errors, setErrors] = useState({
 		title: "",
 		metaTitle: "",
+		description: "",
 		metaDescription: "",
 	});
 
@@ -33,14 +37,14 @@ function CollectionAddComponent({ showNotification }) {
 
 	const statusOptions = useMemo(
 		() => [
-			{ label: "Active", value: "Active" },
+			{ label: "Active", value: "active" },
 			{ label: "Inactive", value: "Inactive" },
 		],
 		[]
 	);
 
-	const handleSubmit = () => {
-		const requiredFields = ["title", "metaTitle", "metaDescription"];
+	const handleSubmit = async () => {
+		const requiredFields = ["title", "description", "metaTitle", "metaDescription"];
 		const emptyField = requiredFields.find((field) => !collectionDetails[field]);
 
 		if (emptyField) {
@@ -53,9 +57,33 @@ function CollectionAddComponent({ showNotification }) {
 			showNotification("Please upload an image.", "warning");
 			return;
 		}
+		const formData = new FormData();
 
-		showNotification("Collection added successfully!", "success");
-		// Add logic to submit the collection details
+		formData.append("image", image);
+		formData.append("title", collectionDetails.title);
+		formData.append("description", collectionDetails.description);
+		formData.append("status", collectionDetails.status);
+		formData.append("showInHome", collectionDetails.showInHome);
+		formData.append("metaTitle", collectionDetails.metaTitle);
+		formData.append("metaDescription", collectionDetails.metaDescription);
+
+		try {
+			const data = await addCollection(formData);
+			if (data) {
+				console.log("Collection added succesfully", data);
+				setCollectionDetails({
+					title: "",
+					description: "",
+					status: "active",
+					showInHome: false,
+					metaTitle: "",
+					metaDescription: "",
+				});
+				setImage(null);
+			}
+		} catch (err) {
+			console.log(err);
+		}
 	};
 
 	return (
@@ -67,17 +95,33 @@ function CollectionAddComponent({ showNotification }) {
 					<div className="outer-box">
 						<TextInput label="Title" className="mb-4" placeholder="Collection Title" name="title" id="title" value={collectionDetails.title} error={errors.title || ""} onChange={handleInputChange} />
 
-						<SelectInput options={statusOptions} label="Status" name="status" className="mb-5" value={collectionDetails.status} onChange={handleInputChange} />
+						<TextArea label="Description" placeholder="Collection description" name="description" id="description" error={errors.description || ""} className="mb-4" value={collectionDetails.description} onChange={handleInputChange} rows={4} />
 					</div>
 
 					<div className="outer-box">
 						<h5 className="mb-2">Meta Details</h5>
 						<TextInput label="Meta Title" placeholder="Meta Title" name="metaTitle" id="metaTitle" value={collectionDetails.metaTitle} error={errors.metaTitle || ""} onChange={handleInputChange} className="mb-4" />
-						<TextArea label="Meta Description" placeholder="Meta Description" name="metaDescription" id="metaDescription" value={collectionDetails.metaDescription} error={errors.metaDescription || ""} rows={3} onChange={handleInputChange} className="mb-4" />
+						<TextArea label="Meta Description" placeholder="Meta Description" name="metaDescription" id="metaDescription" value={collectionDetails.metaDescription} error={errors.metaDescription || ""} rows={5} onChange={handleInputChange} className="mb-4" />
 					</div>
 				</div>
 
 				<div className="w-2/5">
+					<div className="outer-box">
+						<h5 className="mb-2">Status & Home</h5>
+						<SelectInput options={statusOptions} label="Status" name="status" className="mb-5" value={collectionDetails.status} onChange={handleInputChange} />
+
+						<SelectInput
+							options={[
+								{ label: "Yes", value: true },
+								{ label: "No", value: false },
+							]}
+							label="Show In Home"
+							name="showInHome"
+							className="mb-5"
+							value={collectionDetails.showInHome}
+							onChange={handleInputChange}
+						/>
+					</div>
 					<div className="outer-box">
 						<h5 className="mb-2">Collection Image</h5>
 						<ImageUploaderComponent id="collection-image" maxImages={1} onImagesChange={(images) => setImage(images[0] || null)} />
@@ -95,6 +139,7 @@ function CollectionAddComponent({ showNotification }) {
 const mapDispatchToProps = (dispatch) => {
 	return {
 		showNotification: (message, type) => dispatch(showNotification(message, type)),
+		addCollection: (collection) => dispatch(addCollection(collection)),
 	};
 };
 
