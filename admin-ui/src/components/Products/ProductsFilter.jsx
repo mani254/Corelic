@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from "react";
+import React, { useState, useCallback, useRef, useEffect } from "react";
 import { useQueryParams } from "../../hooks/useQueryParams";
 import SearchComponent from "../FormComponents/SearchComponent";
 import { SelectInput } from "../FormComponents/FormComponents";

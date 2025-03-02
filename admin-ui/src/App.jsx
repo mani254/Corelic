@@ -18,6 +18,9 @@ import Orders from "./components/Orders/Orders";
 import CollectionsWrapper from "./components/Collections/CollectionsWrapper";
 import Collections from "./components/Collections/Collections";
 import AddCollection from "./components/Collections/AddCollection";
+import BrandsWrapper from "./components/Brands/BrandsWrapper";
+import Brands from "./components/Brands/Brands";
+import AddBrand from "./components/Brands/AddBrand";
 
 function App({ modal }) {
 	return (
@@ -37,6 +40,10 @@ function App({ modal }) {
 						<Route path="/collections" element={<CollectionsWrapper />}>
 							<Route index element={<Collections />}></Route>
 							<Route path="add" element={<AddCollection />}></Route>
+						</Route>
+						<Route path="/brands" element={<BrandsWrapper />}>
+							<Route index element={<Brands />}></Route>
+							<Route path="add" element={<AddBrand />}></Route>
 						</Route>
 					</Route>
 				</Routes>

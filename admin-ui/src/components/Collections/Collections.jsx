@@ -38,17 +38,6 @@ const Collections = ({ collectionData, fetchCollections }) => {
 		fetchCollectionsData();
 	}, [fetchCollectionsData]);
 
-	// useEffect to send the data to the backend when ever there is a chage in search params
-	useEffect(() => {
-		if (initialRender.current) {
-			initialRender.current = false;
-			return;
-		}
-		if (searchParams.size !== 0) {
-			console.log("Request sent to backend with params:", Object.fromEntries(searchParams.entries()));
-		}
-	}, [searchParams]);
-
 	useEffect(() => {
 		if (collectionData.triggerFetch) {
 			fetchCollectionsData();

@@ -1,23 +1,28 @@
-import React, { useState, useCallback, useRef } from "react";
+import React, { useState, useCallback, useRef, useEffect } from "react";
 import { useQueryParams } from "../../hooks/useQueryParams";
 import SearchComponent from "../FormComponents/SearchComponent";
 import { SelectInput } from "../FormComponents/FormComponents";
 import { debounce } from "../../utils/functions";
 
 function CollectionsFilter() {
-	const { getParam, setParam, resetParams } = useQueryParams({
+	const { getParam, setParam, resetParams, searchParams } = useQueryParams({
 		page: 1,
 		limit: 10,
 	});
 
 	const [searchValue, setSearchValue] = useState(getParam("search"));
 
-	const debouncedSearchChange = useRef(
+	useEffect(() => {
+		setSearchValue(getParam("search") || "");
+	}, [searchParams]);
+
+	const debouncedSearchChange = useCallback(
 		debounce((searchText) => {
 			setParam("search", searchText);
 			setParam("page", 1);
-		}, 500)
-	).current;
+		}, 500),
+		[searchParams]
+	);
 
 	// funciton to handle the search
 	const handleSearchChange = useCallback(
