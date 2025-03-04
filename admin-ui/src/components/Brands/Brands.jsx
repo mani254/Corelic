@@ -62,7 +62,7 @@ const Brands = ({ brandData, fetchBrands }) => {
 								<CheckboxInput onChange={handleSelectAll} checked={allSelected} />
 								<label className="ml-2 text-sm font-medium">Select All</label>
 							</div>
-							<div className="grid gap-10 grid-cols-3">
+							<div className="grid gap-y-5 gap-x-10 grid-cols-3">
 								{brands.map((brand) => (
 									<BrandCard key={brand._id} brand={brand} isSelected={selectedBrands.includes(brand._id)} onCheckboxChange={handleCheckboxChange} selectedBrands={selectedBrands} />
 								))}

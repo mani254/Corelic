@@ -1,11 +1,12 @@
 const Product = require('../schema/productSchema');
+const collectionServices = require('../services/collectionServices');
+const brandServices = require('../services/brandServices')
 
 class ProductService {
 
-   getMatchStage(query) {
+   async getMatchStage(query) {
       const { search, title, minPrice, maxPrice, status, vendor, trackInventory, stockAvailable } = query;
       let matchStage = {};
-
 
       if (search && search.trim() !== "") {
          matchStage.$or = [
@@ -15,7 +16,7 @@ class ProductService {
       }
 
       if (title) {
-         matchStage.title = { $regex: title, $options: 'i' }
+         matchStage.title = { $regex: title, $options: 'i' };
       }
 
       if (minPrice || maxPrice) {
@@ -25,7 +26,6 @@ class ProductService {
       }
 
       if (status) matchStage.status = status;
-      if (vendor) matchStage.vendor = vendor;
 
       if (trackInventory != null) {
          matchStage.trackInventory = String(trackInventory).toLowerCase() === "true";
@@ -39,11 +39,12 @@ class ProductService {
 
    async fetchProducts(query) {
       try {
-         const { sortBy = 'createdAt', sortOrder = 'desc', page = 1, limit = 10 } = query;
+         const { sortBy = 'createdAt', sortOrder = 'desc', page = 1, limit = 10, vendor, collection } = query;
 
          const fetchingOptions = {
-            _id: 1, title: 1, overview: 1, price: 1, comparePrice: 1, gst: 1, sku: 1, status: 1, vendor: 1, images: 1, trackInventory: 1, stock: 1, createdAt: 1
-         }
+            _id: 1, title: 1, slug: 1, overview: 1, price: 1, comparePrice: 1, gst: 1, sku: 1, status: 1,
+            vendor: 1, collections: 1, images: 1, trackInventory: 1, stock: 1, createdAt: 1
+         };
 
          const pageNumber = parseInt(page, 10) || 1;
          const pageSize = parseInt(limit, 10) || 10;
@@ -53,6 +54,36 @@ class ProductService {
 
          const pipeline = [
             { $match: matchStage },
+
+            {
+               $lookup: {
+                  from: 'brands',
+                  localField: 'vendor',
+                  foreignField: '_id',
+                  as: 'vendor'
+               }
+            },
+            { $unwind: { path: '$vendor', preserveNullAndEmptyArrays: true } },
+
+            {
+               $lookup: {
+                  from: 'collections',
+                  localField: 'collections',
+                  foreignField: '_id',
+                  as: 'collections'
+               }
+            },
+
+            ...(vendor
+               ? [{ $match: { 'vendor.title': { $regex: vendor, $options: 'i' } } }]
+               : []
+            ),
+
+            ...(collection
+               ? [{ $match: { 'collections.title': { $regex: collection, $options: 'i' } } }]
+               : []
+            ),
+
             {
                $facet: {
                   totalItems: [{ $count: 'count' }],
@@ -61,7 +92,11 @@ class ProductService {
                      { $skip: skip },
                      { $limit: pageSize },
                      {
-                        $project: fetchingOptions,
+                        $project: {
+                           ...fetchingOptions,
+                           vendor: "$vendor.title",
+                           collections: "$collections.title"
+                        }
                      }
                   ]
                }
@@ -73,8 +108,8 @@ class ProductService {
                }
             }
          ];
-         const result = await Product.aggregate(pipeline);
 
+         const result = await Product.aggregate(pipeline);
 
          if (!result[0].totalItems) {
             return { totalItems: 0, products: [] };
@@ -89,10 +124,38 @@ class ProductService {
 
    async addProduct(productData) {
       try {
+         // Step 1: Handle Vendor (Convert Title to ID)
+         let vendorId = null;
+         if (productData.vendor) {
+            console.log(productData.vendor)
+            let vendor = await brandServices.checkBrandByTitle(productData.vendor);
+            console.log('vendor searched', vendor)
+            if (vendor) {
+               vendorId = vendor._id;
+            } else {
+               let newVendor = await brandServices.addBrand({ title: productData.vendor });
+               console.log(newVendor, 'created vendor')
+               vendorId = newVendor._id;
+            }
+         }
+         productData.vendor = vendorId;
+
+         // Step 2: Handle Collections (Convert Titles to IDs)
+         let availableCollections = await collectionServices.checkMultipleCollectionsByTitles(productData.collections);
+
+         if (availableCollections.length !== productData.collections.length) {
+            throw new Error("All Collections are not available");
+         }
+
+         const collectionIds = availableCollections.map(col => col._id);
+         productData.collections = collectionIds;
+
+         // Step 3: Create Product
          const product = await Product.create(productData);
          return product;
+
       } catch (error) {
-         console.error("Error While adding the paroduct", error)
+         console.error("Error while adding the product:", error);
          throw new Error(error.message);
       }
    }

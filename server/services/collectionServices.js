@@ -1,6 +1,9 @@
 const Collection = require('../schema/collectionSchema');
+const Product = require('../schema/productSchema')
+const mongoose = require('mongoose')
 
 class CollectionService {
+
    getMatchState(query) {
       const { search, status, showInHome } = query;
       let matchStage = {};
@@ -100,9 +103,20 @@ class CollectionService {
       }
    }
 
+   async checkMultipleCollectionsByTitles(titles) {
+      try {
+         return await Collection.find({ title: { $in: titles } }, { title: 1, _id: 1 })
+      } catch (error) {
+         console.error("Error checking multiple collection titles:", error);
+         throw new Error(error.message);
+      }
+   }
+
    async deleteCollectionById(id) {
       try {
-         return await Collection.findByIdAndDelete(id);
+         const collection = await Collection.findByIdAndDelete(id);
+         this.removeCollectionsFromProduct(ids)
+         return collection
       } catch (error) {
          console.error("Error deleting collection:", error);
          throw new Error(error.message);
@@ -118,6 +132,8 @@ class CollectionService {
          if (validCollectionIds.length > 0) {
             await Collection.deleteMany({ _id: { $in: validCollectionIds } });
          }
+
+         this.removeCollectionsFromProduct(validCollectionIds)
 
          return { deletedCollections: validCollections, invalidCollections: invalidCollectionIds };
 
@@ -154,7 +170,24 @@ class CollectionService {
       }
    }
 
+   async removeCollectionsFromProduct(ids) {
+      try {
+         const objectIds = ids.map(id => new mongoose.Types.ObjectId(id));
+         const products = await Product.find({ collections: { $in: objectIds } });
 
+         if (!products) return
+
+         await Product.updateMany(
+            { collections: { $in: objectIds } },
+            { $pull: { collections: { $in: objectIds } } }
+         );
+         console.log("Collections removed from products successfully.");
+      }
+      catch (error) {
+         console.error("Error removing collection from the product:", error);
+         throw new Error(error.message);
+      }
+   }
 }
 
 module.exports = new CollectionService();

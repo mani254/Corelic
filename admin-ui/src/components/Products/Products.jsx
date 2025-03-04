@@ -60,8 +60,8 @@ const Products = ({ productData, fetchProducts }) => {
 	const limit = parseInt(searchParams.get("limit"), 10) || 10;
 
 	return (
-		<div className="min-h-screen relative">
-			<div className="overflow-x-auto">
+		<div className="relative">
+			<div className="overflow-x-auto min-h-screen">
 				<h4 className="mb-5">Products</h4>
 				<ProductsFilter />
 

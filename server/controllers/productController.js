@@ -41,8 +41,6 @@ const productController = {
       try {
          const productData = req.body;
 
-
-
          // Handle missing image uploads
          if (!req.files || req.files.length === 0) {
             return res.status(400).json({ message: "At least one image must be uploaded" });
@@ -75,7 +73,7 @@ const productController = {
          // Delete the product
          const delProduct = await productService.deleteProductById(id);
 
-         res.status(204).json({ message: "Product deleted successfull", product: delProduct }); 
+         res.status(204).json({ message: "Product deleted successfull", product: delProduct });
       } catch (err) {
          console.error("Error deleting product:", err);
          res.status(500).json({ message: err.message });

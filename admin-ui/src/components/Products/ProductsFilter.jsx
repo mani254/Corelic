@@ -21,6 +21,10 @@ function ProductsFilter() {
 		[searchParams]
 	);
 
+	useEffect(() => {
+		setSearchValue(getParam("search") || "");
+	}, [searchParams]);
+
 	// function to update the search value
 	const handleSearchChange = useCallback(
 		(e) => {

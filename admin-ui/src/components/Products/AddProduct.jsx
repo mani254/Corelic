@@ -12,8 +12,10 @@ import { connect } from "react-redux";
 import { showNotification } from "../../redux/actions/notificationActions.js";
 import { addProduct } from "../../redux/actions/productActions.js";
 import { useNavigate } from "react-router-dom";
+import SuggestionSearch from "../FormComponents/SuggestionSearch.jsx";
+import { fetchCollections } from "../../redux/actions/collectionActions.js";
 
-function AddProduct({ showNotification, addProduct }) {
+function AddProduct({ showNotification, addProduct, fetchCollections }) {
 	const navigate = useNavigate();
 
 	const [productDetails, setProductDetails] = useState({
@@ -38,7 +40,6 @@ function AddProduct({ showNotification, addProduct }) {
 	const [options, setOptions] = useState([]);
 	const [stock, setStock] = useState(0);
 
-	const [singleCollection, setSingleCollection] = useState("");
 	const [collections, setCollections] = useState([]);
 
 	const [errors, setErrors] = useState({
@@ -73,19 +74,9 @@ function AddProduct({ showNotification, addProduct }) {
 		setErrors((prev) => ({ ...prev, sku: "" }));
 	}, []);
 
-	const handleCollectionEntry = useCallback(
-		(e) => {
-			if (e.key === "Enter") {
-				setCollections((prev) => [...prev, singleCollection]);
-				setSingleCollection("");
-			}
-		},
-		[singleCollection]
-	);
-
 	const handleBlur = (title, value) => {
 		const numericValue = parseFloat(value);
-
+      
 		if (!isNaN(numericValue)) {
 			const formattedValue = numericValue.toFixed(2);
 			setProductDetails((prev) => ({ ...prev, [title]: formattedValue }));
@@ -106,7 +97,6 @@ function AddProduct({ showNotification, addProduct }) {
 
 		// Validate required fields
 		const emptyField = requiredFields.find((field) => {
-
 			return !productDetails[field];
 		});
 
@@ -147,7 +137,7 @@ function AddProduct({ showNotification, addProduct }) {
 		formData.append("stock", stock);
 
 		formData.append("options", JSON.stringify(options));
-
+		formData.append("collections", JSON.stringify(collections));
 		formData.append("metaData", JSON.stringify(metaData));
 
 		try {
@@ -160,6 +150,21 @@ function AddProduct({ showNotification, addProduct }) {
 			console.log(err);
 		}
 	};
+
+	const fetchCollectionSuggestions = useCallback(async (query) => {
+		try {
+			const response = await fetchCollections(query);
+
+			if (response?.collections) {
+				const data = response.collections.map((col) => col.title);
+				return data;
+			}
+			return [];
+		} catch (err) {
+			console.error("Error fetching collections:", err);
+			return [];
+		}
+	}, []);
 
 	return (
 		<div className="max-w-6xl m-auto mt-5 mb-10">
@@ -226,15 +231,14 @@ function AddProduct({ showNotification, addProduct }) {
 					<div className="top-3 sticky">
 						<div className="outer-box">
 							<SelectInput options={statusOptions} label="Status" name="status" className="mb-5" value={productDetails.status} onChange={handleInputChange} />
-
-							<TextInput label="Vendor" placeholder="Brand Name" name="vendor" id="vendor" value={productDetails.vendor} onChange={handleInputChange} />
+							<SuggestionSearch label="Vendor" placeholder="Vendor" selected={productDetails} setSelected={setProductDetails} allowManual={true} single={true} value={"vendor"} fetchSuggestions={fetchCollectionSuggestions} />
 						</div>
 
 						<div className="outer-box">
 							<h5 className="mb-2">Collections</h5>
 							<p className="text-xxs mb-2">Select Under Which Collection this product should comes under</p>
 							<MultiSelect array={collections} setArray={setCollections} />
-							<TextInput name="singleCollection" id="singleCollection" placeholder="Collection Name" value={singleCollection} onChange={({ target: { value } }) => setSingleCollection(value)} onKeyDown={handleCollectionEntry} />
+							<SuggestionSearch selected={collections} setSelected={setCollections} fetchSuggestions={fetchCollectionSuggestions} placeholder="collection" />
 						</div>
 
 						<div className="outer-box">
@@ -259,6 +263,7 @@ const mapDispatchToProps = (dispatch) => {
 	return {
 		showNotification: (message, type) => dispatch(showNotification(message, type)),
 		addProduct: (productData) => dispatch(addProduct(productData)),
+		fetchCollections: (query) => dispatch(fetchCollections(query)),
 	};
 };
 

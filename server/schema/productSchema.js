@@ -25,9 +25,12 @@ const productSchema = mongoose.Schema({
       trim: true
    },
    vendor: {
-      type: String,
-      // type: mongoose.Schema.Types.ObjectId,
-      // ref: 'Vendors',
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Brands',
+   },
+   collections: {
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: 'Collections'
    },
    price: {
       type: Number,

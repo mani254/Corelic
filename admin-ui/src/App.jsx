@@ -21,6 +21,8 @@ import AddCollection from "./components/Collections/AddCollection";
 import BrandsWrapper from "./components/Brands/BrandsWrapper";
 import Brands from "./components/Brands/Brands";
 import AddBrand from "./components/Brands/AddBrand";
+import { Settings } from "lucide-react";
+import SearchComponent from "./components/FormComponents/SuggestionSearch";
 
 function App({ modal }) {
 	return (
@@ -45,6 +47,7 @@ function App({ modal }) {
 							<Route index element={<Brands />}></Route>
 							<Route path="add" element={<AddBrand />}></Route>
 						</Route>
+						<Route path="/settings" element={<SearchComponent />}></Route>
 					</Route>
 				</Routes>
 			</main>

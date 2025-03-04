@@ -65,6 +65,8 @@ const collectionsController = {
       try {
          const { id } = req.params;
 
+         if (!id) return res.status(404).json({ message: 'collection id is required' })
+
          const collection = await collectionServices.checkCollectionById(id)
          if (!collection) {
             return res.status(404).json({ message: "Collection does not exist" });

@@ -14,6 +14,10 @@ function BrandsFilter() {
 		setParam("limit", 20);
 	}, []);
 
+	useEffect(() => {
+		setSearchValue(getParam("search") || "");
+	}, [searchParams]);
+
 	const [searchValue, setSearchValue] = useState(getParam("search"));
 
 	const debouncedSearchChange = useCallback(

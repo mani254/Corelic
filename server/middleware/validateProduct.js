@@ -1,6 +1,6 @@
 const validateProduct = (req, res, next) => {
    try {
-      const { title, price, sku, stock, vendor, status, options, metaData } = req.body;
+      const { title, price, sku, stock, vendor, status, options, metaData, collections } = req.body;
 
       if (!title || !price || !sku || !stock) {
          return res.status(400).json({ message: "Title, price, SKU, and stock are required" });
@@ -20,6 +20,7 @@ const validateProduct = (req, res, next) => {
       try {
          if (options) req.body.options = JSON.parse(options);
          if (metaData) req.body.metaData = JSON.parse(metaData);
+         if (collections) req.body.collections = JSON.parse(collections)
       } catch (error) {
          return res.status(400).json({ message: "Invalid JSON format for options or metaData" });
       }

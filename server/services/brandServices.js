@@ -1,4 +1,5 @@
 const Brand = require('../schema/brandSchema');
+const Product = require('../schema/productSchema')
 
 class BrandService {
 
@@ -66,6 +67,7 @@ class BrandService {
 
    async addBrand(brandData) {
       try {
+         console.log(brandData)
          const newBrand = await Brand.create(brandData);
          return newBrand;
       } catch (error) {
@@ -83,6 +85,15 @@ class BrandService {
       }
    }
 
+   async checkBrandByTitle(title) {
+      try {
+         return await Brand.findOne({ title: title })
+      } catch (error) {
+         console.error('Error checking brand by Name:', error)
+         throw new Error(error.message)
+      }
+   }
+
    async checkMultipleBrandsById(ids) {
       try {
          return await Brand.find({ _id: { $in: ids } }, { title: 1, _id: 1 });
@@ -92,9 +103,24 @@ class BrandService {
       }
    }
 
+   async makeVendorNull(ids) {
+      try {
+         const result = await Product.updateMany(
+            { vendor: { $in: ids } },
+            { $set: { vendor: null } }
+         );
+         return result;
+      } catch (error) {
+         console.error("Error updating vendors to null:", error);
+         throw new Error(error.message);
+      }
+   }
+
    async deleteBrandById(id) {
       try {
-         return await Brand.findByIdAndDelete(id);
+         this.makeVendorNull([id])
+         let brand = await Brand.findByIdAndDelete(id);
+         return brand
       } catch (error) {
          console.error("Error deleting brand:", error);
          throw new Error(error.message);
@@ -106,6 +132,8 @@ class BrandService {
          const validBrands = await this.checkMultipleBrandsById(ids);
          const validBrandIds = validBrands.map(brand => brand._id.toString());
          const invalidBrandIds = ids.filter(id => !validBrandIds.includes(id));
+
+         this.makeVendorNull(validBrandIds)
 
          if (validBrandIds.length > 0) {
             await Brand.deleteMany({ _id: { $in: validBrandIds } });
