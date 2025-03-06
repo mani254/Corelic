@@ -127,7 +127,6 @@ const collectionsController = {
       }
    },
 
-
    async changeMultipleCollectionStatus(req, res) {
       try {
          const { ids, status } = req.body;

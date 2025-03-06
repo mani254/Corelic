@@ -51,12 +51,13 @@ const productSchema = mongoose.Schema({
 
    gst: {
       type: Number,
+      default: 0,
       min: 0
    },
    sku: {
       type: Number,
       required: true,
-      unique: true
+      unique: true,
    },
    status: {
       type: String,
@@ -80,8 +81,8 @@ const productSchema = mongoose.Schema({
    },
    stock: {
       type: Number,
-      required: true,
-      min: 0
+      min: 0,
+      default: 0
    },
    options: {
       type: [

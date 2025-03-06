@@ -34,7 +34,6 @@ const brandsController = {
       try {
          const brandData = req.body;
 
-         console.log(brandData, '---------------')
          brandData.metaData = {
             metaTitle: brandData.metaTitle,
             metaDescription: brandData.metaDescription

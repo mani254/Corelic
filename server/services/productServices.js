@@ -11,7 +11,7 @@ class ProductService {
       if (search && search.trim() !== "") {
          matchStage.$or = [
             { title: { $regex: search, $options: 'i' } },
-            { overview: { $regex: search, $options: 'i' } }
+            // { overview: { $regex: search, $options: 'i' } }
          ];
       }
 
@@ -39,18 +39,26 @@ class ProductService {
 
    async fetchProducts(query) {
       try {
-         const { sortBy = 'createdAt', sortOrder = 'desc', page = 1, limit = 10, vendor, collection } = query;
+         const { sortBy = 'createdAt', sortOrder = 'desc', page = 1, limit = 10, vendor, collection, fetchingData } = query;
 
-         const fetchingOptions = {
-            _id: 1, title: 1, slug: 1, overview: 1, price: 1, comparePrice: 1, gst: 1, sku: 1, status: 1,
-            vendor: 1, collections: 1, images: 1, trackInventory: 1, stock: 1, createdAt: 1
-         };
+         let fetchingOptions;
+         if (fetchingData) {
+            fetchingOptions = Object.fromEntries(
+               Object.entries(fetchingData).map(([key, value]) => [key, Number(value)])
+            );
+         }
+         else {
+            fetchingOptions = {
+               _id: 1, title: 1, slug: 1, overview: 1, price: 1, comparePrice: 1, gst: 1, sku: 1, status: 1,
+               vendor: 1, collections: 1, images: 1, trackInventory: 1, stock: 1, createdAt: 1
+            };
+         }
 
          const pageNumber = parseInt(page, 10) || 1;
          const pageSize = parseInt(limit, 10) || 10;
          const skip = (pageNumber - 1) * pageSize;
 
-         const matchStage = this.getMatchStage(query);
+         const matchStage = await this.getMatchStage(query);
 
          const pipeline = [
             { $match: matchStage },
@@ -127,14 +135,11 @@ class ProductService {
          // Step 1: Handle Vendor (Convert Title to ID)
          let vendorId = null;
          if (productData.vendor) {
-            console.log(productData.vendor)
             let vendor = await brandServices.checkBrandByTitle(productData.vendor);
-            console.log('vendor searched', vendor)
             if (vendor) {
                vendorId = vendor._id;
             } else {
                let newVendor = await brandServices.addBrand({ title: productData.vendor });
-               console.log(newVendor, 'created vendor')
                vendorId = newVendor._id;
             }
          }
@@ -142,11 +147,9 @@ class ProductService {
 
          // Step 2: Handle Collections (Convert Titles to IDs)
          let availableCollections = await collectionServices.checkMultipleCollectionsByTitles(productData.collections);
-
          if (availableCollections.length !== productData.collections.length) {
             throw new Error("All Collections are not available");
          }
-
          const collectionIds = availableCollections.map(col => col._id);
          productData.collections = collectionIds;
 

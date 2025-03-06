@@ -1,9 +1,9 @@
 const validateProduct = (req, res, next) => {
    try {
-      const { title, price, sku, stock, vendor, status, options, metaData, collections } = req.body;
+      const { title, price, sku, stock, vendor, status, options, metaData, collections, trackInventory } = req.body;
 
-      if (!title || !price || !sku || !stock) {
-         return res.status(400).json({ message: "Title, price, SKU, and stock are required" });
+      if (!title || !price || !sku) {
+         return res.status(400).json({ message: "Title, price, SKU are required" });
       }
       if (isNaN(price) || price < 0) {
          return res.status(400).json({ message: "Price must be a valid number greater than or equal to 0" });
