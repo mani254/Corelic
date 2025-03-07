@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { TextInput } from "./FormComponents";
 
-const MultiSuggestionSearch = ({ selected, setSelected, fetchSuggestions, allowManual = false, label = null, placeholder = null }) => {
+const MultiSuggestionSearch = ({ selected, setSelected, fetchSuggestions, allowManual = false, label = null, placeholder = null, valueKey = "title" }) => {
 	const [search, setSearch] = useState("");
 	const [suggestions, setSuggestions] = useState([]);
 	const [isFocused, setIsFocused] = useState(false);
@@ -28,14 +28,14 @@ const MultiSuggestionSearch = ({ selected, setSelected, fetchSuggestions, allowM
 
 	const handleSelect = useCallback(
 		(suggestion) => {
-			if (!selected.includes(suggestion)) {
+			if (!selected.some((item) => (typeof item === "object" ? item[valueKey] : item) === (typeof suggestion === "object" ? suggestion[valueKey] : suggestion))) {
 				setSelected((prev) => [...prev, suggestion]);
 			}
 			setSearch("");
 			setSuggestions([]);
 			setActiveIndex(-1);
 		},
-		[selected, setSelected]
+		[selected, setSelected, valueKey]
 	);
 
 	const handleKeyDown = useCallback(
@@ -58,16 +58,21 @@ const MultiSuggestionSearch = ({ selected, setSelected, fetchSuggestions, allowM
 	return (
 		<div className="relative">
 			<TextInput ref={inputRef} label={label} placeholder={placeholder} value={search} onChange={(e) => setSearch(e.target.value)} onFocus={() => setIsFocused(true)} onBlur={() => setTimeout(() => setIsFocused(false), 200)} onKeyDown={handleKeyDown} />
-			{isFocused && suggestions.length > 0 && (
+			{isFocused && suggestions.length > 0 ? (
 				<div className="absolute w-full bg-white border mt-1 max-h-52 overflow-y-auto shadow-md rounded">
 					{suggestions
-						.filter((sug) => !selected.includes(sug))
-						.map((suggestion, index) => (
-							<div key={suggestion} onMouseDown={(e) => e.preventDefault()} onClick={() => handleSelect(suggestion)} className={`p-2 cursor-pointer ${index === activeIndex ? "bg-gray-200" : ""}`}>
-								{suggestion}
-							</div>
-						))}
+						.filter((sug) => !selected.some((item) => (typeof item === "object" ? item[valueKey] : item) === (typeof sug === "object" ? sug[valueKey] : sug)))
+						.map((suggestion, index) => {
+							const displayValue = typeof suggestion === "object" ? suggestion[valueKey] : suggestion;
+							return (
+								<div key={displayValue} onMouseDown={(e) => e.preventDefault()} onClick={() => handleSelect(suggestion)} className={`p-2 cursor-pointer ${index === activeIndex ? "bg-gray-200" : ""}`}>
+									{displayValue}
+								</div>
+							);
+						})}
 				</div>
+			) : (
+				isFocused && search.length > 2 && <p className="text-center text-gray-500 absolute w-full bg-white border mt-1">No Results</p>
 			)}
 		</div>
 	);

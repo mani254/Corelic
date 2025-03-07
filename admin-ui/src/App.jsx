@@ -18,11 +18,14 @@ import Orders from "./components/Orders/Orders";
 import CollectionsWrapper from "./components/Collections/CollectionsWrapper";
 import Collections from "./components/Collections/Collections";
 import AddCollection from "./components/Collections/AddCollection";
+
 import BrandsWrapper from "./components/Brands/BrandsWrapper";
 import Brands from "./components/Brands/Brands";
 import AddBrand from "./components/Brands/AddBrand";
-import { Settings } from "lucide-react";
-import SearchComponent from "./components/FormComponents/SuggestionSearch";
+
+import VariantsWrapper from "./components/Variants/VariantsWrapper";
+import Variants from "./components/Variants/Variants";
+import AddVariant from "./components/Variants/AddVariant";
 
 function App({ modal }) {
 	return (
@@ -47,7 +50,11 @@ function App({ modal }) {
 							<Route index element={<Brands />}></Route>
 							<Route path="add" element={<AddBrand />}></Route>
 						</Route>
-						<Route path="/settings" element={<SearchComponent />}></Route>
+						<Route path="/variants" element={<VariantsWrapper />}>
+							<Route index element={<Variants />}></Route>
+							<Route path="add" element={<AddVariant />}></Route>
+						</Route>
+						{/* <Route path="/settings" element={<SearchComponent />}></Route> */}
 					</Route>
 				</Routes>
 			</main>

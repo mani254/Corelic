@@ -14,8 +14,9 @@ import { addProduct } from "../../redux/actions/productActions.js";
 import { useNavigate } from "react-router-dom";
 import SuggestionSearch from "../FormComponents/SuggestionSearch.jsx";
 import { fetchCollections } from "../../redux/actions/collectionActions.js";
+import { fetchBrands } from "../../redux/actions/brandActions.js";
 
-function AddProduct({ showNotification, addProduct, fetchCollections }) {
+function AddProduct({ showNotification, addProduct, fetchCollections, fetchBrands }) {
 	const navigate = useNavigate();
 
 	const [productDetails, setProductDetails] = useState({
@@ -76,7 +77,7 @@ function AddProduct({ showNotification, addProduct, fetchCollections }) {
 
 	const handleBlur = (title, value) => {
 		const numericValue = parseFloat(value);
-      
+
 		if (!isNaN(numericValue)) {
 			const formattedValue = numericValue.toFixed(2);
 			setProductDetails((prev) => ({ ...prev, [title]: formattedValue }));
@@ -103,6 +104,14 @@ function AddProduct({ showNotification, addProduct, fetchCollections }) {
 		if (emptyField) {
 			setErrors((prev) => ({ ...prev, [emptyField]: "Field is required" }));
 			return showNotification(`The field "${emptyField}" is required`, "warning");
+		}
+
+		if (Number(productDetails.price)< 0 || Number(productDetails.comparePrice) < 0) {
+			return showNotification("Price and compare Price should be greater than 0", "warning");
+		}
+
+		if (Number(productDetails.price) > Number(productDetails.comparePrice)) {
+			return showNotification("Price should be less then the compare Price", "warning");
 		}
 
 		// Check if there are any existing errors
@@ -162,6 +171,21 @@ function AddProduct({ showNotification, addProduct, fetchCollections }) {
 			return [];
 		} catch (err) {
 			console.error("Error fetching collections:", err);
+			return [];
+		}
+	}, []);
+
+	const fetchVendorSuggestions = useCallback(async (query) => {
+		try {
+			const response = await fetchBrands(query);
+
+			if (response?.brands) {
+				const data = response.brands.map((brand) => brand.title);
+				return data;
+			}
+			return [];
+		} catch (err) {
+			console.error("Error fetching brands:", err);
 			return [];
 		}
 	}, []);
@@ -231,7 +255,7 @@ function AddProduct({ showNotification, addProduct, fetchCollections }) {
 					<div className="top-3 sticky">
 						<div className="outer-box">
 							<SelectInput options={statusOptions} label="Status" name="status" className="mb-5" value={productDetails.status} onChange={handleInputChange} />
-							<SuggestionSearch label="Vendor" placeholder="Vendor" selected={productDetails} setSelected={setProductDetails} allowManual={true} single={true} value={"vendor"} fetchSuggestions={fetchCollectionSuggestions} />
+							<SuggestionSearch label="Vendor" placeholder="Vendor" selected={productDetails} setSelected={setProductDetails} allowManual={true} single={true} value={"vendor"} fetchSuggestions={fetchVendorSuggestions} />
 						</div>
 
 						<div className="outer-box">
@@ -264,6 +288,7 @@ const mapDispatchToProps = (dispatch) => {
 		showNotification: (message, type) => dispatch(showNotification(message, type)),
 		addProduct: (productData) => dispatch(addProduct(productData)),
 		fetchCollections: (query) => dispatch(fetchCollections(query)),
+		fetchBrands: (query) => dispatch(fetchBrands(query)),
 	};
 };
 

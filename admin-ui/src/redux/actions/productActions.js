@@ -67,7 +67,6 @@ export const deleteProduct = (id) => async (dispatch) => {
    }
 };
 
-
 export const deleteMultipleProducts = (selectedProducts) => async (dispatch) => {
    try {
       dispatch({ type: "DELETE_MULTIPLE_PRODUCTS_SUCCESS", payload: selectedProducts });
@@ -91,7 +90,6 @@ export const deleteMultipleProducts = (selectedProducts) => async (dispatch) => 
       return Promise.reject(errorMessage);
    }
 };
-
 
 export const updateProductStatus = (ids, status) => async (dispatch) => {
    try {
