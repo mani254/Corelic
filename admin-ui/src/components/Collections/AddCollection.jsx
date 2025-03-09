@@ -70,7 +70,6 @@ function CollectionAddComponent({ showNotification, addCollection }) {
 		try {
 			const data = await addCollection(formData);
 			if (data) {
-				console.log("Collection added succesfully", data);
 				setCollectionDetails({
 					title: "",
 					description: "",

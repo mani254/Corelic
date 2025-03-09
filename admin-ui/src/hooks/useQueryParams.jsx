@@ -29,7 +29,6 @@ export const useQueryParams = (defaults = {}) => {
 	};
 
 	const resetParams = () => {
-		// console.log(defaults);
 		setSearchParams(defaults);
 	};
 

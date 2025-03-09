@@ -106,7 +106,7 @@ function AddProduct({ showNotification, addProduct, fetchCollections, fetchBrand
 			return showNotification(`The field "${emptyField}" is required`, "warning");
 		}
 
-		if (Number(productDetails.price)< 0 || Number(productDetails.comparePrice) < 0) {
+		if (Number(productDetails.price) < 0 || Number(productDetails.comparePrice) < 0) {
 			return showNotification("Price and compare Price should be greater than 0", "warning");
 		}
 
@@ -152,7 +152,6 @@ function AddProduct({ showNotification, addProduct, fetchCollections, fetchBrand
 		try {
 			const data = await addProduct(formData);
 			if (data) {
-				console.log("product added succesfully", data);
 				navigate("/products");
 			}
 		} catch (err) {

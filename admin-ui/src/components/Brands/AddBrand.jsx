@@ -44,7 +44,6 @@ function BrandAddComponent({ showNotification, addBrand }) {
 		try {
 			const data = await addBrand(brandDetails);
 			if (data) {
-				console.log("Brand added successfully", data);
 				setBrandDetails({
 					title: "",
 					description: "",

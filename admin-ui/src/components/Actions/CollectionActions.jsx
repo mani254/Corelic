@@ -41,7 +41,6 @@ function CollectionActions({ id = null, selectedCollections, setSelectedCollecti
 
 	const handleStatusChange = useCallback(
 		(id, status) => {
-			console.log(id, status);
 			if (multiSelect) {
 				updateCollectionStatus(selectedCollections, status);
 				setSelectedCollections([]);
