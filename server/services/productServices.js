@@ -11,7 +11,7 @@ class ProductService {
       if (search && search.trim() !== "") {
          matchStage.$or = [
             { title: { $regex: search, $options: 'i' } },
-            // { overview: { $regex: search, $options: 'i' } }
+            { overview: { $regex: search, $options: 'i' } }
          ];
       }
 
@@ -148,7 +148,7 @@ class ProductService {
          // Step 2: Handle Collections (Convert Titles to IDs)
          let availableCollections = await collectionServices.checkMultipleCollectionsByTitles(productData.collections);
          if (availableCollections.length !== productData.collections.length) {
-            throw new Error("All Collections are not available");
+            return { status: 404, message: "Some Collections are removed or not available" }
          }
          const collectionIds = availableCollections.map(col => col._id);
          productData.collections = collectionIds;
