@@ -1,11 +1,22 @@
-const Brand = require('../schema/brandSchema');
-const Product = require('../schema/productSchema')
+import Brand from '../schema/brandSchema';
+import Product from '../schema/productSchema';
+import { BrandQueryParams, BrandType } from '../types/brandTypes';
+
+interface BrandFetchResult {
+  totalItems: number;
+  brands: BrandType[];
+}
+
+interface BrandDeleteResult {
+  deletedBrands: BrandType[];
+  invalidBrands: string[];
+}
 
 class BrandService {
 
-   getMatchState(query) {
+   private getMatchState(query: BrandQueryParams): Record<string, any> {
       const { search } = query;
-      let matchStage = {};
+      let matchStage: Record<string, any> = {};
 
       if (search && search.trim() !== "") {
          matchStage.title = { $regex: search, $options: 'i' };
@@ -14,9 +25,14 @@ class BrandService {
       return matchStage;
    }
 
-   async fetchBrands(query) {
+   async fetchBrands(query: BrandQueryParams): Promise<BrandFetchResult> {
       try {
-         const { sortBy = "createdAt", sortOrder = "desc", page = 1, limit = 10 } = query;
+         const { 
+            sortBy = "createdAt", 
+            sortOrder = "desc",
+            page,
+            limit
+         } = query;
 
          const fetchingOptions = {
             _id: 1,
@@ -25,11 +41,16 @@ class BrandService {
             createdAt: 1,
             updatedAt: 1
          };
+        
+         let skip = 0
 
-         const pageNumber = parseInt(page, 10) || 1;
-         const pageSize = parseInt(limit, 10) || 10;
-         const skip = (pageNumber - 1) * pageSize;
-
+         if(page && limit){
+           skip = (Number(page) - 1) * Number(limit) || 0;
+         }
+         else{
+            skip = 0;
+         }
+        
          const matchStage = this.getMatchState(query);
 
          const pipeline = [
@@ -40,7 +61,7 @@ class BrandService {
                   brands: [
                      { $sort: { [sortBy]: sortOrder === 'desc' ? -1 : 1 } },
                      { $skip: skip },
-                     { $limit: pageSize },
+                     { $limit: limit },
                      { $project: fetchingOptions }
                   ]
                }
@@ -53,98 +74,97 @@ class BrandService {
             }
          ];
 
-         const result = await Brand.aggregate(pipeline);
-         if (!result[0].totalItems) {
+         const [result] = await Brand.aggregate(pipeline as any[]);
+         if (!result?.totalItems) {
             return { totalItems: 0, brands: [] };
          }
-         return result[0] || { totalItems: 0, brands: [] };
+         return result || { totalItems: 0, brands: [] };
 
-      } catch (error) {
+      } catch (error: any) {
          console.error('Error while fetching brands:', error);
          throw new Error(error.message);
       }
    }
 
-   async addBrand(brandData) {
+   async addBrand(brandData: Partial<BrandType>): Promise<BrandType> {
       try {
-         console.log(brandData)
          const newBrand = await Brand.create(brandData);
          return newBrand;
-      } catch (error) {
+      } catch (error: any) {
          console.error('Error while adding brand:', error);
          throw new Error(error.message);
       }
    }
 
-   async checkBrandById(id) {
+   async checkBrandById(id: string): Promise<BrandType | null> {
       try {
          return await Brand.findById(id);
-      } catch (error) {
+      } catch (error: any) {
          console.error("Error checking brand by ID:", error);
          throw new Error(error.message);
       }
    }
 
-   async checkBrandByTitle(title) {
+   async checkBrandByTitle(title: string): Promise<BrandType | null> {
       try {
          return await Brand.findOne({ title: title })
-      } catch (error) {
+      } catch (error: any) {
          console.error('Error checking brand by Name:', error)
          throw new Error(error.message)
       }
    }
 
-   async checkMultipleBrandsById(ids) {
+   async checkMultipleBrandsById(ids: string[]): Promise<BrandType[]> {
       try {
          return await Brand.find({ _id: { $in: ids } }, { title: 1, _id: 1 });
-      } catch (error) {
+      } catch (error: any) {
          console.error("Error checking multiple brand IDs:", error);
          throw new Error(error.message);
       }
    }
 
-   async makeVendorNull(ids) {
+   async makeVendorNull(ids: string[]): Promise<any> {
       try {
          const result = await Product.updateMany(
             { vendor: { $in: ids } },
             { $set: { vendor: null } }
          );
          return result;
-      } catch (error) {
+      } catch (error: any) {
          console.error("Error updating vendors to null:", error);
          throw new Error(error.message);
       }
    }
 
-   async deleteBrandById(id) {
+   async deleteBrandById(id: string): Promise<BrandType | null> {
       try {
          this.makeVendorNull([id])
          let brand = await Brand.findByIdAndDelete(id);
-         return brand
-      } catch (error) {
+         return brand as BrandType;
+      } catch (error: any) {
          console.error("Error deleting brand:", error);
          throw new Error(error.message);
       }
    }
 
-   async deleteMultipleBrandsById(ids) {
+   async deleteMultipleBrandsById(ids: string[]): Promise<BrandDeleteResult > {
       try {
          const validBrands = await this.checkMultipleBrandsById(ids);
          const validBrandIds = validBrands.map(brand => brand._id.toString());
          const invalidBrandIds = ids.filter(id => !validBrandIds.includes(id));
 
-         this.makeVendorNull(validBrandIds)
+         await this.makeVendorNull(validBrandIds);
 
          if (validBrandIds.length > 0) {
             await Brand.deleteMany({ _id: { $in: validBrandIds } });
          }
 
          return { deletedBrands: validBrands, invalidBrands: invalidBrandIds };
-      } catch (error) {
+      } catch (error: any) {
          console.error("Error deleting multiple brands:", error);
          throw new Error(error.message);
       }
    }
 }
 
-module.exports = new BrandService();
+export default new BrandService();
