@@ -4,6 +4,7 @@ import { BrandQueryParams, BrandType } from '../types/brandTypes';
 
 
 const brandsController = {
+
   async fetchBrands(req: Request<{}, {}, {}, BrandQueryParams>, res: Response) {
     try {
       const { sortBy = "createdAt", sortOrder = "desc", page, limit} = req.query;
@@ -112,6 +113,7 @@ const brandsController = {
       return res.status(500).json({ message: err.message });
     }
   }
+  
 };
 
 export default brandsController;

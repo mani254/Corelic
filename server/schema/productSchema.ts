@@ -116,14 +116,14 @@ const productSchema = new Schema<IProduct>(
       },
       stock: {
          type: Number,
-         min: 0,
-         default: 0
+         min: -1,
+         default: -1
       },
       options: {
          type: [
             {
                name: { type: String, required: true, trim: true },
-               stock: { type: Number, required: true, min: 0 }
+               stock: { type: Number, required: true, min: -1,default:-1}
             }
          ],
          default: [],
