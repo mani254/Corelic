@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import express, { Application, NextFunction, Request, Response } from 'express';
 import mongoose from 'mongoose';
 import path from 'path';
+import autoCastQueryParams from './middleware/parseReqType';
 import apiRoutes from './routes/index';
 
 dotenv.config();
@@ -20,7 +21,14 @@ mongoose.connect(process.env.MONGODB_URI as string)
    .then(() => console.log('MongoDB connected'))
    .catch((err: Error) => console.error('MongoDB connection error:', err));
 
-app.use('/api', apiRoutes);
+const queryValuesToCast: Record<string, "number" | "boolean" | "array"> = {
+  page: "number",
+  limit: "number",
+  fetchFields: "array",
+  // isPublished: "boolean",
+};
+
+app.use('/api', autoCastQueryParams(queryValuesToCast), apiRoutes);
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
    console.error(err);

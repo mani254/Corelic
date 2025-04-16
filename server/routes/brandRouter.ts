@@ -1,12 +1,12 @@
-import express, { Router } from 'express';
-import brandsController from '../controllers/brandController';
+import express, { RequestHandler, Router } from 'express';
+import { addBrand, deleteBrand, deleteMultipleBrands, fetchBrands } from '../controllers/brandController';
 
 const router: Router = express.Router();
 
-router.get('/', brandsController.fetchBrands);
-router.post('/', brandsController.addBrand);
+router.get('/', fetchBrands as RequestHandler);
+router.post('/', addBrand);
 
-router.delete('/:id', brandsController.deleteBrand);
-router.delete('/', brandsController.deleteMultipleBrands);
+router.delete('/:id', deleteBrand);
+router.delete('/', deleteMultipleBrands);
 
 export default router;

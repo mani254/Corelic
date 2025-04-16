@@ -158,6 +158,16 @@ productSchema.pre('validate', function(next) {
    next();
 });
 
+productSchema.index({ title: 1 });
+productSchema.index({slug:1})
+productSchema.index({ vendor: 1 });
+productSchema.index({ collections: 1 });
+productSchema.index({ price: 1 });
+productSchema.index({createdAt:1})
+productSchema.index({ collections: 1 ,status:1});
+productSchema.index({price:1,status:1})
+productSchema.index({ title:1,overview:1});
+
 const Product = mongoose.model<IProduct>('Product', productSchema);
 
 export default Product;

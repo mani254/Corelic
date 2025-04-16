@@ -29,8 +29,9 @@ export interface BrandQueryParams {
   search?: string;
   sortBy?: string;
   sortOrder?: string;
-  page?: string | number;
-  limit?: string | number;
+  page?: number;
+  limit?: number;
+  fetchFields?:  Record<string, number>;
 }
 
 

@@ -1,6 +1,6 @@
-import Brand from '../schema/brandSchema';
-import Product from '../schema/productSchema';
-import { BrandQueryParams, BrandType } from '../types/brandTypes';
+import Brand from "../schema/brandSchema";
+import Product from "../schema/productSchema";
+import { BrandQueryParams, BrandType } from "../types/brandTypes";
 
 interface BrandFetchResult {
   totalItems: number;
@@ -13,158 +13,148 @@ interface BrandDeleteResult {
 }
 
 class BrandService {
+  private getMatchState(query: BrandQueryParams): Record<string, any> {
+    const { search } = query;
+    let matchStage: Record<string, any> = {};
 
-   private getMatchState(query: BrandQueryParams): Record<string, any> {
-      const { search } = query;
-      let matchStage: Record<string, any> = {};
+    if (search && search.trim() !== "") {
+      matchStage.title = { $regex: search, $options: "i" };
+    }
 
-      if (search && search.trim() !== "") {
-         matchStage.title = { $regex: search, $options: 'i' };
+    return matchStage;
+  }
+
+  async fetchBrands(query: BrandQueryParams): Promise<BrandFetchResult> {
+    try {
+      const {
+        sortBy = "createdAt",
+        sortOrder = "desc",
+        page,
+        limit,
+        fetchFields,
+      } = query;
+
+      const skip = page && limit ? (Number(page) - 1) * Number(limit) : 0;
+      const matchStage = this.getMatchState(query);
+
+      // Build dynamic stages
+      const brandStages: any[] = [
+        { $sort: { [sortBy]: sortOrder === "desc" ? -1 : 1 } },
+        { $skip: skip },
+      ];
+
+      if (limit) {
+        brandStages.push({ $limit: Number(limit) });
       }
 
-      return matchStage;
-   }
-
-   async fetchBrands(query: BrandQueryParams): Promise<BrandFetchResult> {
-      try {
-         const { 
-            sortBy = "createdAt", 
-            sortOrder = "desc",
-            page,
-            limit
-         } = query;
-
-         const fetchingOptions = {
-            _id: 1,
-            title: 1,
-            description: 1,
-            createdAt: 1,
-            updatedAt: 1
-         };
-        
-         let skip = 0
-
-         if(page && limit){
-           skip = (Number(page) - 1) * Number(limit) || 0;
-         }
-         else{
-            skip = 0;
-         }
-        
-         const matchStage = this.getMatchState(query);
-
-         const pipeline = [
-            { $match: matchStage },
-            {
-               $facet: {
-                  totalItems: [{ $count: 'count' }],
-                  brands: [
-                     { $sort: { [sortBy]: sortOrder === 'desc' ? -1 : 1 } },
-                     { $skip: skip },
-                     { $limit: limit },
-                     { $project: fetchingOptions }
-                  ]
-               }
-            },
-            {
-               $project: {
-                  totalItems: { $arrayElemAt: ['$totalItems.count', 0] },
-                  brands: 1
-               }
-            }
-         ];
-
-         const [result] = await Brand.aggregate(pipeline as any[]);
-         if (!result?.totalItems) {
-            return { totalItems: 0, brands: [] };
-         }
-         return result || { totalItems: 0, brands: [] };
-
-      } catch (error: any) {
-         console.error('Error while fetching brands:', error);
-         throw new Error(error.message);
+      // Add $project only if fetchFields is provided
+      if (fetchFields && Object.keys(fetchFields).length > 0) {
+        brandStages.push({ $project: fetchFields });
       }
-   }
 
-   async addBrand(brandData: Partial<BrandType>): Promise<BrandType> {
-      try {
-         const newBrand = await Brand.create(brandData);
-         return newBrand;
-      } catch (error: any) {
-         console.error('Error while adding brand:', error);
-         throw new Error(error.message);
+      const pipeline = [
+        { $match: matchStage },
+        {
+          $facet: {
+            totalItems: [{ $count: "count" }],
+            brands: brandStages,
+          },
+        },
+        {
+          $project: {
+            totalItems: { $arrayElemAt: ["$totalItems.count", 0] },
+            brands: 1,
+          },
+        },
+      ];
+
+      const [result] = await Brand.aggregate(pipeline as any[]);
+      return result || { totalItems: 0, brands: [] };
+    } catch (error: any) {
+      console.error("Error while fetching brands:", error);
+      throw new Error(error.message);
+    }
+  }
+
+  async addBrand(brandData: Partial<BrandType>): Promise<BrandType> {
+    try {
+      const newBrand = await Brand.create(brandData);
+      return newBrand;
+    } catch (error: any) {
+      console.error("Error while adding brand:", error);
+      throw new Error(error.message);
+    }
+  }
+
+  async checkBrandById(id: string): Promise<BrandType | null> {
+    try {
+      return await Brand.findById(id);
+    } catch (error: any) {
+      console.error("Error checking brand by ID:", error);
+      throw new Error(error.message);
+    }
+  }
+
+  async checkBrandByTitle(title: string): Promise<BrandType | null> {
+    try {
+      return await Brand.findOne({ title: title });
+    } catch (error: any) {
+      console.error("Error checking brand by Name:", error);
+      throw new Error(error.message);
+    }
+  }
+
+  async checkMultipleBrandsById(ids: string[]): Promise<BrandType[]> {
+    try {
+      return await Brand.find({ _id: { $in: ids } }, { title: 1, _id: 1 });
+    } catch (error: any) {
+      console.error("Error checking multiple brand IDs:", error);
+      throw new Error(error.message);
+    }
+  }
+
+  async makeVendorNull(ids: string[]): Promise<any> {
+    try {
+      const result = await Product.updateMany(
+        { vendor: { $in: ids } },
+        { $set: { vendor: null } }
+      );
+      return result;
+    } catch (error: any) {
+      console.error("Error updating vendors to null:", error);
+      throw new Error(error.message);
+    }
+  }
+
+  async deleteBrandById(id: string): Promise<BrandType | null> {
+    try {
+      this.makeVendorNull([id]);
+      let brand = await Brand.findByIdAndDelete(id);
+      return brand as BrandType;
+    } catch (error: any) {
+      console.error("Error deleting brand:", error);
+      throw new Error(error.message);
+    }
+  }
+
+  async deleteMultipleBrandsById(ids: string[]): Promise<BrandDeleteResult> {
+    try {
+      const validBrands = await this.checkMultipleBrandsById(ids);
+      const validBrandIds = validBrands.map((brand) => brand._id.toString());
+      const invalidBrandIds = ids.filter((id) => !validBrandIds.includes(id));
+
+      await this.makeVendorNull(validBrandIds);
+
+      if (validBrandIds.length > 0) {
+        await Brand.deleteMany({ _id: { $in: validBrandIds } });
       }
-   }
 
-   async checkBrandById(id: string): Promise<BrandType | null> {
-      try {
-         return await Brand.findById(id);
-      } catch (error: any) {
-         console.error("Error checking brand by ID:", error);
-         throw new Error(error.message);
-      }
-   }
-
-   async checkBrandByTitle(title: string): Promise<BrandType | null> {
-      try {
-         return await Brand.findOne({ title: title })
-      } catch (error: any) {
-         console.error('Error checking brand by Name:', error)
-         throw new Error(error.message)
-      }
-   }
-
-   async checkMultipleBrandsById(ids: string[]): Promise<BrandType[]> {
-      try {
-         return await Brand.find({ _id: { $in: ids } }, { title: 1, _id: 1 });
-      } catch (error: any) {
-         console.error("Error checking multiple brand IDs:", error);
-         throw new Error(error.message);
-      }
-   }
-
-   async makeVendorNull(ids: string[]): Promise<any> {
-      try {
-         const result = await Product.updateMany(
-            { vendor: { $in: ids } },
-            { $set: { vendor: null } }
-         );
-         return result;
-      } catch (error: any) {
-         console.error("Error updating vendors to null:", error);
-         throw new Error(error.message);
-      }
-   }
-
-   async deleteBrandById(id: string): Promise<BrandType | null> {
-      try {
-         this.makeVendorNull([id])
-         let brand = await Brand.findByIdAndDelete(id);
-         return brand as BrandType;
-      } catch (error: any) {
-         console.error("Error deleting brand:", error);
-         throw new Error(error.message);
-      }
-   }
-
-   async deleteMultipleBrandsById(ids: string[]): Promise<BrandDeleteResult > {
-      try {
-         const validBrands = await this.checkMultipleBrandsById(ids);
-         const validBrandIds = validBrands.map(brand => brand._id.toString());
-         const invalidBrandIds = ids.filter(id => !validBrandIds.includes(id));
-
-         await this.makeVendorNull(validBrandIds);
-
-         if (validBrandIds.length > 0) {
-            await Brand.deleteMany({ _id: { $in: validBrandIds } });
-         }
-
-         return { deletedBrands: validBrands, invalidBrands: invalidBrandIds };
-      } catch (error: any) {
-         console.error("Error deleting multiple brands:", error);
-         throw new Error(error.message);
-      }
-   }
+      return { deletedBrands: validBrands, invalidBrands: invalidBrandIds };
+    } catch (error: any) {
+      console.error("Error deleting multiple brands:", error);
+      throw new Error(error.message);
+    }
+  }
 }
 
 export default new BrandService();
