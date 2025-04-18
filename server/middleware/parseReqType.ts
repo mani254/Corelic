@@ -39,9 +39,10 @@ const autoCastQueryParams = (paramsToCast: Record<string, ParamType>) => {
               .filter((field) => !!field);
 
             if (fields.length === 0) {
-              return res.status(400).json({
+              res.status(400).json({
                 message: `Invalid query param: '${key}' must contain at least one valid field.`,
               });
+              return
             }
 
             const projectedFields: Record<string, number> = Object.fromEntries(

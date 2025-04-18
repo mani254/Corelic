@@ -21,10 +21,10 @@ mongoose.connect(process.env.MONGODB_URI as string)
    .then(() => console.log('MongoDB connected'))
    .catch((err: Error) => console.error('MongoDB connection error:', err));
 
-const queryValuesToCast: Record<string, "number" | "boolean" | "array"> = {
+const queryValuesToCast: Record<string, "number" | "boolean" | "object"> = {
   page: "number",
   limit: "number",
-  fetchFields: "array",
+  fetchFields: "object",
   // isPublished: "boolean",
 };
 

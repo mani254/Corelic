@@ -82,6 +82,13 @@ class BrandService {
       return newBrand;
     } catch (error: any) {
       console.error("Error while adding brand:", error);
+      if (error.code === 11000 && error.keyValue) {
+        const fields = Object.entries(error.keyValue)
+          .map(([key, value]) => `${key} '${value}'`)
+          .join(", ");
+        const message = `Brand with ${fields} already exists.`;
+        throw new Error(message);
+      }
       throw new Error(error.message);
     }
   }
@@ -106,7 +113,7 @@ class BrandService {
 
   async checkMultipleBrandsById(ids: string[]): Promise<BrandType[]> {
     try {
-      return await Brand.find({ _id: { $in: ids } }, { title: 1, _id: 1 });
+      return await Brand.find({ _id: { $in: ids } });
     } catch (error: any) {
       console.error("Error checking multiple brand IDs:", error);
       throw new Error(error.message);
@@ -149,7 +156,7 @@ class BrandService {
         await Brand.deleteMany({ _id: { $in: validBrandIds } });
       }
 
-      return { deletedBrands: validBrands, invalidBrands: invalidBrandIds };
+      return {deletedBrands: validBrands, invalidBrands: invalidBrandIds };
     } catch (error: any) {
       console.error("Error deleting multiple brands:", error);
       throw new Error(error.message);

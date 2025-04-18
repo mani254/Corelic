@@ -1,4 +1,4 @@
-import { Document, ObjectId } from 'mongoose';
+import { Document, ObjectId } from "mongoose";
 
 // Database Brand type
 export interface BrandType extends Document {
@@ -11,6 +11,11 @@ export interface BrandType extends Document {
     metaTitle?: string;
     metaDescription?: string;
   };
+  image?: {
+    url?: string;
+    alt?: string;
+    publicId?:string;
+  };
   createdAt: Date;
   updatedAt: Date;
 }
@@ -19,9 +24,12 @@ export interface BrandType extends Document {
 export interface BrandInput {
   title: string;
   status?: "active" | "inactive";
+  image?:any;
   description?: string;
-  metaTitle?: string;
-  metaDescription?: string;
+  metaData: {
+    metaTitle?: string;
+    metaDescription?: string;
+  };
 }
 
 // Query parameters interface
@@ -31,8 +39,5 @@ export interface BrandQueryParams {
   sortOrder?: string;
   page?: number;
   limit?: number;
-  fetchFields?:  Record<string, number>;
+  fetchFields?: Record<string, number>;
 }
-
-
-

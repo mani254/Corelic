@@ -27,6 +27,19 @@ const brandSchema = new Schema<BrandType>(
          maxlength: [450, 'Description should be less than 450 characters'],
          trim: true,
       },
+      image:{
+        url:{
+          type:String,
+          default:"https://res.cloudinary.com/dd2cl2oly/image/upload/v1744854393/default-image_l4b8k8.svg",
+        },
+        alt:{
+          type:String,
+          default:"Defult placeholder image for brand",
+        },
+        publicId:{
+          type:String,
+        }
+      },
       metaData: {
          metaTitle: {
             type: String,
@@ -44,6 +57,21 @@ const brandSchema = new Schema<BrandType>(
 brandSchema.pre('validate', function (next) {
    if (this.isModified('title')) {
       this.slug = slugify(this.title, { lower: true, strict: true });
+   }
+   next();
+});
+
+brandSchema.pre('validate', function (next) {
+   if (this.isModified('title')) {
+      this.slug = slugify(this.title, { lower: true, strict: true });
+
+      // Generate a default image alt text if not manually provided
+      if (!this.image) {
+         this.image = {};
+      }
+
+      const formattedTitle = this.title.trim();
+      this.image.alt = `${formattedTitle} brand image icon`;
    }
    next();
 });
