@@ -1,8 +1,15 @@
 import { Request, Response } from "express";
 import slugify from "slugify";
-import { deleteImage, uploadSingleImage } from "../middleware/cloudinary";
+import Brand from "../schema/brandSchema";
 import brandServices from "../services/brandServices";
-import { BrandInput, BrandQueryParams } from "../types/brandTypes";
+import { BrandInput, BrandQueryParams, BrandType } from "../types/brandTypes";
+import { bulkUpsertHandler, normalizeBulkData } from "../utils/bulkUpload";
+import { deleteImage, uploadSingleImage } from "../utils/cloudinary";
+
+interface BulkUploadRequest<T> {
+  data: T[];
+  uniqueField: keyof T;
+}
 
 export const fetchBrands = async (
   req: Request<{}, {}, {}, BrandQueryParams>,
@@ -178,3 +185,25 @@ export const deleteMultipleBrands = async (
     res.status(500).json({ message: err.message });
   }
 };
+
+export const bulkUploadBrands = async (
+  req: Request<{}, {}, BulkUploadRequest<BrandInput>>,
+  res: Response
+) => {
+  try {
+    const { data, uniqueField } = req.body;
+
+    const normalizedData = normalizeBulkData(data); 
+
+    const result = await bulkUpsertHandler<BrandType>(Brand, normalizedData, uniqueField);
+
+    res.status(200).json({
+      message: "Bulk operation completed",
+      ...result,
+    });
+  } catch (err: any) {
+    console.error("Bulk upload error:", err);
+    res.status(500).json({ message: err.message });
+  }
+};
+

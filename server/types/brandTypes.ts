@@ -26,10 +26,12 @@ export interface BrandInput {
   status?: "active" | "inactive";
   image?:any;
   description?: string;
-  metaData: {
-    metaTitle?: string;
-    metaDescription?: string;
-  };
+  metaTitle?:string;
+  metaDescription?:string;
+  metaData?:{
+    metaTitle?:string,
+    metaDescription?:string,
+  }
 }
 
 // Query parameters interface

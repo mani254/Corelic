@@ -28,6 +28,7 @@ const brandSchema = new Schema<BrandType>(
          trim: true,
       },
       image:{
+
         url:{
           type:String,
           default:"https://res.cloudinary.com/dd2cl2oly/image/upload/v1744854393/default-image_l4b8k8.svg",
@@ -64,15 +65,22 @@ brandSchema.pre('validate', function (next) {
 brandSchema.pre('validate', function (next) {
    if (this.isModified('title')) {
       this.slug = slugify(this.title, { lower: true, strict: true });
+   }
 
-      // Generate a default image alt text if not manually provided
-      if (!this.image) {
-         this.image = {};
-      }
 
-      const formattedTitle = this.title.trim();
+   if (!this.image || typeof this.image !== 'object' || Array.isArray(this.image)) {
+      this.image = {};
+   }
+
+   if (!this.image.url) {
+      this.image.url = "https://res.cloudinary.com/dd2cl2oly/image/upload/v1744854393/default-image_l4b8k8.svg";
+   }
+
+   const formattedTitle = this.title?.trim() || "Default";
+   if (!this.image.alt) {
       this.image.alt = `${formattedTitle} brand image icon`;
    }
+
    next();
 });
 
