@@ -2,6 +2,20 @@ import { NextFunction, Request, Response } from "express";
 
 type ParamType = "number" | "boolean" | "object";
 
+/**
+ * Express automatically treats all values in req.query as strings.
+ * This middleware parses and casts specified query parameters into their appropriate data types.
+ * 
+ * For example:
+ * - Converts "page" and "limit" from strings to numbers.
+ * - Parses "fetchOptions" (a comma-separated string) into a structured JSON object.
+ * 
+ * This function returns an Express middleware that ensures type-safe query parameters,
+ * improving reliability and consistency in route handlers.
+ * 
+ * @param paramsToCast - An object mapping query parameter names to the desired data type ("number", "boolean", or "object").
+ */
+
 const autoCastQueryParams = (paramsToCast: Record<string, ParamType>) => {
   return (req: Request, res: Response, next: NextFunction) => {
     for (const key in paramsToCast) {

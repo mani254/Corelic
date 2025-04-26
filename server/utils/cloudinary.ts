@@ -17,25 +17,21 @@ interface UploadOptions {
 
 export const uploadSingleImage = (
   fileBuffer: Buffer,
-  originalName: string,
-  options: UploadOptions
+  folder: string,
+  publicId: string,
 ): Promise<UploadApiResponse> => {
-  const { folder, publicId } = options;
-  const fileNameWithoutExt = originalName.split('.').slice(0, -1).join('.');
-  const finalPublicId = publicId ?? fileNameWithoutExt;
-
   return new Promise((resolve, reject) => {
     const uploadStream = cloudinary.uploader.upload_stream(
       {
         folder,
-        public_id: finalPublicId,
+        public_id: publicId,
         overwrite: true,
-        resource_type: 'image',
-        format: 'webp', // 👈 Always convert to webp
+        resource_type: "image",
+        format: "webp",
       },
       (error: UploadApiErrorResponse | undefined, result: UploadApiResponse | undefined) => {
         if (error) return reject(error);
-        resolve(result as UploadApiResponse);
+        resolve(result!);
       }
     );
 
@@ -43,26 +39,11 @@ export const uploadSingleImage = (
   });
 };
 
-export const uploadMultipleImages = async (
-  files: Express.Multer.File[],
-  folder: string
-): Promise<UploadApiResponse[]> => {
-  const uploadPromises = files.map((file) => {
-    const fileName = file.originalname.split('.').slice(0, -1).join('.');
-    return uploadSingleImage(file.buffer, fileName, {
-      folder,
-      publicId: fileName, // Reuse filename for id
-    });
-  });
+export const deleteImage = (publicId: string): Promise<any> => {
 
-  return Promise.all(uploadPromises);
-};
-
-export const deleteImage = (folder:string,publicId: string): Promise<any> => {
   return new Promise((resolve, reject) => {
-    let pathId= folder +'/'+ publicId
     cloudinary.uploader.destroy(
-      pathId,
+      publicId,
       { resource_type: 'image' },
       (error, result) => {
         if (error) {
@@ -76,5 +57,29 @@ export const deleteImage = (folder:string,publicId: string): Promise<any> => {
   });
 };
 
+export const renameImage = (
+  oldPublicId: string,
+  newPublicId: string
+): Promise<UploadApiResponse> => {
+  return new Promise((resolve, reject) => {
+    cloudinary.uploader.rename(
+      oldPublicId,
+      newPublicId,
+      {
+        overwrite: true, 
+        invalidate: true,        
+        resource_type: "image",  
+      },
+      (error, result) => {
+        if (error) {
+          console.error("Cloudinary Rename Error:", error);
+          return reject(error);
+        }
+        console.log("Cloudinary Rename Result:", result);
+        resolve(result as UploadApiResponse);
+      }
+    );
+  });
+};
 
 export default cloudinary;

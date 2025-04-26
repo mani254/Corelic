@@ -93,6 +93,21 @@ class BrandService {
     }
   }
 
+  async updateBrand(brandData: BrandType): Promise<BrandType | null> {
+
+    try {
+      const updatedBrand = await Brand.findByIdAndUpdate(
+        brandData._id ,
+        { $set: { ...brandData } },
+        { new: true }
+      );
+
+      return updatedBrand as BrandType;
+    } catch (error: any) {
+      throw new Error(error.message);
+    }
+  }
+
   async checkBrandById(id: string): Promise<BrandType | null> {
     try {
       return await Brand.findById(id);
@@ -102,14 +117,26 @@ class BrandService {
     }
   }
 
-  async checkBrandByTitle(title: string): Promise<BrandType | null> {
-    try {
-      return await Brand.findOne({ title: title });
-    } catch (error: any) {
-      console.error("Error checking brand by Name:", error);
-      throw new Error(error.message);
+  async checkBrandByTitle(title:string): Promise<BrandType | null>{
+    try{
+      return await Brand.findOne({title})
+    }catch(error:any){
+      console.error("Error checkling brand by Title:",error)
+      throw new Error(error.message)
     }
   }
+
+async checkForTitleDuplication(title: string, id: string): Promise<BrandType | null> {
+  try {
+    return await Brand.findOne({
+      title,
+      _id: { $ne: id }, 
+    });
+  } catch (error: any) {
+    console.error("Error checking brand by title and id:", error);
+    throw new Error(error.message);
+  }
+}
 
   async checkMultipleBrandsById(ids: string[]): Promise<BrandType[]> {
     try {
@@ -156,7 +183,7 @@ class BrandService {
         await Brand.deleteMany({ _id: { $in: validBrandIds } });
       }
 
-      return {deletedBrands: validBrands, invalidBrands: invalidBrandIds };
+      return { deletedBrands: validBrands, invalidBrands: invalidBrandIds };
     } catch (error: any) {
       console.error("Error deleting multiple brands:", error);
       throw new Error(error.message);
