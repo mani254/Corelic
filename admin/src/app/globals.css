@@ -1,0 +1,76 @@
+@import "tailwindcss";
+@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap");
+
+:root {
+  --primary-color: 24, 100%, 50%;
+  --secondary-color: 185, 100%, 90%;
+}
+
+@theme inline {
+  --color-primary-50: hsl(var(--primary-color), 95%);
+  --color-primary-100: hsl(var(--primary-color), 90%);
+  --color-primary-200: hsl(var(--primary-color), 80%);
+  --color-primary-300: hsl(var(--primary-color), 70%);
+  --color-primary-400: hsl(var(--primary-color), 60%);
+  --color-primary-500: hsl(var(--primary-color));
+  --color-primary-600: hsl(var(--primary-color), 40%);
+  --color-primary-700: hsl(var(--primary-color), 30%);
+  --color-primary-800: hsl(var(--primary-color), 20%);
+  --color-primary-900: hsl(var(--primary-color), 10%);
+
+  --color-secondary-50: hsl(var(--secondary-color), 95%);
+  --color-secondary-100: hsl(var(--secondary-color), 90%);
+  --color-secondary-200: hsl(var(--secondary-color), 80%);
+  --color-secondary-300: hsl(var(--secondary-color), 70%);
+  --color-secondary-400: hsl(var(--secondary-color), 60%);
+  --color-secondary-500: hsl(var(--secondary-color));
+  --color-secondary-600: hsl(var(--secondary-color), 40%);
+  --color-secondary-700: hsl(var(--secondary-color), 30%);
+  --color-secondary-800: hsl(var(--secondary-color), 20%);
+  --color-secondary-900: hsl(var(--secondary-color), 10%);
+
+  /* --text-xs: 14px;
+  --text-sm: 15px;
+  --text-md: 18px; */
+
+  --font-heading: "Bricolage Grotesque", sans-serif;
+  --font-content: "Inter", sans-serif;
+}
+
+@layer base {
+  h1 {
+    @apply text-5xl font-bold;
+  }
+  h2 {
+    @apply text-4xl font-semibold;
+  }
+  h3 {
+    @apply text-3xl font-semibold;
+  }
+  h4 {
+    @apply text-2xl font-medium;
+  }
+  h5 {
+    @apply text-xl font-medium;
+  }
+  h6 {
+    @apply text-lg font-medium;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-heading;
+  }
+  body {
+    @apply font-content;
+  }
+  .container {
+    @apply m-auto px-4;
+    max-width: 1400px !important;
+  }
+}
