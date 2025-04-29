@@ -45,7 +45,7 @@ export default function Header() {
   }, [])
 
   return (
-    <header className="shadow-sm shadow-orange-100 bg-white sticky top-0">
+    <header className="shadow-sm shadow-orange-100 bg-white fixed w-full left-0 top-0">
       {/* Logo */}
       <div className="container w-full flex items-center justify-between py-2">
         <div className="flex items-center">

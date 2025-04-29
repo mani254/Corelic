@@ -7,6 +7,7 @@ export const metadata: Metadata = {
 };
 
 import Header from "@/components/Header";
+import Navbar from "@/components/Navbar";
 
 export default function RootLayout({
   children,
@@ -15,9 +16,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>
-        <Header></Header>
-        <main>{children}</main>
+      <body className="">
+        <Header />
+        <div className="flex pt-[65px] h-screen overflow-auto">
+          <Navbar />
+          <main className="w-full">{children}</main>
+        </div>
       </body>
     </html>
   );
