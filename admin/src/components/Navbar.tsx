@@ -81,7 +81,7 @@ const Sidebar = () => {
   };
 
   return (
-    <aside className="w-64 px-4 h-full overflow-auto min-w-[250px] bg-white border border-gray-300">
+    <aside className="w-64 px-4 pt-[65px] h-full overflow-auto min-w-[250px] bg-white border border-gray-100 shadow-sm shadow-gray-300">
       {renderNavItems(navItems)}
     </aside>
   );

@@ -32,7 +32,7 @@ export interface ItemType {
 const navItems: ItemType[] = [
   {
     label: "Dashboard",
-    route: "/dashboard",
+    route: "/",
     icon: LayoutDashboard,
   },
   {
@@ -55,7 +55,11 @@ const navItems: ItemType[] = [
       { label: "All Orders", route: "/orders/all", icon: FileText },
       { label: "Returns", route: "/orders/returns", icon: History },
       { label: "Refunds", route: "/orders/refunds", icon: CreditCard },
-      { label: "Abandoned Carts", route: "/orders/abandoned-carts", icon: ShoppingCart },
+      {
+        label: "Abandoned Carts",
+        route: "/orders/abandoned-carts",
+        icon: ShoppingCart,
+      },
     ],
   },
   {
@@ -66,7 +70,11 @@ const navItems: ItemType[] = [
       { label: "Customer List", route: "/customers/list", icon: Users },
       { label: "Groups", route: "/customers/groups", icon: Layers },
       { label: "Reviews", route: "/customers/reviews", icon: FileText },
-      { label: "Customer Segments", route: "/customers/segments", icon: SlidersHorizontal },
+      {
+        label: "Customer Segments",
+        route: "/customers/segments",
+        icon: SlidersHorizontal,
+      },
     ],
   },
   {
@@ -84,8 +92,16 @@ const navItems: ItemType[] = [
     route: "/payments",
     icon: DollarSign,
     children: [
-      { label: "Payment Methods", route: "/payments/methods", icon: CreditCard },
-      { label: "Transactions", route: "/payments/transactions", icon: DollarSign },
+      {
+        label: "Payment Methods",
+        route: "/payments/methods",
+        icon: CreditCard,
+      },
+      {
+        label: "Transactions",
+        route: "/payments/transactions",
+        icon: DollarSign,
+      },
     ],
   },
   {
@@ -94,7 +110,11 @@ const navItems: ItemType[] = [
     icon: BarChart2,
     children: [
       { label: "Sales Reports", route: "/reports/sales", icon: BarChart2 },
-      { label: "Customer Reports", route: "/reports/customers", icon: BarChart2 },
+      {
+        label: "Customer Reports",
+        route: "/reports/customers",
+        icon: BarChart2,
+      },
       { label: "Product Reports", route: "/reports/products", icon: BarChart2 },
     ],
   },
@@ -104,10 +124,18 @@ const navItems: ItemType[] = [
     icon: Settings,
     children: [
       { label: "Store Settings", route: "/settings/store", icon: Store },
-      { label: "Checkout Settings", route: "/settings/checkout", icon: ShoppingCart },
+      {
+        label: "Checkout Settings",
+        route: "/settings/checkout",
+        icon: ShoppingCart,
+      },
       { label: "Tax Settings", route: "/settings/tax", icon: DollarSign },
       { label: "Shipping Settings", route: "/settings/shipping", icon: Truck },
-      { label: "Notification Settings", route: "/settings/notifications", icon: Server },
+      {
+        label: "Notification Settings",
+        route: "/settings/notifications",
+        icon: Server,
+      },
     ],
   },
   {
