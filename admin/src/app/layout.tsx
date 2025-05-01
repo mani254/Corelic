@@ -16,10 +16,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="">
+      <body>
         <Header />
         <div className="flex h-screen overflow-auto">
-          <Navbar />
+          <div className="sticky top-0">
+            <Navbar />
+          </div>
           <main className="w-full">{children}</main>
         </div>
       </body>

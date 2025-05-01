@@ -1,9 +1,12 @@
 "use client"
 import { Filter, ListFilter } from "lucide-react"
-import { useState } from "react"
+import { useSearchParams } from "next/navigation"
+import { useEffect, useState } from "react"
 import { FilterSearchInput } from "../FilterComponents/FilterSearchInput"
 import { SelectFilter } from "../FilterComponents/SelectFilter"
 import { SortFilterPopover } from "../FilterComponents/SelectFilterPoopover"
+import { useQueryParams } from "../hooks/useQueryState"
+import Pagination from "../Pagination"
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip"
 
 export interface SortOption {
@@ -12,14 +15,13 @@ export interface SortOption {
 }
 export type SortField = string
 
-export type SortDirection = 'asc' | 'desc'
+export type SortDirection = 'asc' | 'desc' | ''
 
 export interface SortState {
   label: string,
   field: SortField
   direction: SortDirection
 }
-
 
 const ToolTipForStatus = () => {
   return (<Tooltip>
@@ -39,30 +41,91 @@ const ToolTipForPages = () => {
         <span className="text-muted-foreground"><Filter size={16} /></span>
       </TooltipTrigger>
       <TooltipContent side="bottom">
-        <p>No Of pages</p>
+        <p>No Of Items</p>
       </TooltipContent>
     </Tooltip>
   )
-
 }
+
+const sortOptions: SortOption[] = [
+  { label: "Sort By", value: "" },
+  { label: 'Created At', value: 'createdAt' },
+  { label: 'Title', value: 'title' },
+];
+
 const BrandFilters = () => {
-  const [search, setSearch] = useState<string>('')
-  const [status, setStatus] = useState<string | null>(null)
-  const [limit, setLimit] = useState('10')
-  const [sort, setSort] = useState<SortState>({ label: "", field: '', direction: 'asc' })
+
+  const searchParams = useSearchParams()
+  const { getParam, setBulk, setParam } = useQueryParams()
+
+  const parseNumber = (value: string | null): number | null => {
+    if (!value) return null
+    const num = parseInt(value)
+    return isNaN(num) ? null : num
+  }
+
+  const [search, setSearch] = useState<string>("")
+  const [status, setStatus] = useState<string | null>("")
+  const [limit, setLimit] = useState<number | null>(10)
+  const [sort, setSort] = useState<SortState>({
+    label: '',
+    field: '',
+    direction: '',
+  })
+  const [page, setPage] = useState<number>(1)
+
+  useEffect(() => {
+    const field = getParam('sortBy') || '';
+    const direction = (getParam('orderBy') as SortDirection) || '';
+
+    const matchedLabel = sortOptions.find(opt => opt.value === field)?.label || '';
+
+    setSearch(getParam('search'));
+    setStatus(getParam('status'));
+    setLimit(parseNumber(getParam('limit')) || 10);
+    setSort({
+      label: matchedLabel,
+      field,
+      direction,
+    });
+    setPage(parseNumber(getParam('page')) || 1);
+  }, [getParam, searchParams]);
+
+
+  const handleSearch = (val: string) => {
+    setBulk({ "search": val, "page": 1 })
+  }
+  const handleStatus = (val: never) => {
+    setBulk({ 'status': val, "page": 1 })
+  }
+
+  const handleSort = (val: SortState) => {
+    setBulk({ "sortBy": val.field, "orderBy": val.direction, "page": 1 })
+  }
+
+  const handleLimit = (val: number) => {
+    setBulk({ "limit": val, "page": "1" })
+  }
+
+  const handlePage = (val: number) => {
+    setParam("page", val)
+    setPage(val)
+  }
+
 
   return (
     <div className="flex flex-wrap items-end gap-4 mt-3">
-      <FilterSearchInput value={search} onChange={setSearch} placeholder="Search brands..." className="w-full max-w-[350px]" />
+      <FilterSearchInput value={search} onChange={handleSearch} placeholder="Search brands..." className="w-full max-w-[350px]" />
 
       <div className="ml-auto flex flex-wrap items-end gap-4">
+
         <SelectFilter
           value={status!}
-          onChange={setStatus}
+          onChange={handleStatus}
           placeholder="Status"
           iconComponent={<ToolTipForStatus />}
           options={[
-            { label: 'All', value: null! },
+            { label: 'All', value: null },
             { label: 'Active', value: 'active' },
             { label: 'Inactive', value: 'inactive' },
           ]}
@@ -70,26 +133,28 @@ const BrandFilters = () => {
 
         <SortFilterPopover
           value={sort}
-          onChange={setSort}
-          options={[
-            { label: 'Created At', value: 'createdAt' },
-            { label: 'Title', value: 'title' },
-          ]}
+          onChange={handleSort}
+          options={sortOptions}
         />
 
         <SelectFilter
-          value={limit}
-          onChange={setLimit}
+          value={limit!}
+          onChange={handleLimit}
           placeholder="Limit"
           iconComponent={<ToolTipForPages />}
           options={[
-            { label: '10', value: '10' },
-            { label: '20', value: '20' },
-            { label: '50', value: '50' },
-            { label: '100', value: '100' },
-            { label: 'All', value: 'empty' },
+            { label: '10', value: 10 },
+            { label: '20', value: 20 },
+            { label: '50', value: 50 },
+            { label: '100', value: 100 },
+            { label: 'All', value: null },
           ]}
         />
+
+        <div className="fixed left-1/2 bottom-10 -translate-x-1/2 bg-white shadow-sm px-5 py-1 shadow-gray-300 rounded-2xl">
+          <Pagination totalItems={500} limit={limit} currentPage={page} setPage={handlePage} />
+        </div>
+
       </div>
     </div>
   )
