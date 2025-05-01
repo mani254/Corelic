@@ -1,3 +1,4 @@
+import BrandFilters from "@/components/Brand/BrandFilters"
 import { Button } from "@/components/ui/button"
 
 const BrandsPage = () => {
@@ -12,6 +13,7 @@ const BrandsPage = () => {
         </div>
       </div>
 
+      <BrandFilters />
     </>
   )
 }
