@@ -58,6 +58,7 @@ const brandSchema = new Schema<BrandType>(
 brandSchema.pre("validate", function (next) {
   if (this.isModified("title")) {
     this.slug = slugify(this.title, { lower: true, strict: true });
+    this.title = this.title.charAt(0).toUpperCase() + this.title.slice(1);
   }
   next();
 });

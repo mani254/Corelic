@@ -1,7 +1,7 @@
 'use client';
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 
 type QueryValue = string | number | null;
 type QueryParams = Record<string, QueryValue>;
@@ -11,6 +11,14 @@ export const useQueryParams = (defaults: StringQueryParams = {}) => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
+
+  useEffect(() => {
+    if (searchParams.size === 0 && Object.keys(defaults).length > 0) {
+      const search = new URLSearchParams(defaults).toString();
+      router.replace(`${pathname}?${search}`);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const getCleanQuery = useCallback((): StringQueryParams => {
     const clean: StringQueryParams = {};

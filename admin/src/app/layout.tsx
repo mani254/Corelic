@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 import Header from "@/components/Header";
 import Navbar from "@/components/Navbar";
-
+import { ReduxProvider } from "@/redux/ReudxProvider";
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -22,7 +22,11 @@ export default function RootLayout({
           <div className="sticky top-0">
             <Navbar />
           </div>
-          <main className="w-full">{children}</main>
+          <main className="w-full">
+            <ReduxProvider>
+              {children}
+            </ReduxProvider>
+          </main>
         </div>
       </body>
     </html>

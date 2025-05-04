@@ -1,43 +1,50 @@
 "use client";
 
 import BrandFilters from "@/components/Brand/BrandFilters";
+import BrandRow from "@/components/Brand/BrandRow";
+import BrandSkeleton from "@/components/Brand/BrandSkeleton";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import Image from "next/image";
+import { fetchBrands } from "@/redux/brand/BrandActions";
+import { BrandQueryParams } from "@/redux/brand/BrandTypes";
+import { AppDispatch, RootState } from "@/redux/store";
+import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
+import { connect, ConnectedProps } from "react-redux";
 
-interface BrandType {
-  _id: string;
-  title: string;
-  image: { url: string; alt?: string };
-  status: "active" | "inactive";
-}
+type BrandsPageProps = ConnectedProps<typeof connector>;
 
-const BrandsPage = () => {
-  const [brands] = useState<BrandType[]>([
-    { _id: "brand2", title: "Adidas", image: { url: "https://upload.wikimedia.org/wikipedia/commons/a/a3/Image-not-found.png?20210521171500", alt: "Adidas Logo" }, status: "inactive" },
-    { _id: "brand3", title: "Puma", image: { url: "https://upload.wikimedia.org/wikipedia/commons/a/a3/Image-not-found.png?20210521171500", alt: "Puma Logo" }, status: "active" },
-    { _id: "brand4", title: "Reebok", image: { url: "https://upload.wikimedia.org/wikipedia/commons/a/a3/Image-not-found.png?20210521171500", alt: "Reebok Logo" }, status: "inactive" },
-    { _id: "brand5", title: "Under Armour", image: { url: "https://upload.wikimedia.org/wikipedia/commons/a/a3/Image-not-found.png?20210521171500", alt: "Under Armour Logo" }, status: "active" },
-    { _id: "brand6", title: "New Balance", image: { url: "https://upload.wikimedia.org/wikipedia/commons/a/a3/Image-not-found.png?20210521171500", alt: "New Balance Logo" }, status: "active" },
-    { _id: "brand7", title: "Asics", image: { url: "https://upload.wikimedia.org/wikipedia/commons/a/a3/Image-not-found.png?20210521171500", alt: "Asics Logo" }, status: "inactive" },
-    { _id: "brand8", title: "Fila", image: { url: "https://upload.wikimedia.org/wikipedia/commons/a/a3/Image-not-found.png?20210521171500", alt: "Fila Logo" }, status: "active" },
-    { _id: "brand9", title: "Converse", image: { url: "https://upload.wikimedia.org/wikipedia/commons/a/a3/Image-not-found.png?20210521171500", alt: "Converse Logo" }, status: "inactive" },
-    { _id: "brand10", title: "Vans", image: { url: "https://upload.wikimedia.org/wikipedia/commons/a/a3/Image-not-found.png?20210521171500", alt: "Vans Logo" }, status: "active" },
-    { _id: "brand11", title: "Skechers", image: { url: "https://upload.wikimedia.org/wikipedia/commons/a/a3/Image-not-found.png?20210521171500", alt: "Skechers Logo" }, status: "inactive" },
-    { _id: "brand12", title: "Columbia", image: { url: "https://upload.wikimedia.org/wikipedia/commons/a/a3/Image-not-found.png?20210521171500", alt: "Columbia Logo" }, status: "active" },
-    { _id: "brand13", title: "Timberland", image: { url: "https://upload.wikimedia.org/wikipedia/commons/a/a3/Image-not-found.png?20210521171500", alt: "Timberland Logo" }, status: "active" },
-    { _id: "brand14", title: "The North Face", image: { url: "https://upload.wikimedia.org/wikipedia/commons/a/a3/Image-not-found.png?20210521171500", alt: "The North Face Logo" }, status: "inactive" },
-    { _id: "brand15", title: "Lacoste", image: { url: "https://upload.wikimedia.org/wikipedia/commons/a/a3/Image-not-found.png?20210521171500", alt: "Lacoste Logo" }, status: "active" },
-    { _id: "brand16", title: "Champion", image: { url: "https://upload.wikimedia.org/wikipedia/commons/a/a3/Image-not-found.png?20210521171500", alt: "Champion Logo" }, status: "inactive" },
-    { _id: "brand17", title: "Jordan", image: { url: "https://upload.wikimedia.org/wikipedia/commons/a/a3/Image-not-found.png?20210521171500", alt: "Jordan Logo" }, status: "active" },
-    { _id: "brand18", title: "Balenciaga", image: { url: "https://upload.wikimedia.org/wikipedia/commons/a/a3/Image-not-found.png?20210521171500", alt: "Balenciaga Logo" }, status: "inactive" },
-    { _id: "brand19", title: "Gucci", image: { url: "https://upload.wikimedia.org/wikipedia/commons/a/a3/Image-not-found.png?20210521171500", alt: "Gucci Logo" }, status: "active" },
-    { _id: "brand20", title: "Prada", image: { url: "https://upload.wikimedia.org/wikipedia/commons/a/a3/Image-not-found.png?20210521171500", alt: "Prada Logo" }, status: "inactive" },
-  ]);
+const BrandsPage = ({ fetchBrands, brandData }: BrandsPageProps) => {
+  const { brands, loading } = brandData;
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [allSelected, setAllSelected] = useState<boolean>(false);
+  const [totalItems, setTotalItems] = useState<number>(0)
+  const searchParams = useSearchParams();
 
+  useEffect(() => {
+    if (!searchParams.get('page')) {
+      return
+    }
+    async function fetchBrandsData() {
+      const params: BrandQueryParams = {
+        search: searchParams.get("search") || undefined,
+        sortBy: searchParams.get("sortBy") || undefined,
+        orderBy: searchParams.get("orderBy") || undefined,
+        status: searchParams.get("status") as 'active' | 'inactive' || undefined,
+        page: searchParams.get("page") ? Number(searchParams.get("page")) : undefined,
+        limit: searchParams.get("limit") ? Number(searchParams.get("limit")) : undefined,
+      };
+      try {
+        const data = await fetchBrands(params);
+        setTotalItems(data.totalItems);
+        setSelectedBrands([]);
+      } catch (err) {
+        console.error("Error fetching brands:", err);
+      }
+    }
+    fetchBrandsData()
+
+  }, [searchParams, fetchBrands]);
 
   useEffect(() => {
     setAllSelected(
@@ -47,17 +54,17 @@ const BrandsPage = () => {
     );
   }, [brands, selectedBrands]);
 
-
-  const handleSelectAll = useCallback((checked: boolean) => {
-    setSelectedBrands(checked ? brands.map((b) => b._id) : []);
-  }, [brands]);
-
+  const handleSelectAll = useCallback(
+    (checked: boolean) => {
+      setSelectedBrands(checked ? brands.map((b) => b._id) : []);
+    },
+    [brands]
+  );
 
   const handleCheckboxChange = useCallback((id: string) => {
-    setSelectedBrands((prev) => {
-      const exists = prev.includes(id);
-      return exists ? prev.filter((existingId) => existingId !== id) : [...prev, id];
-    });
+    setSelectedBrands((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+    );
   }, []);
 
   return (
@@ -73,7 +80,7 @@ const BrandsPage = () => {
         </div>
       </div>
 
-      <BrandFilters />
+      <BrandFilters totalItems={totalItems} />
 
       <div className="pb-[120px]">
         <table className="w-full border-collapse rounded-md mt-3 text-sm">
@@ -89,56 +96,59 @@ const BrandsPage = () => {
             </tr>
           </thead>
           <tbody>
-            {brands.map((brand) => (
-              <BrandRow
-                key={brand._id}
-                brand={brand}
-                isSelected={selectedBrands.includes(brand._id)}
-                onCheckboxChange={handleCheckboxChange}
-                selectedBrands={selectedBrands}
-              />
-            ))}
+            {loading ? (
+              <BrandSkeleton />
+            ) : brands.length === 0 ? (
+              <tr>
+                <td colSpan={5} className="py-12 text-center">
+                  <div className="flex flex-col items-center justify-center gap-3">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-14 w-14 text-gray-400"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={1.5}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M3 4a1 1 0 011-1h5l1 2h6l1-2h5a1 1 0 011 1v16a1 1 0 01-1 1H4a1 1 0 01-1-1V4z"
+                      />
+                    </svg>
+                    <h3 className="text-lg font-semibold text-gray-700">
+                      No brands found
+                    </h3>
+                    <p className="text-sm text-gray-500">
+                      Try adjusting your filters or adding a new brand.
+                    </p>
+                  </div>
+                </td>
+              </tr>
+            ) : (
+              brands.map((brand) => (
+                <BrandRow
+                  key={brand._id}
+                  brand={brand}
+                  isSelected={selectedBrands.includes(brand._id)}
+                  onCheckboxChange={handleCheckboxChange}
+                  selectedBrands={selectedBrands}
+                />
+              ))
+            )}
           </tbody>
         </table>
       </div>
-
     </div>
   );
 };
 
-// Optimized BrandRow component with React.memo for performance
-const BrandRow = ({ brand, isSelected, onCheckboxChange }: {
-  brand: BrandType;
-  isSelected: boolean;
-  onCheckboxChange: (id: string) => void;
-  selectedBrands: string[];
-}) => (
-  <tr className="border-t border-gray-200 hover:bg-opacity-50 hover:bg-gray-50 cursor-pointer">
-    <td className="px-6 py-[6px]">
-      <Checkbox checked={isSelected} onCheckedChange={() => onCheckboxChange(brand._id)} className="" />
-    </td>
-    <td className="px-6 py-[6px]">
-      <div className="relative h-10 w-10 overflow-hidden rounded-lg">
-        <Image width={100} height={100} src={brand.image.url} alt={brand.image.alt || ""} className="w-full h-full object-cover object-center"></Image>
-      </div>
-    </td>
-    <td className="px-6 py-[6px] w-1/3">{brand.title}</td>
-    <td className="px-6 py-[6px]">
-      <span
-        className={`inline-block px-3 py-1 rounded-full text-[13px] ${brand.status === "active"
-          ? "bg-green-100 text-green-800"
-          : brand.status === "inactive"
-            ? "bg-red-100 text-red-800"
-            : "bg-yellow-100 text-yellow-800"
-          }`}
-      >
-        {brand.status}
-      </span>
-    </td>
-    <td className="px-6 py-[6px]">
-      actions
-    </td>
-  </tr>
-);
+const mapStateToProps = (state: RootState) => ({
+  brandData: state.brand,
+});
+const mapDispatchToProps = (dispatch: AppDispatch) => ({
+  fetchBrands: (params?: BrandQueryParams) => dispatch(fetchBrands(params)),
+});
+const connector = connect(mapStateToProps, mapDispatchToProps);
 
-export default BrandsPage;
+export default connector(BrandsPage);

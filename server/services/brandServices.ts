@@ -14,11 +14,15 @@ interface BrandDeleteResult {
 
 class BrandService {
   private getMatchState(query: BrandQueryParams): Record<string, any> {
-    const { search } = query;
+    const { search, status } = query;
     let matchStage: Record<string, any> = {};
 
     if (search && search.trim() !== "") {
       matchStage.title = { $regex: search, $options: "i" };
+    }
+
+    if (status) {
+      matchStage.status = status;
     }
 
     return matchStage;
@@ -28,7 +32,7 @@ class BrandService {
     try {
       const {
         sortBy = "createdAt",
-        sortOrder = "desc",
+        orderBy = "desc",
         page,
         limit,
         fetchFields,
@@ -39,7 +43,7 @@ class BrandService {
 
       // Build dynamic stages
       const brandStages: any[] = [
-        { $sort: { [sortBy]: sortOrder === "desc" ? -1 : 1 } },
+        { $sort: { [sortBy]: orderBy === "desc" ? -1 : 1 } },
         { $skip: skip },
       ];
 
@@ -94,10 +98,9 @@ class BrandService {
   }
 
   async updateBrand(brandData: BrandType): Promise<BrandType | null> {
-
     try {
       const updatedBrand = await Brand.findByIdAndUpdate(
-        brandData._id ,
+        brandData._id,
         { $set: { ...brandData } },
         { new: true }
       );
@@ -117,26 +120,29 @@ class BrandService {
     }
   }
 
-  async checkBrandByTitle(title:string): Promise<BrandType | null>{
-    try{
-      return await Brand.findOne({title})
-    }catch(error:any){
-      console.error("Error checkling brand by Title:",error)
-      throw new Error(error.message)
+  async checkBrandByTitle(title: string): Promise<BrandType | null> {
+    try {
+      return await Brand.findOne({ title });
+    } catch (error: any) {
+      console.error("Error checkling brand by Title:", error);
+      throw new Error(error.message);
     }
   }
 
-async checkForTitleDuplication(title: string, id: string): Promise<BrandType | null> {
-  try {
-    return await Brand.findOne({
-      title,
-      _id: { $ne: id }, 
-    });
-  } catch (error: any) {
-    console.error("Error checking brand by title and id:", error);
-    throw new Error(error.message);
+  async checkForTitleDuplication(
+    title: string,
+    id: string
+  ): Promise<BrandType | null> {
+    try {
+      return await Brand.findOne({
+        title,
+        _id: { $ne: id },
+      });
+    } catch (error: any) {
+      console.error("Error checking brand by title and id:", error);
+      throw new Error(error.message);
+    }
   }
-}
 
   async checkMultipleBrandsById(ids: string[]): Promise<BrandType[]> {
     try {

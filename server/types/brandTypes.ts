@@ -14,7 +14,7 @@ export interface BrandType extends Document {
   image?: {
     url?: string;
     alt?: string;
-    publicId?:string;
+    publicId?: string;
   };
   createdAt: Date;
   updatedAt: Date;
@@ -24,22 +24,23 @@ export interface BrandType extends Document {
 export interface BrandInput {
   title: string;
   status?: "active" | "inactive";
-  image?:any;
+  image?: any;
   description?: string;
-  metaTitle?:string;
-  metaDescription?:string;
-  metaData?:{
-    metaTitle?:string,
-    metaDescription?:string,
-  }
+  metaTitle?: string;
+  metaDescription?: string;
+  metaData?: {
+    metaTitle?: string;
+    metaDescription?: string;
+  };
 }
 
 // Query parameters interface
 export interface BrandQueryParams {
   search?: string;
   sortBy?: string;
-  sortOrder?: string;
+  orderBy?: string;
   page?: number;
   limit?: number;
   fetchFields?: Record<string, number>;
+  status?: "active" | "inactive";
 }

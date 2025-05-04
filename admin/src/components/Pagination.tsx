@@ -8,7 +8,7 @@ interface PaginationProps {
   limit?: number | null,
 }
 
-const Pagination: React.FC<PaginationProps> = ({ totalItems = 1000, setPage, currentPage = 1, limit }) => {
+const Pagination: React.FC<PaginationProps> = ({ totalItems = 1000, setPage, currentPage = 0, limit }) => {
 
   if (!limit) limit = totalItems
 

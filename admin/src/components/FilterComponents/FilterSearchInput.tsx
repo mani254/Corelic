@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 import { Search } from 'lucide-react'
-import { useEffect, useRef } from 'react'
+import { useRef, useState } from 'react'
 
 type FilterSearchInputProps = {
   value: string
@@ -8,6 +8,7 @@ type FilterSearchInputProps = {
   placeholder?: string
   className?: string
   iconSize?: number
+  debounceDelay?: number
 }
 
 export const FilterSearchInput = ({
@@ -16,26 +17,28 @@ export const FilterSearchInput = ({
   placeholder = 'Search...',
   className,
   iconSize = 18,
+  debounceDelay = 300,
 }: FilterSearchInputProps) => {
-  const wrapperRef = useRef<HTMLDivElement>(null)
+  const [searchValue, setSearchValue] = useState(value)
+  const inputRef = useRef<HTMLInputElement>(null)
 
-  // Optional: blur input on Escape
-  useEffect(() => {
-    function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === 'Escape') {
-        const input = wrapperRef.current?.querySelector('input')
-        input?.blur()
-      }
+  // store timeout id between renders
+  const debounceRef = useRef<NodeJS.Timeout | null>(null)
+
+  const handleChange = (val: string) => {
+    setSearchValue(val)
+
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current)
     }
-    document.addEventListener('keydown', handleKeyDown)
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown)
-    }
-  }, [])
+
+    debounceRef.current = setTimeout(() => {
+      onChange(val)
+    }, debounceDelay)
+  }
 
   return (
     <div
-      ref={wrapperRef}
       className={clsx(
         "relative flex items-center border border-input rounded-md px-3 py-2 bg-white shadow-sm transition-colors focus-within:ring-1 focus-within:border-orange-100 focus-within:ring-orange-100",
         className
@@ -47,13 +50,19 @@ export const FilterSearchInput = ({
         aria-hidden="true"
       />
       <input
+        ref={inputRef}
         type="text"
         className="w-full text-sm bg-transparent outline-none text-foreground placeholder:text-muted-foreground"
         role="searchbox"
         aria-label="Search"
         placeholder={placeholder}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
+        value={searchValue}
+        onChange={(e) => handleChange(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === 'Escape') {
+            inputRef.current?.blur()
+          }
+        }}
       />
     </div>
   )

@@ -2,10 +2,10 @@
 import { Filter, ListFilter } from "lucide-react"
 import { useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react"
+import { useQueryParams } from "../../hooks/useQueryState"
 import { FilterSearchInput } from "../FilterComponents/FilterSearchInput"
 import { SelectFilter } from "../FilterComponents/SelectFilter"
 import { SortFilterPopover } from "../FilterComponents/SelectFilterPoopover"
-import { useQueryParams } from "../hooks/useQueryState"
 import Pagination from "../Pagination"
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip"
 
@@ -53,10 +53,10 @@ const sortOptions: SortOption[] = [
   { label: 'Title', value: 'title' },
 ];
 
-const BrandFilters = () => {
+const BrandFilters = ({ totalItems }: { totalItems: number }) => {
 
   const searchParams = useSearchParams()
-  const { getParam, setBulk, setParam } = useQueryParams()
+  const { getParam, setBulk } = useQueryParams({ page: "1", limit: "10" })
 
   const parseNumber = (value: string | null): number | null => {
     if (!value) return null
@@ -82,7 +82,7 @@ const BrandFilters = () => {
 
     setSearch(getParam('search'));
     setStatus(getParam('status'));
-    setLimit(parseNumber(getParam('limit')) || 10);
+    setLimit(parseNumber(getParam('limit')) || null);
     setSort({
       label: matchedLabel,
       field,
@@ -91,10 +91,14 @@ const BrandFilters = () => {
     setPage(parseNumber(getParam('page')) || 1);
   }, [getParam, searchParams]);
 
-
   const handleSearch = (val: string) => {
-    setBulk({ "search": val, "page": 1 })
+    if (val) {
+      setBulk({ "search": val, "page": 1 })
+    } else {
+      setBulk({ search: null })
+    }
   }
+
   const handleStatus = (val: never) => {
     setBulk({ 'status': val, "page": 1 })
   }
@@ -108,8 +112,7 @@ const BrandFilters = () => {
   }
 
   const handlePage = (val: number) => {
-    setParam("page", val)
-    setPage(val)
+    setBulk({ "page": val })
   }
 
 
@@ -152,7 +155,7 @@ const BrandFilters = () => {
         />
 
         <div className="fixed left-1/2 bottom-10 -translate-x-1/2 bg-white shadow-sm px-5 py-1 shadow-gray-300 rounded-2xl">
-          <Pagination totalItems={500} limit={limit} currentPage={page} setPage={handlePage} />
+          <Pagination totalItems={totalItems} limit={limit} currentPage={page} setPage={handlePage} />
         </div>
 
       </div>

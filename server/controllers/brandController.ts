@@ -15,7 +15,7 @@ export const fetchBrands = async (
   res: Response
 ) => {
   try {
-    const { sortBy, sortOrder } = req.query;
+    const { sortBy, orderBy } = req.query;
 
     const allowedSortFields = ["createdAt", "title"];
     if (sortBy && !allowedSortFields.includes(sortBy)) {
@@ -25,7 +25,7 @@ export const fetchBrands = async (
       return;
     }
 
-    if (sortOrder && !["asc", "desc"].includes(sortOrder)) {
+    if (orderBy && !["asc", "desc"].includes(orderBy)) {
       res
         .status(400)
         .json({ message: "Invalid sort order. Allowed values: asc, desc." });
@@ -52,7 +52,7 @@ export const addBrand = async (
   res: Response
 ) => {
   try {
-    const { title} = req.body;
+    const { title } = req.body;
 
     if (!title) {
       res.status(400).send({ message: "brand title is required" });
@@ -91,28 +91,26 @@ export const deleteBrand = async (
     if (publicId) {
       deleteImage(publicId);
     }
-    
+
     if (!delBrand) {
-      res
-        .status(404)
-        .json({
-          message: "Failed to delete brand",
-          deletedBrand: null,
-          invalidBrand: id,
-        });
+      res.status(404).json({
+        message: "Failed to delete brand",
+        deletedBrand: null,
+        invalidBrand: id,
+      });
       return;
     }
 
-    res
-      .status(200)
-      .json({
-        message: "Brand deleted successfully",
-        deletedBrand: delBrand._id,
-        invalidBrand: null,
-      });
+    res.status(200).json({
+      message: "Brand deleted successfully",
+      deletedBrand: delBrand._id,
+      invalidBrand: null,
+    });
   } catch (err: any) {
     console.error("Error deleting brand:", err);
-    res.status(500).json({ message:"Error while deleteing Brand", error:err.message });
+    res
+      .status(500)
+      .json({ message: "Error while deleteing Brand", error: err.message });
   }
 };
 
@@ -134,34 +132,33 @@ export const deleteMultipleBrands = async (
       await brandServices.deleteMultipleBrandsById(ids);
 
     if (!deletedBrands) {
-      res
-        .status(404)
-        .send({
-          message: "Brands doesn't exist",
-          invalidBrands: ids,
-          deleteBrands: null,
-        });
+      res.status(404).send({
+        message: "Brands doesn't exist",
+        invalidBrands: ids,
+        deleteBrands: null,
+      });
       return;
     }
 
-    if(deletedBrands.length>=1){
-      deletedBrands.forEach((brand)=>{
+    if (deletedBrands.length >= 1) {
+      deletedBrands.forEach((brand) => {
         const publicId = brand.image?.publicId;
         if (publicId) {
           deleteImage(publicId);
         }
-      })
+      });
     }
 
     res.status(207).json({
       message: "Brand deletion process completed.",
-      deletedBrands: deletedBrands.map(brand=>brand._id),
+      deletedBrands: deletedBrands.map((brand) => brand._id),
       invalidBrands: invalidBrands,
     });
-
   } catch (err: any) {
     console.error("Error deleting multiple brands:", err);
-    res.status(500).json({ message:"Error deleting multiple brands" ,error:err.message });
+    res
+      .status(500)
+      .json({ message: "Error deleting multiple brands", error: err.message });
   }
 };
 
@@ -172,9 +169,13 @@ export const bulkUploadBrands = async (
   try {
     const { data, uniqueField } = req.body;
 
-    const normalizedData = normalizeBulkData(data); 
+    const normalizedData = normalizeBulkData(data);
 
-    const result = await bulkUpsertHandler<BrandType>(Brand, normalizedData, uniqueField);
+    const result = await bulkUpsertHandler<BrandType>(
+      Brand,
+      normalizedData,
+      uniqueField
+    );
 
     res.status(200).json({
       message: "Bulk operation completed",
@@ -182,7 +183,9 @@ export const bulkUploadBrands = async (
     });
   } catch (err: any) {
     console.error("Bulk upload error:", err);
-    res.status(500).json({ message:"Error while bulk uploading", error:err.message });
+    res
+      .status(500)
+      .json({ message: "Error while bulk uploading", error: err.message });
   }
 };
 
@@ -192,28 +195,30 @@ export const updateBrand = async (
 ) => {
   try {
     const { id } = req.params;
-    
+
     const brand = await Brand.findById(id);
     if (!brand) {
       res.status(404).json({ message: "Brand not found" });
-      return
+      return;
     }
 
-    let oldPublicId = brand?.image?.publicId
-    let newPublicId =req.body?.image?.public_id
-    
-    // 1️⃣ Update brand
-    const updatedBrand = await brandServices.updateBrand({_id:brand._id,...req.body} as BrandType);
+    let oldPublicId = brand?.image?.publicId;
+    let newPublicId = req.body?.image?.public_id;
 
-    if(oldPublicId && newPublicId && oldPublicId!==newPublicId){
-      deleteImage(oldPublicId)
+    // 1️⃣ Update brand
+    const updatedBrand = await brandServices.updateBrand({
+      _id: brand._id,
+      ...req.body,
+    } as BrandType);
+
+    if (oldPublicId && newPublicId && oldPublicId !== newPublicId) {
+      deleteImage(oldPublicId);
     }
 
     res.status(200).json({
       message: "Brand updated successfully",
       brand: updatedBrand,
     });
-    
   } catch (err: any) {
     console.error("Error while updating brand:", err);
     res.status(500).json({ message: err.message });
