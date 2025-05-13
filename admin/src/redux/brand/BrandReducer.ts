@@ -36,7 +36,14 @@ const brandReducer = (
         error: null,
         triggerFetch: false,
       };
-
+    case BrandActionTypes.DELETE_SUCCESS:
+       return {
+         ...state,
+         brands: state.brands.filter((brand) => brand._id !== action.payload),
+         loading: false,
+         error: null,
+       };
+       
     default:
       return state;
   }
@@ -52,13 +59,7 @@ export default brandReducer;
 //         error: null,
 //       };
 
-//     case BrandActionTypes.DELETE_SUCCESS:
-//       return {
-//         ...state,
-//         brands: state.brands.filter((brand) => brand._id !== action.payload),
-//         loading: false,
-//         error: null,
-//       };
+
 
 //     case BrandActionTypes.DELETE_MULTIPLE_SUCCESS:
 //       return {

@@ -8,6 +8,7 @@ export const metadata: Metadata = {
 
 import Header from "@/components/Header";
 import Navbar from "@/components/Navbar";
+import Notifications from "@/components/Notifications/Notifications";
 import { ReduxProvider } from "@/redux/ReudxProvider";
 export default function RootLayout({
   children,
@@ -25,6 +26,7 @@ export default function RootLayout({
           <main className="w-full">
             <ReduxProvider>
               {children}
+              <Notifications />
             </ReduxProvider>
           </main>
         </div>

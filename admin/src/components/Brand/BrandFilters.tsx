@@ -7,6 +7,7 @@ import { FilterSearchInput } from "../FilterComponents/FilterSearchInput"
 import { SelectFilter } from "../FilterComponents/SelectFilter"
 import { SortFilterPopover } from "../FilterComponents/SelectFilterPoopover"
 import Pagination from "../Pagination"
+import { Button } from "../ui/button"
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip"
 
 export interface SortOption {
@@ -56,7 +57,7 @@ const sortOptions: SortOption[] = [
 const BrandFilters = ({ totalItems }: { totalItems: number }) => {
 
   const searchParams = useSearchParams()
-  const { getParam, setBulk } = useQueryParams({ page: "1", limit: "10" })
+  const { getParam, setBulk, resetParams } = useQueryParams({ page: "1", limit: "10" })
 
   const parseNumber = (value: string | null): number | null => {
     if (!value) return null
@@ -115,6 +116,9 @@ const BrandFilters = ({ totalItems }: { totalItems: number }) => {
     setBulk({ "page": val })
   }
 
+  const handleResetFilter = () => {
+    resetParams()
+  }
 
   return (
     <div className="flex flex-wrap items-end gap-4 mt-3">
@@ -153,6 +157,8 @@ const BrandFilters = ({ totalItems }: { totalItems: number }) => {
             { label: 'All', value: null },
           ]}
         />
+
+        <Button onClick={handleResetFilter} variant="outline">Reset</Button>
 
         <div className="fixed left-1/2 bottom-10 -translate-x-1/2 bg-white shadow-sm px-5 py-1 shadow-gray-300 rounded-2xl">
           <Pagination totalItems={totalItems} limit={limit} currentPage={page} setPage={handlePage} />

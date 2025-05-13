@@ -1,4 +1,5 @@
 import axios, { AxiosError } from "axios";
+import { showNotification } from "../notification/notificationActions";
 import { AppDispatch } from "../store";
 import { BrandActionTypes, BrandQueryParams, BrandType } from "./BrandTypes";
 
@@ -27,44 +28,75 @@ export const fetchBrands =
 
       return response.data;
     } catch (err) {
-      const error = err as AxiosError<{ message?: string }>;
+      const error = err as AxiosError<{ message?: string; error?: string }>;
       const errorMessage =
         error.response?.data?.message || "Failed to fetch brands";
-
-      // dispatch(showNotification(errorMessage, "error"));
+      dispatch(
+        showNotification({
+          message: errorMessage || "",
+          subMessage: error.response?.data?.error,
+          type: "error",
+        })
+      );
       return Promise.reject(errorMessage);
     }
   };
 
-// Delete Single Brand
-// export const deleteBrand =
-//   (id: string) =>
-//   async (dispatch: AppDispatch): Promise<void> => {
-//     try {
-//       dispatch({ type: BrandActionTypes.DELETE_SUCCESS, payload: id });
+// delete single brand
+export const deleteBrand =
+  (id: string) =>
+  async (dispatch: AppDispatch): Promise<string> => {
+    dispatch({ type: BrandActionTypes.REQUEST });
+    try {
+      await axios.delete(
+        `${process.env.NEXT_PUBLIC_API_BACKEND_URI}/api/brands/${id}`
+      );
+      dispatch({ type: BrandActionTypes.TRIGGER_FETCH });
+      dispatch(
+        showNotification({
+          message: "Brand deleted successfully",
+          subMessage: `Brand ID: ${id}`,
+          type: "success",
+        })
+      );
+      return id;
+    } catch (err) {
+      const error = err as AxiosError<{ message?: string; error?: string }>;
+      const errorMessage =
+        error.response?.data?.message || "Failed to delete brand";
 
-//       const response = await axios.delete(
-//         `${process.env.NEXT_PUBLIC_API_BACKEND_URI}/api/brands/${id}`,
-//         {
-//           headers: {
-//             "Content-Type": "application/json",
-//           },
-//         }
+      dispatch(
+        showNotification({
+          message: errorMessage,
+          subMessage: error.response?.data?.error,
+          type: "error",
+        })
+      );
+
+      return Promise.reject(errorMessage);
+    }
+  };
+
+//update status of single brand
+// export const updateStatus =(id:string)=> async (dispatch:AppDispatch):Promise<string[]> =>{
+
+//   dispatch({type:BrandActionTypes.REQUEST})
+
+//   try{
+//     await axios.delete(`${process.env.NEXT_PUBLIC_API_BACKEND_URI}/api/brands`)
+
+//   }catch (err) {
+//       const error = err as AxiosError<{ message?: string; error?: string }>;
+//       const errorMessage = error.response?.data?.message || "Failed to delete brands";
+
+//       dispatch(
+//         showNotification({
+//           message: errorMessage,
+//           subMessage: error.response?.data?.error,
+//           type: "error",
+//         })
 //       );
-
-//       dispatch({ type: BrandActionTypes.TRIGGER_FETCH });
-//       // dispatch(showNotification("Brand deleted successfully", "success"));
-
-//       return response.data;
-//     } catch (err) {
-//       const error = err as AxiosError<{ message?: string }>;
-//       const errorMessage =
-//         error.response?.data?.message || "Failed to delete brand";
-
-//       // dispatch(showNotification(errorMessage, "error"));
-//       return Promise.reject(errorMessage);
-//     }
-//   };
+// }
 
 // Delete Multiple Brands
 // export const deleteMultipleBrands =

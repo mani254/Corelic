@@ -44,7 +44,7 @@ const BrandsPage = ({ fetchBrands, brandData }: BrandsPageProps) => {
     }
     fetchBrandsData()
 
-  }, [searchParams, fetchBrands]);
+  }, [searchParams, fetchBrands, brandData.triggerFetch]);
 
   useEffect(() => {
     setAllSelected(
