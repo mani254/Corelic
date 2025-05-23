@@ -15,7 +15,7 @@ import { connect, ConnectedProps } from "react-redux";
 type BrandsPageProps = ConnectedProps<typeof connector>;
 
 const BrandsPage = ({ fetchBrands, brandData }: BrandsPageProps) => {
-  const { brands, loading } = brandData;
+  const { brands, fetchLoading } = brandData;
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [allSelected, setAllSelected] = useState<boolean>(false);
   const [totalItems, setTotalItems] = useState<number>(0)
@@ -44,7 +44,7 @@ const BrandsPage = ({ fetchBrands, brandData }: BrandsPageProps) => {
     }
     fetchBrandsData()
 
-  }, [searchParams, fetchBrands, brandData.triggerFetch]);
+  }, [searchParams, fetchBrands]);
 
   useEffect(() => {
     setAllSelected(
@@ -96,7 +96,7 @@ const BrandsPage = ({ fetchBrands, brandData }: BrandsPageProps) => {
             </tr>
           </thead>
           <tbody>
-            {loading ? (
+            {fetchLoading ? (
               <BrandSkeleton />
             ) : brands.length === 0 ? (
               <tr>

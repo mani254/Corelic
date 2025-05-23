@@ -1,5 +1,3 @@
-import { UnknownAction } from "redux";
-
 import {
   NotificationAction,
   NotificationActionTypes,
@@ -13,13 +11,16 @@ const initialState: NotificationState = {
 
 const notificationReducer = (
   state = initialState,
-  action: NotificationAction | UnknownAction
+  action: NotificationAction
 ): NotificationState => {
-  if (!('type' in action)) return state;
-  
+  if (!("type" in action)) return state;
+
   switch (action.type) {
     case NotificationActionTypes.SHOW_NOTIFICATION:
-      const showAction = action as { type: typeof NotificationActionTypes.SHOW_NOTIFICATION; payload: NotificationType };
+      const showAction = action as {
+        type: typeof NotificationActionTypes.SHOW_NOTIFICATION;
+        payload: NotificationType;
+      };
       return {
         notifications: [
           ...state.notifications,
@@ -32,7 +33,10 @@ const notificationReducer = (
         ],
       };
     case NotificationActionTypes.HIDE_NOTIFICATION:
-      const hideAction = action as { type: typeof NotificationActionTypes.HIDE_NOTIFICATION; payload: number };
+      const hideAction = action as {
+        type: typeof NotificationActionTypes.HIDE_NOTIFICATION;
+        payload: number;
+      };
       return {
         notifications: state.notifications.filter(
           (notification) => notification.id !== hideAction.payload

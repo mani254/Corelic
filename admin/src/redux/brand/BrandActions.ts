@@ -3,21 +3,37 @@ import { showNotification } from "../notification/notificationActions";
 import { AppDispatch } from "../store";
 import { BrandActionTypes, BrandQueryParams, BrandType } from "./BrandTypes";
 
+const API_URL = process.env.NEXT_PUBLIC_API_BACKEND_URI;
+
+const handleError = (
+  err: unknown,
+  defaultMessage: string,
+  dispatch: AppDispatch
+): Promise<never> => {
+  const error = err as AxiosError<{ message?: string; error?: string }>;
+  const errorMessage = error.response?.data?.message || defaultMessage;
+
+  dispatch(
+    showNotification({
+      message: errorMessage,
+      subMessage: error.response?.data?.error,
+      type: "error",
+    })
+  );
+
+  return Promise.reject(errorMessage);
+};
+
 export const fetchBrands =
-  (params?: BrandQueryParams) =>
-  async (
-    dispatch: AppDispatch
-  ): Promise<{ brands: BrandType[]; totalItems: number }> => {
-    dispatch({ type: BrandActionTypes.REQUEST });
+  (params?: BrandQueryParams) => async (dispatch: AppDispatch) => {
+    dispatch({ type: BrandActionTypes.FETCH_REQUEST });
 
     try {
       const response = await axios.get<{
         brands: BrandType[];
         totalItems: number;
-      }>(`${process.env.NEXT_PUBLIC_API_BACKEND_URI}/api/brands`, {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
+      }>(`${API_URL}/api/brands`, {
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
         params,
       });
 
@@ -28,106 +44,168 @@ export const fetchBrands =
 
       return response.data;
     } catch (err) {
-      const error = err as AxiosError<{ message?: string; error?: string }>;
-      const errorMessage =
-        error.response?.data?.message || "Failed to fetch brands";
-      dispatch(
-        showNotification({
-          message: errorMessage || "",
-          subMessage: error.response?.data?.error,
-          type: "error",
-        })
-      );
-      return Promise.reject(errorMessage);
+      return handleError(err, "Failed to fetch brands", dispatch);
     }
   };
 
-// delete single brand
-export const deleteBrand =
-  (id: string) =>
-  async (dispatch: AppDispatch): Promise<string> => {
-    dispatch({ type: BrandActionTypes.REQUEST });
+export const addBrand =
+  (brandData: FormData) => async (dispatch: AppDispatch) => {
+    dispatch({ type: BrandActionTypes.ADD_REQUEST });
+
     try {
-      await axios.delete(
-        `${process.env.NEXT_PUBLIC_API_BACKEND_URI}/api/brands/${id}`
+      const response = await axios.post<{ brand: BrandType }>(
+        `${API_URL}/api/brands`,
+        brandData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
       );
-      dispatch({ type: BrandActionTypes.TRIGGER_FETCH });
+
+      dispatch({
+        type: BrandActionTypes.ADD_SUCCESS,
+        payload: response.data.brand,
+      });
+
       dispatch(
         showNotification({
-          message: "Brand deleted successfully",
-          subMessage: `Brand ID: ${id}`,
+          message: "Brand added successfully",
           type: "success",
         })
       );
-      return id;
+
+      return response.data.brand;
     } catch (err) {
-      const error = err as AxiosError<{ message?: string; error?: string }>;
-      const errorMessage =
-        error.response?.data?.message || "Failed to delete brand";
-
-      dispatch(
-        showNotification({
-          message: errorMessage,
-          subMessage: error.response?.data?.error,
-          type: "error",
-        })
-      );
-
-      return Promise.reject(errorMessage);
+      return handleError(err, "Failed to add brand", dispatch);
     }
   };
 
-//update status of single brand
-// export const updateStatus =(id:string)=> async (dispatch:AppDispatch):Promise<string[]> =>{
+export const updateBrand =
+  (id: string, brandData: FormData) => async (dispatch: AppDispatch) => {
+    dispatch({ type: BrandActionTypes.UPDATE_REQUEST });
 
-//   dispatch({type:BrandActionTypes.REQUEST})
+    try {
+      const response = await axios.put<{ brand: BrandType }>(
+        `${API_URL}/api/brands/${id}`,
+        brandData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
 
-//   try{
-//     await axios.delete(`${process.env.NEXT_PUBLIC_API_BACKEND_URI}/api/brands`)
+      dispatch({
+        type: BrandActionTypes.UPDATE_SUCCESS,
+        payload: response.data.brand,
+      });
 
-//   }catch (err) {
-//       const error = err as AxiosError<{ message?: string; error?: string }>;
-//       const errorMessage = error.response?.data?.message || "Failed to delete brands";
+      dispatch(
+        showNotification({
+          message: "Brand updated successfully",
+          type: "success",
+        })
+      );
 
-//       dispatch(
-//         showNotification({
-//           message: errorMessage,
-//           subMessage: error.response?.data?.error,
-//           type: "error",
-//         })
-//       );
-// }
+      return response.data.brand;
+    } catch (err) {
+      return handleError(err, "Failed to update brand", dispatch);
+    }
+  };
 
-// Delete Multiple Brands
-// export const deleteMultipleBrands =
-//   (selectedBrands: string[]) =>
-//   async (dispatch: AppDispatch): Promise<void> => {
-//     try {
-//       dispatch({
-//         type: BrandActionTypes.DELETE_MULTIPLE_SUCCESS,
-//         payload: selectedBrands,
-//       });
+export const deleteBrand = (id: string) => async (dispatch: AppDispatch) => {
+  dispatch({ type: BrandActionTypes.DELETE_REQUEST });
+  try {
+    await axios.delete(`${API_URL}/api/brands/${id}`);
 
-//       const response = await axios.delete(
-//         `${process.env.NEXT_PUBLIC_API_BACKEND_URI}/api/brands`,
-//         {
-//           data: { ids: selectedBrands },
-//           headers: {
-//             "Content-Type": "application/json",
-//           },
-//         }
-//       );
+    dispatch({
+      type: BrandActionTypes.DELETE_SUCCESS,
+      payload: id,
+    });
 
-//       dispatch({ type: BrandActionTypes.TRIGGER_FETCH });
-//       // dispatch(showNotification("Brands deleted successfully", "success"));
+    dispatch(
+      showNotification({
+        message: "Brand deleted successfully",
+        type: "success",
+      })
+    );
 
-//       return response.data;
-//     } catch (err) {
-//       const error = err as AxiosError<{ message?: string }>;
-//       const errorMessage =
-//         error.response?.data?.message || "Failed to delete brands";
+    return id;
+  } catch (err) {
+    return handleError(err, "Failed to delete brand", dispatch);
+  }
+};
 
-//       // dispatch(showNotification(errorMessage, "error"));
-//       return Promise.reject(errorMessage);
-//     }
-//   };
+export const deleteMultipleBrands =
+  (ids: string[]) => async (dispatch: AppDispatch) => {
+    dispatch({ type: BrandActionTypes.DELETE_MULTIPLE_REQUEST });
+
+    try {
+      await axios.delete(`${API_URL}/api/brands`, { data: { ids } });
+
+      dispatch({
+        type: BrandActionTypes.DELETE_MULTIPLE_SUCCESS,
+        payload: ids,
+      });
+
+      dispatch(
+        showNotification({
+          message: `Successfully deleted ${ids.length} brands`,
+          type: "success",
+        })
+      );
+
+      return ids;
+    } catch (err) {
+      return handleError(err, "Failed to delete brands", dispatch);
+    }
+  };
+
+export const updateBrandStatus =
+  (id: string, status: "active" | "inactive") =>
+  async (dispatch: AppDispatch) => {
+    dispatch({ type: BrandActionTypes.UPDATE_REQUEST });
+
+    try {
+      await axios.patch(`${API_URL}/api/brands/${id}`, { status });
+
+      dispatch({
+        type: BrandActionTypes.UPDATE_STATUS_SUCCESS,
+        payload: { ids: [id], status },
+      });
+
+      dispatch(
+        showNotification({
+          message: `Successfully updated brand status to ${status}`,
+          type: "success",
+        })
+      );
+
+      return { id, status };
+    } catch (err) {
+      return handleError(err, "Failed to update brand status", dispatch);
+    }
+  };
+
+export const updateMultipleBrandsStatus =
+  (ids: string[], status: "active" | "inactive") =>
+  async (dispatch: AppDispatch) => {
+    dispatch({ type: BrandActionTypes.UPDATE_REQUEST });
+
+    try {
+      await axios.patch(`${API_URL}/api/brands/status`, { ids, status });
+
+      dispatch({
+        type: BrandActionTypes.UPDATE_STATUS_SUCCESS,
+        payload: { ids, status },
+      });
+
+      dispatch(
+        showNotification({
+          message: `Successfully updated status of ${ids.length} brands to ${status}`,
+          type: "success",
+        })
+      );
+
+      return { ids, status };
+    } catch (err) {
+      return handleError(err, "Failed to update brands status", dispatch);
+    }
+  };

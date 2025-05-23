@@ -1,19 +1,20 @@
-import { configureStore } from "@reduxjs/toolkit";
+import { configureStore, Reducer } from "@reduxjs/toolkit";
 import brandReducer from "./brand/BrandReducer";
+import { BrandState } from "./brand/BrandTypes";
 import notificationReducer from "./notification/notificationReducer";
-// import productReducer from "./products/ProductReducer";
+import { NotificationState } from "./notification/notificationTypes";
 
 const store = configureStore({
   reducer: {
-    brand: brandReducer,
-    notification: notificationReducer, 
+    notification: notificationReducer as Reducer<NotificationState>,
+    brand: brandReducer as Reducer<BrandState>,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: false,
     }),
   devTools: {
-    name: "Corelic Redux Store", 
+    name: "Corelic Redux Store",
     trace: true,
     traceLimit: 25,
   },

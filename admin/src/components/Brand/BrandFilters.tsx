@@ -6,7 +6,7 @@ import { useQueryParams } from "../../hooks/useQueryState"
 import { FilterSearchInput } from "../FilterComponents/FilterSearchInput"
 import { SelectFilter } from "../FilterComponents/SelectFilter"
 import { SortFilterPopover } from "../FilterComponents/SelectFilterPoopover"
-import Pagination from "../Pagination"
+import Pagination from "../ReusableComponents/Pagination"
 import { Button } from "../ui/button"
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip"
 

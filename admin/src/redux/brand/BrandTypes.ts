@@ -44,33 +44,41 @@ export interface BrandQueryParams {
 export interface BrandState {
   brands: BrandType[];
   singleBrand: Partial<BrandType>;
-  loading: boolean;
+  fetchLoading: boolean;
+  addLoading: boolean;
+  updateLoading: boolean;
+  deleteLoading: boolean;
   error: unknown;
-  triggerFetch: boolean;
 }
 
 // Action Types
 export const enum BrandActionTypes {
-  REQUEST = "BRANDS_REQUEST",
-  FAILURE = "BRANDS_FAILURE",
-  FETCH_SUCCESS = "FETCH_BRANDS_SUCCESS",
-  ADD_SUCCESS = "ADD_BRAND_SUCCESS",
-  DELETE_SUCCESS = "DELETE_BRAND_SUCCESS",
-  DELETE_MULTIPLE_SUCCESS = "DELETE_MULTIPLE_BRANDS_SUCCESS",
-  UPDATE_STATUS_SUCCESS = "UPDATE_BRAND_STATUS_SUCCESS",
-  TRIGGER_FETCH = "TRIGGER_FETCH",
+  FETCH_REQUEST = "BRANDS_FETCH_REQUEST",
+  ADD_REQUEST = "BRAND_ADD_REQUEST",
+  UPDATE_REQUEST = "BRAND_UPDATE_REQUEST",
+  DELETE_REQUEST = "BRAND_DELETE_REQUEST",
+  DELETE_MULTIPLE_REQUEST = "BRANDS_DELETE_MULTIPLE_REQUEST",
+  FETCH_SUCCESS = "BRANDS_FETCH_SUCCESS",
+  ADD_SUCCESS = "BRAND_ADD_SUCCESS",
+  UPDATE_SUCCESS = "BRAND_UPDATE_SUCCESS",
+  DELETE_SUCCESS = "BRAND_DELETE_SUCCESS",
+  DELETE_MULTIPLE_SUCCESS = "BRANDS_DELETE_MULTIPLE_SUCCESS",
+  UPDATE_STATUS_SUCCESS = "BRANDS_STATUS_UPDATE_SUCCESS",
 }
 
 // Action Interfaces (Discriminated Union)
-export type BrandAction =
-  | { type: BrandActionTypes.REQUEST }
-  | { type: BrandActionTypes.FAILURE; payload: unknown }
+export type BrandActions =
+  | { type: BrandActionTypes.FETCH_REQUEST }
+  | { type: BrandActionTypes.ADD_REQUEST }
+  | { type: BrandActionTypes.UPDATE_REQUEST }
+  | { type: BrandActionTypes.DELETE_REQUEST }
+  | { type: BrandActionTypes.DELETE_MULTIPLE_REQUEST }
   | { type: BrandActionTypes.FETCH_SUCCESS; payload: BrandType[] }
   | { type: BrandActionTypes.ADD_SUCCESS; payload: BrandType }
+  | { type: BrandActionTypes.UPDATE_SUCCESS; payload: BrandType }
   | { type: BrandActionTypes.DELETE_SUCCESS; payload: string }
   | { type: BrandActionTypes.DELETE_MULTIPLE_SUCCESS; payload: string[] }
   | {
       type: BrandActionTypes.UPDATE_STATUS_SUCCESS;
       payload: { ids: string[]; status: "active" | "inactive" };
-    }
-  | { type: BrandActionTypes.TRIGGER_FETCH };
+    };

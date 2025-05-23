@@ -3,7 +3,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { deleteBrand } from "@/redux/brand/BrandActions";
+import { deleteBrand, updateBrandStatus } from "@/redux/brand/BrandActions";
 import { BrandType } from "@/redux/brand/BrandTypes";
 import { AppDispatch } from "@/redux/store";
 import { Ellipsis } from 'lucide-react';
@@ -24,9 +24,10 @@ interface BrandRowOwnProps {
   onCheckboxChange: (id: string) => void;
   selectedBrands: string[];
 }
+
 type BrandRowProps = BrandRowOwnProps & PropsFromRedux;
 
-const BrandRow = ({ brand, isSelected, onCheckboxChange, deleteBrand }: BrandRowProps) => {
+const BrandRow = ({ brand, isSelected, onCheckboxChange, deleteBrand, updateBrandStatus }: BrandRowProps) => {
 
   const [isReviewOpen, setIsReviewOpen] = useState<boolean>(false)
 
@@ -43,6 +44,10 @@ const BrandRow = ({ brand, isSelected, onCheckboxChange, deleteBrand }: BrandRow
 
   async function handleDelete(id: string) {
     await deleteBrand(id)
+  }
+
+  async function handleUpdateSingleStatus(id: string, status: 'active' | 'inactive') {
+    await updateBrandStatus(id, status)
   }
 
   return (
@@ -86,6 +91,7 @@ const BrandRow = ({ brand, isSelected, onCheckboxChange, deleteBrand }: BrandRow
                 id={brand._id}
                 onView={handleOnView}
                 onDelete={handleDelete}
+                onStatusChange={handleUpdateSingleStatus}
               >
               </BrandActions>
             </PopoverContent>
@@ -105,7 +111,9 @@ const BrandRow = ({ brand, isSelected, onCheckboxChange, deleteBrand }: BrandRow
 
 const mapDispatchToProps = (dispatch: AppDispatch) => ({
   deleteBrand: (id: string) => dispatch(deleteBrand(id)),
+  updateBrandStatus: (id: string, status: 'active' | 'inactive') => dispatch(updateBrandStatus(id, status)),
 });
+
 const connector = connect(null, mapDispatchToProps);
 
 export default connector(BrandRow)

@@ -1,3 +1,4 @@
+import { DeleteAlert } from "@/components/ui/DeleteAlert";
 import {
   ChevronRight,
   Eye,
@@ -24,7 +25,7 @@ const BrandActions: React.FC<BrandActionsProps> = ({
   const [showStatusMenu, setShowStatusMenu] = useState(false);
 
   return (
-    <ul className="bg-white rounded-xl shadow-md w-max p-1 text-xs z-10 relative text-gray-700" onClick={(e) => { e.stopPropagation() }}>
+    <ul className="bg-white rounded-xl shadow-md w-max p-1 text-[14px] z-10 relative text-gray-700" onClick={(e) => { e.stopPropagation() }}>
       <li
         className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 cursor-pointer"
         onClick={() => onEdit?.(id)}
@@ -33,13 +34,16 @@ const BrandActions: React.FC<BrandActionsProps> = ({
         <span>Edit</span>
       </li>
 
-      <li
-        className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 cursor-pointer"
-        onClick={() => onDelete?.(id)}
+      <DeleteAlert
+        title="Delete brand?"
+        description="Are you sure you want to delete this brand? This action cannot be undone."
+        onDelete={() => onDelete?.(id)}
       >
-        <Trash2 size={16} />
-        <span>Delete</span>
-      </li>
+        <li className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 cursor-pointer">
+          <Trash2 size={16} />
+          <span>Delete</span>
+        </li>
+      </DeleteAlert>
 
       <li
         className="relative flex items-center gap-2 px-3 py-2 hover:bg-gray-100 cursor-pointer"
