@@ -132,7 +132,7 @@ const BrandsPage = ({ fetchBrands, brandData }: BrandsPageProps) => {
                   brand={brand}
                   isSelected={selectedBrands.includes(brand._id)}
                   onCheckboxChange={handleCheckboxChange}
-                  selectedBrands={selectedBrands}
+                  mutlipleSelect={selectedBrands.length > 0}
                 />
               ))
             )}

@@ -1,12 +1,13 @@
 "use client"
 import { ArrowRight, Globe, House, LayoutGrid, LogOut, Menu, User } from "lucide-react";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import logo from '../assets/images/logo.png';
-
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const pathname = usePathname();
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -43,6 +44,10 @@ export default function Header() {
   const handleSignout = useCallback(() => {
     console.log('handle sign out')
   }, [])
+
+  if (pathname === '/login' || pathname === '/register') {
+    return null;
+  }
 
   return (
     <header className="shadow-sm shadow-orange-100 bg-white fixed w-full left-0 top-0 z-40">

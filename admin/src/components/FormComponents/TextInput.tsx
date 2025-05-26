@@ -28,7 +28,7 @@ export const TextInput = React.forwardRef<HTMLInputElement, TextInputProps>(
     return (
       <div className={clsx("input-wrapper", wrapperClass)}>
         {label && (
-          <label htmlFor={inputId} className={clsx("block text-sm font-medium", labelClass)}>
+          <label htmlFor={inputId} className={clsx("block text-sm font-medium mb-[6px] ml-1", labelClass)}>
             {label}
           </label>
         )}

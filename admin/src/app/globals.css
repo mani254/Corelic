@@ -66,9 +66,9 @@
   --color-secondary-800: hsl(var(--secondary-color), 20%);
   --color-secondary-900: hsl(var(--secondary-color), 10%);
 
-  /* --text-xs: 14px;
+  --text-xs: 14px;
   --text-sm: 15px;
-  --text-md: 18px; */
+  --text-md: 18px;
 
   --font-heading: "Bricolage Grotesque", sans-serif;
   --font-content: "Open Sans", sans-serif;

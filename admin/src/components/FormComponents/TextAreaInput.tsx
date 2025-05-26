@@ -27,7 +27,7 @@ export const TextareaInput: React.FC<TextareaInputProps> = ({
   return (
     <div className={clsx("input-wrapper", wrapperClass)}>
       {label && (
-        <label htmlFor={inputId} className={clsx("block text-sm font-medium", labelClass)}>
+        <label htmlFor={inputId} className={clsx("block text-sm mb-[6px] ml-1 font-medium", labelClass)}>
           {label}
         </label>
       )}

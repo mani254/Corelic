@@ -22,12 +22,12 @@ interface BrandRowOwnProps {
   brand: BrandType;
   isSelected: boolean;
   onCheckboxChange: (id: string) => void;
-  selectedBrands: string[];
+  mutlipleSelect: boolean;
 }
 
 type BrandRowProps = BrandRowOwnProps & PropsFromRedux;
 
-const BrandRow = ({ brand, isSelected, onCheckboxChange, deleteBrand, updateBrandStatus }: BrandRowProps) => {
+const BrandRow = ({ brand, isSelected, mutlipleSelect, onCheckboxChange, deleteBrand, updateBrandStatus }: BrandRowProps) => {
 
   const [isReviewOpen, setIsReviewOpen] = useState<boolean>(false)
 
@@ -77,25 +77,33 @@ const BrandRow = ({ brand, isSelected, onCheckboxChange, deleteBrand, updateBran
           </Badge>
         </td>
         <td className="px-6 py-[6px]">
-          <Popover>
-            <PopoverTrigger asChild>
-              <div
-                onClick={(e) => { e.stopPropagation() }}
-                className="p-2 bg-slate-100 rounded-full w-[35px] cursor-pointer"
-              >
-                <Ellipsis size={18} />
-              </div>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" side="left" sideOffset={10} align="start" alignOffset={10} >
-              <BrandActions
-                id={brand._id}
-                onView={handleOnView}
-                onDelete={handleDelete}
-                onStatusChange={handleUpdateSingleStatus}
-              >
-              </BrandActions>
-            </PopoverContent>
-          </Popover>
+          {mutlipleSelect ? (<div
+            onClick={(e) => { e.stopPropagation() }}
+            className="p-2 bg-slate-100 rounded-full w-[35px] cursor-pointer"
+          >
+            <Ellipsis size={18} />
+          </div>) : (
+            <Popover>
+              <PopoverTrigger asChild>
+                <div
+                  onClick={(e) => { e.stopPropagation() }}
+                  className="p-2 bg-slate-100 rounded-full w-[35px] cursor-pointer"
+                >
+                  <Ellipsis size={18} />
+                </div>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" side="left" sideOffset={10} align="start" alignOffset={10} >
+                <BrandActions
+                  id={brand._id}
+                  onView={handleOnView}
+                  onDelete={handleDelete}
+                  onStatusChange={handleUpdateSingleStatus}
+                >
+                </BrandActions>
+              </PopoverContent>
+            </Popover >
+          )}
+
         </td>
       </tr>
       <BrandDetailsSheet

@@ -1,12 +1,11 @@
 "use client";
 
 import navItems, { ItemType } from "@/utils/navbar";
-import { ChevronDown } from "lucide-react"; // Import an arrow icon
+import { ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useMemo } from "react";
 
-// Helper: Find if the route is active or any of its children are active
 const isRouteActive = (item: ItemType, currentPath: string): boolean => {
   if (item.route === currentPath) return true;
   if (item.children) {
@@ -59,7 +58,6 @@ const Sidebar = () => {
                 </div>
                 {level > 0 && (<div className={`absolute h-[2px] w-2  bg-gray-300 ${shouldHighlight && "bg-gray-500"}  left-0 top-1/2`}></div>)}
 
-                {/* Only show arrow if it has children */}
                 {item.children && (
                   <ChevronDown
                     className={`w-4 h-4 transition-transform duration-300 ${isExpanded ? "rotate-180" : "rotate-0"}`}
@@ -67,7 +65,6 @@ const Sidebar = () => {
                 )}
               </Link>
 
-              {/* If it has children and is expanded, show them */}
               {item.children && isExpanded && (
                 <div className={`mt-1 ml-5 border-l border-gray-300`}>
                   {renderNavItems(item.children, level + 1)}
@@ -80,10 +77,17 @@ const Sidebar = () => {
     );
   };
 
+  // Hide navbar on login and register routes
+  if (pathname === '/login' || pathname === '/register') {
+    return null;
+  }
+
   return (
-    <aside className="w-64 px-4 pt-[65px] h-full overflow-auto min-w-[250px] bg-white border border-gray-100 shadow-sm shadow-gray-300">
-      {renderNavItems(navItems)}
-    </aside>
+    <div className="sticky top-0">
+      <aside className="w-64 px-4 pt-[65px] h-full overflow-auto min-w-[250px] bg-white border border-gray-100 shadow-sm shadow-gray-300">
+        {renderNavItems(navItems)}
+      </aside>
+    </div>
   );
 };
 

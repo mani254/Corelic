@@ -19,9 +19,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ReduxProvider>
           <Header />
           <div className="flex h-screen overflow-auto">
-            <div className="sticky top-0">
-              <Navbar />
-            </div>
+            <Navbar />
             <main className="w-full">
               {children}
               <Notifications />
