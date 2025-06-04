@@ -1,15 +1,16 @@
-import { useDispatch, useSelector } from "react-redux";
-import { useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
-import { AppDispatch, RootState } from "@/redux/store";
-import { fetchBrands } from "@/redux/brand/BrandActions";
-import { BrandQueryParams } from "@/redux/brand/BrandTypes";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { bulkUploadBrands, fetchBrands } from "@/redux/brand/BrandActions";
+import { BrandQueryParams } from "@/redux/brand/BrandTypes";
+import { AppDispatch, RootState } from "@/redux/store";
+import { useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import BulkUploadComponent from "../ReusableComponents/BulkUploadComponent";
+import { addBrandRequiredColumns, updateBrandRequiredColumns } from "./BrandBulkUploadData";
 import BrandFilters from "./BrandFilters";
 import BrandRow from "./BrandRow";
 import BrandSkeleton from "./BrandSkeleton";
-import BulkUploadComponent from "../ReusableComponents/BulkUploadComponent";
 
 const Brands = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -20,30 +21,30 @@ const Brands = () => {
   const [totalItems, setTotalItems] = useState<number>(0);
   const searchParams = useSearchParams();
 
+
+  const fetchBrandsData = useCallback(async () => {
+    const params: BrandQueryParams = {
+      search: searchParams.get("search") || undefined,
+      sortBy: searchParams.get("sortBy") || undefined,
+      orderBy: searchParams.get("orderBy") || undefined,
+      status: searchParams.get("status") as "active" | "inactive" || undefined,
+      page: searchParams.get("page") ? Number(searchParams.get("page")) : undefined,
+      limit: searchParams.get("limit") ? Number(searchParams.get("limit")) : undefined,
+    };
+
+    try {
+      const data = await dispatch(fetchBrands(params))
+      setTotalItems(data.totalItems);
+      setSelectedBrands([]);
+    } catch (err) {
+      console.error("Error fetching brands:", err);
+    }
+  }, [dispatch, searchParams])
+
   useEffect(() => {
     if (!searchParams.get("page")) return;
-
-    async function fetchBrandsData() {
-      const params: BrandQueryParams = {
-        search: searchParams.get("search") || undefined,
-        sortBy: searchParams.get("sortBy") || undefined,
-        orderBy: searchParams.get("orderBy") || undefined,
-        status: searchParams.get("status") as "active" | "inactive" || undefined,
-        page: searchParams.get("page") ? Number(searchParams.get("page")) : undefined,
-        limit: searchParams.get("limit") ? Number(searchParams.get("limit")) : undefined,
-      };
-
-      try {
-        const data = await dispatch(fetchBrands(params))
-        setTotalItems(data.totalItems);
-        setSelectedBrands([]);
-      } catch (err) {
-        console.error("Error fetching brands:", err);
-      }
-    }
-
     fetchBrandsData();
-  }, [searchParams, dispatch]);
+  }, [searchParams, fetchBrandsData]);
 
   useEffect(() => {
     setAllSelected(
@@ -66,12 +67,23 @@ const Brands = () => {
     );
   }, []);
 
+  const handleBulkUpload = async ({ uploadType, uniqueField, data }: { uploadType: "add" | "update", uniqueField: string, data: unknown[] }) => {
+    try {
+      await dispatch(bulkUploadBrands(uploadType, uniqueField, data))
+      fetchBrandsData()
+    }
+    catch (err) {
+      console.error(err)
+    }
+
+  }
+
   return (
     <div>
       <div className="mt-1 py-2 flex items-center justify-between border-b border-gray-300">
         <h5>Brands</h5>
         <div className="flex gap-3">
-          <BulkUploadComponent />
+          <BulkUploadComponent addRequiredCols={addBrandRequiredColumns} updateRequiredCols={updateBrandRequiredColumns} handleBulkUpload={handleBulkUpload} />
           <Button variant="ghost" className="font-light">
             Export
           </Button>

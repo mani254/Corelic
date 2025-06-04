@@ -142,8 +142,8 @@ class BulkUploader {
     this.columnsConfig[index].mappedTo = selectedHeader;
   }
 
-  validateRequiredMappings(): void {
-    const unmapped = this.requiredColumns.filter((req) => {
+  validateRequiredMappings(requiredColumns: string[]): void {
+    const unmapped = requiredColumns.filter((req) => {
       const col = this.columnsConfig.find((c) => c.columnName === req);
       return !col || !col.mappedTo;
     });
@@ -154,8 +154,6 @@ class BulkUploader {
   }
 
   parseAndValidateRows(): Record<string, unknown>[] {
-    this.validateRequiredMappings();
-
     const mappedFields = this.columnsConfig.filter((col) => col.mappedTo);
     const parsedRows: Record<string, unknown>[] = [];
     const errors: RowError[] = [];

@@ -41,3 +41,6 @@ export const brandColumnsConfig: ColumnConfig[] = [
     mappedTo: null,
   },
 ];
+
+export const addBrandRequiredColumns: string[] = ["title", "image"];
+export const updateBrandRequiredColumns: string[] = ["title"];

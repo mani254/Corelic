@@ -14,7 +14,6 @@ export interface BrandType extends Document {
   image?: {
     url?: string;
     alt?: string;
-    publicId?: string;
   };
   createdAt: Date;
   updatedAt: Date;

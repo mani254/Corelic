@@ -10,13 +10,21 @@ import { brandColumnsConfig } from "../Brand/BrandBulkUploadData";
 import { BulkUploadFileModal } from "./BulkUploadFileModal";
 import BulkUploadMapping from "./BulkUploadMapping";
 
-function BulkUploadComponent() {
+function BulkUploadComponent({ addRequiredCols, updateRequiredCols, handleBulkUpload }: {
+  addRequiredCols: string[],
+  updateRequiredCols: string[],
+  handleBulkUpload: (params: {
+    uploadType: "add" | "update",
+    uniqueField: string,
+    data: unknown[]
+  }) => Promise<void>;
+}) {
 
   const dispatch = useDispatch<AppDispatch>();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [requiredColumns, setRequiredColumns] = useState<string[]>(["title"]);
   const [bulkUploader, setBulkUploader] = useState<BulkUploader | null>(null);
   const [showMapping, setShowMapping] = useState<boolean>(false);
+  const [dialogOpen, setDialogOpen] = useState<boolean>(false);
 
   useEffect(() => {
     if (!selectedFile) return;
@@ -33,14 +41,15 @@ function BulkUploadComponent() {
           size: selectedFile.size,
         },
         columnsConfig: brandColumnsConfig,
-        requiredColumns: requiredColumns,
+        requiredColumns: updateRequiredCols,
       });
 
       setBulkUploader(uploader);
     };
 
     setupUploader();
-  }, [selectedFile, requiredColumns]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedFile]);
 
   const handleFileChange = (file: File | null) => {
     const allowedTypes = [
@@ -64,7 +73,7 @@ function BulkUploadComponent() {
   };
 
   return (
-    <Dialog>
+    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogTrigger asChild>
         <Button variant="outline" className="gap-2">
           <UploadCloud className="h-4 w-4" />
@@ -75,7 +84,11 @@ function BulkUploadComponent() {
       {showMapping ? (
         <BulkUploadMapping
           bulkUploader={bulkUploader}
-          setRequiredColumns={setRequiredColumns}
+          setShowMapping={setShowMapping}
+          addRequiredCols={addRequiredCols}
+          updateRequiredCols={updateRequiredCols}
+          handleBulkUpload={handleBulkUpload}
+          setDialogOpen={setDialogOpen}
         />
       ) : (
         <BulkUploadFileModal
@@ -86,6 +99,7 @@ function BulkUploadComponent() {
       )}
     </Dialog>
   );
+
 }
 
 export default BulkUploadComponent;

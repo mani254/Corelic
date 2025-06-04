@@ -24,7 +24,12 @@ export function BulkUploadFileModal({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const downloadSampleSheet = () => {
-    console.log("Downloading sample sheet...");
+    const link = document.createElement('a');
+    link.href = '/sample-csv-files/brands.xlsx';
+    link.download = 'brands-sample.xlsx';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const triggerFileUpload = () => {
@@ -34,7 +39,7 @@ export function BulkUploadFileModal({
   return (
     <DialogContent className="sm:max-w-[750px]">
       <DialogHeader>
-        <DialogTitle className="text-xl flex items-center gap-5">
+        <DialogTitle className="text-md flex items-center gap-5">
           Import Excel or CSV File
         </DialogTitle>
         <DialogDescription className="text-base">

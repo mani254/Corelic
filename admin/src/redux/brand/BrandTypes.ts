@@ -11,7 +11,6 @@ export interface BrandType {
   image?: {
     url?: string;
     alt?: string;
-    publicId?: string;
   };
   createdAt: Date;
   updatedAt: Date;

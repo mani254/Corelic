@@ -158,6 +158,33 @@ export const deleteMultipleBrands =
     }
   };
 
+export const bulkUploadBrands =
+  (uploadType: "add" | "update", uniqueField: string, data: unknown[]) =>
+  async (dispatch: AppDispatch) => {
+    dispatch({ type: BrandActionTypes.UPDATE_REQUEST });
+
+    try {
+      const response = await axios.post<{ message: string }>(
+        `${API_URL}/api/brands/bulkupload`,
+        { uploadType, uniqueField, data },
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+      if (response.data) {
+        dispatch(
+          showNotification({
+            message: "Bulk upload successful",
+            subMessage: response.data.message,
+            type: "success",
+          })
+        );
+      }
+    } catch (err) {
+      return handleError(err, "Bulk upload Failed", dispatch);
+    }
+  };
+
 export const updateBrandStatus =
   (id: string, status: "active" | "inactive") =>
   async (dispatch: AppDispatch) => {

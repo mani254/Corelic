@@ -49,4 +49,4 @@ const fileUpload = (options: fileUploadOptions) => {
   return single ? upload.single(fieldName) : upload.array(fieldName);
 };
 
-export default fileUpload
+export default fileUpload;

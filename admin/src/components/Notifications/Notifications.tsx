@@ -41,7 +41,7 @@ const Notifications = () => {
   }, [notifications, dispatch, timeouts]);
 
   return (
-    <div className="fixed right-10 bottom-10 z-50 w-[350px] group flex flex-col items-end  space-y-[-62px] hover:space-y-3 transition-all duration-300">
+    <div className="fixed right-10 bottom-10 z-[9999] w-[350px] group flex flex-col items-end  space-y-[-62px] hover:space-y-3 transition-all duration-300">
       <AnimatePresence initial={false} mode="popLayout">
         {visible.map((notification) => (
           <motion.div

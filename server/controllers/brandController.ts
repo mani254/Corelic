@@ -8,6 +8,7 @@ import { deleteImage } from "../utils/cloudinary";
 interface BulkUploadRequest<T> {
   data: T[];
   uniqueField: keyof T;
+  uploadType: "add" | "update";
 }
 
 export const fetchBrands = async (
@@ -87,16 +88,15 @@ export const deleteBrand = async (
 
     const delBrand = await brandServices.deleteBrandById(id);
 
-    const publicId = brand.image?.publicId;
-    if (publicId) {
-      deleteImage(publicId);
+    const imageUrl = brand.image?.url;
+    if (imageUrl) {
+      deleteImage(imageUrl);
     }
 
     if (!delBrand) {
       res.status(404).json({
         message: "Failed to delete brand",
         deletedBrand: null,
-        invalidBrand: id,
       });
       return;
     }
@@ -104,7 +104,6 @@ export const deleteBrand = async (
     res.status(200).json({
       message: "Brand deleted successfully",
       deletedBrand: delBrand._id,
-      invalidBrand: null,
     });
   } catch (err: any) {
     console.error("Error deleting brand:", err);
@@ -142,9 +141,9 @@ export const deleteMultipleBrands = async (
 
     if (deletedBrands.length >= 1) {
       deletedBrands.forEach((brand) => {
-        const publicId = brand.image?.publicId;
-        if (publicId) {
-          deleteImage(publicId);
+        const imageUrl = brand.image?.url;
+        if (imageUrl) {
+          deleteImage(imageUrl);
         }
       });
     }
@@ -167,19 +166,19 @@ export const bulkUploadBrands = async (
   res: Response
 ) => {
   try {
-    const { data, uniqueField } = req.body;
+    const { data, uniqueField, uploadType } = req.body;
 
     const normalizedData = normalizeBulkData(data);
 
     const result = await bulkUpsertHandler<BrandType>(
       Brand,
       normalizedData,
-      uniqueField
+      uniqueField,
+      uploadType
     );
 
     res.status(200).json({
-      message: "Bulk operation completed",
-      ...result,
+      message: `${result} brands uploaded successfully`,
     });
   } catch (err: any) {
     console.error("Bulk upload error:", err);
@@ -202,17 +201,16 @@ export const updateBrand = async (
       return;
     }
 
-    let oldPublicId = brand?.image?.publicId;
-    let newPublicId = req.body?.image?.public_id;
-
-    // 1️⃣ Update brand
     const updatedBrand = await brandServices.updateBrand({
       _id: brand._id,
       ...req.body,
     } as BrandType);
 
-    if (oldPublicId && newPublicId && oldPublicId !== newPublicId) {
-      deleteImage(oldPublicId);
+    let oldImage = brand?.image?.url;
+    let newImage = updatedBrand?.image?.url;
+
+    if (oldImage && newImage && oldImage !== newImage) {
+      deleteImage(oldImage);
     }
 
     res.status(200).json({
