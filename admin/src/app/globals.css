@@ -200,4 +200,16 @@
   .hide-scrollbar::-webkit-scrollbar {
     display: none;
   }
+
+  .outer-box {
+    @apply mt-4 p-4 rounded-lg bg-white;
+    box-shadow: 0px 0px 1px 1.5px rgba(45, 45, 45, 0.1);
+  }
+  .outer-box-title {
+    @apply text-sm font-medium text-gray-700 text-center;
+  }
+  input::placeholder,
+  textarea::placeholder {
+    @apply text-[13px];
+  }
 }

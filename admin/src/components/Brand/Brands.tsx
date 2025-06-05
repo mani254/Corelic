@@ -3,6 +3,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { bulkUploadBrands, fetchBrands } from "@/redux/brand/BrandActions";
 import { BrandQueryParams } from "@/redux/brand/BrandTypes";
 import { AppDispatch, RootState } from "@/redux/store";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -93,7 +94,9 @@ const Brands = () => {
           <Button variant="ghost" className="font-light" onClick={handleDownloadCsv}>
             Export
           </Button>
-          <Button>Add Brand</Button>
+          <Link href="brands/add">
+            <Button>Add Brand</Button>
+          </Link>
         </div>
       </div>
 
