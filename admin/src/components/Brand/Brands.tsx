@@ -7,6 +7,7 @@ import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import BulkUploadComponent from "../ReusableComponents/BulkUploadComponent";
+import { downloadJsonAsCsv, JsonObject } from "../ReusableComponents/ExportCsv";
 import { addBrandRequiredColumns, updateBrandRequiredColumns } from "./BrandBulkUploadData";
 import BrandFilters from "./BrandFilters";
 import BrandRow from "./BrandRow";
@@ -67,6 +68,11 @@ const Brands = () => {
     );
   }, []);
 
+  const handleDownloadCsv = async () => {
+    const allBrands = await dispatch(fetchBrands())
+    downloadJsonAsCsv(allBrands.brands as unknown as JsonObject[], { filename: "Brands Data", columns: ['title', 'status'] })
+  }
+
   const handleBulkUpload = async ({ uploadType, uniqueField, data }: { uploadType: "add" | "update", uniqueField: string, data: unknown[] }) => {
     try {
       await dispatch(bulkUploadBrands(uploadType, uniqueField, data))
@@ -84,7 +90,7 @@ const Brands = () => {
         <h5>Brands</h5>
         <div className="flex gap-3">
           <BulkUploadComponent addRequiredCols={addBrandRequiredColumns} updateRequiredCols={updateBrandRequiredColumns} handleBulkUpload={handleBulkUpload} />
-          <Button variant="ghost" className="font-light">
+          <Button variant="ghost" className="font-light" onClick={handleDownloadCsv}>
             Export
           </Button>
           <Button>Add Brand</Button>
