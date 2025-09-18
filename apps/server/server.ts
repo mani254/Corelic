@@ -28,7 +28,9 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 });
 
 app.get("/", (req: Request, res: Response) => {
-  res.send("Server is running!");
+  res.json({
+    message: "Server is running!",
+  });
 });
 
 const PORT: number = Number(process.env.PORT) || 8080;
