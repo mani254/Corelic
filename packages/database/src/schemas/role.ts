@@ -1,5 +1,6 @@
 import mongoose, { InferSchemaType } from "mongoose";
 import { ROLE_ACTIONS } from "../consts/dbConsts";
+import { AuditSchema, SLUG_REGEX, SoftDeleteSchema } from "./_common";
 const { Schema } = mongoose;
 
 const permissionSchema = new Schema(
@@ -20,6 +21,7 @@ const roleSchema = new Schema(
     },
 
     name: { type: String, required: true, trim: true },
+    slug: { type: String, trim: true, lowercase: true, match: SLUG_REGEX },
     description: { type: String, trim: true },
 
     permissions: [permissionSchema],
@@ -28,13 +30,18 @@ const roleSchema = new Schema(
 
     isActive: { type: Boolean, default: true },
     archivedAt: { type: Date },
+    audit: { type: AuditSchema, default: {} },
+    softDelete: { type: SoftDeleteSchema, default: {} },
+    metadata: { type: Map, of: Schema.Types.Mixed, default: {} },
   },
   { timestamps: true }
 );
 
-roleSchema.index({ tenantId: 1, name: 1 }, { unique: true });
+roleSchema.index({ tenantId: 1, slug: 1 }, { unique: true, sparse: true });
+roleSchema.index({ tenantId: 1, name: 1 });
 
 export type PermissionType = InferSchemaType<typeof permissionSchema>;
 export type RoleType = InferSchemaType<typeof roleSchema>;
 
-export default mongoose.model("Role", roleSchema);
+const RoleModal = mongoose.model("Role", roleSchema);
+export default RoleModal;

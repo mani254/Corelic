@@ -1,4 +1,11 @@
 import mongoose, { InferSchemaType, model } from "mongoose";
+import {
+  AddressSchema,
+  AuditSchema,
+  EMAIL_REGEX,
+  SEOSchema,
+  SoftDeleteSchema,
+} from "./_common";
 const { Schema } = mongoose;
 
 const taxSchema = new Schema(
@@ -33,13 +40,7 @@ const paymentSchema = new Schema(
 
 const tenantSchema = new Schema(
   {
-    tenantId: {
-      type: Schema.Types.ObjectId,
-      auto: true,
-      index: true,
-      unique: true,
-    },
-    name: { type: String, required: true, trim: true },
+    name: { type: String, required: true, trim: true, maxlength: 120 },
     slug: {
       type: String,
       required: true,
@@ -79,19 +80,25 @@ const tenantSchema = new Schema(
         of: Boolean,
         default: {},
       },
-      // Only if you need extra flexibility for unknowns:
       custom: Schema.Types.Mixed,
     },
-    contactEmail: { type: String, trim: true, lowercase: true },
+    contactEmail: {
+      type: String,
+      trim: true,
+      lowercase: true,
+      match: EMAIL_REGEX,
+    },
     supportContact: { type: String },
-    address: { type: Schema.Types.Mixed }, // Legal/compliance, can also be schema if fields known
-    createdBy: { type: Schema.Types.ObjectId, ref: "User", index: true },
-    updatedBy: { type: Schema.Types.ObjectId, ref: "User", index: true },
+    address: { type: AddressSchema },
+    audit: { type: AuditSchema, default: {} },
+    softDelete: { type: SoftDeleteSchema, default: {} },
+    seo: { type: SEOSchema, default: {} },
+    metadata: { type: Map, of: Schema.Types.Mixed, default: {} },
   },
   { timestamps: true }
 );
 
-tenantSchema.index({ tenantId: 1, slug: 1 });
+tenantSchema.index({ slug: 1 }, { unique: true });
 
 export type TenantType = InferSchemaType<typeof tenantSchema>;
 export type TaxType = InferSchemaType<typeof taxSchema>;

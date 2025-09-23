@@ -1,7 +1,12 @@
 {
   "extends": "@repo/typescript-config/base.json",
   "compilerOptions": {
-    "noEmit": true
+    "noEmit": true,
+    "baseUrl": ".",
+    "paths": {
+      "@database/schemas": ["./src/schemas"],
+      "@database/consts": ["./src/consts"]
+    }
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]

@@ -28,7 +28,11 @@
     /* Modules */
     "module": "NodeNext",                                 /* Specify what module code is generated. */
     "moduleResolution": "NodeNext",                      /* Use NodeNext resolution to honor package exports. */
-    "resolvePackageJsonExports": true,                    /* Ensure subpath exports like '@database/types' resolve. */
+    "resolvePackageJsonExports": true,                  /* Ensure subpath exports like '@database/types' resolve. */
+    "baseUrl": ".",                                     /* Enable absolute imports */
+    "paths": {
+      "@repo/database/*": ["../../packages/database/dist/*"]
+    },                                                  /* Configure path aliases */
     // "rootDir": "./",                                  /* Specify the root folder within your source files. */
     // "moduleResolution": "node10",                     /* Specify how TypeScript looks up a file from a given module specifier. */
     // "baseUrl": "./",                                  /* Specify the base directory to resolve non-relative module names. */

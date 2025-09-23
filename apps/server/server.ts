@@ -1,3 +1,4 @@
+// import { default as Store } from "@repo/database/schemas/store";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import cors from "cors";
@@ -5,7 +6,6 @@ import dotenv from "dotenv";
 import express, { Application, NextFunction, Request, Response } from "express";
 import mongoose from "mongoose";
 import path from "path";
-
 dotenv.config();
 
 const app: Application = express();

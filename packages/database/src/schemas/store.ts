@@ -1,17 +1,6 @@
 import mongoose, { InferSchemaType } from "mongoose";
+import { AddressSchema, AuditSchema, SoftDeleteSchema } from "./_common";
 const { Schema } = mongoose;
-
-const addressSchema = new Schema(
-  {
-    line1: { type: String, required: true, trim: true },
-    line2: { type: String, trim: true },
-    city: { type: String, required: true, index: true },
-    state: { type: String },
-    postalCode: { type: String },
-    country: { type: String, required: true, default: "US" },
-  },
-  { _id: false }
-);
 
 const storeSchema = new Schema(
   {
@@ -21,9 +10,9 @@ const storeSchema = new Schema(
       required: true,
       index: true,
     },
-    code: { type: String, required: true, trim: true },
+    code: { type: String, required: true, trim: true, lowercase: true },
     name: { type: String, required: true, trim: true },
-    address: { type: addressSchema, required: true },
+    address: { type: AddressSchema, required: true },
 
     location: {
       type: {
@@ -54,16 +43,19 @@ const storeSchema = new Schema(
     openedAt: { type: Date },
 
     tags: [{ type: String, trim: true, lowercase: true }],
-    meta: Schema.Types.Mixed,
+    audit: { type: AuditSchema, default: {} },
+    softDelete: { type: SoftDeleteSchema, default: {} },
+    metadata: { type: Map, of: Schema.Types.Mixed, default: {} },
   },
   { timestamps: true }
 );
 
-storeSchema.index({ tenantId: 1, name: 1 }, { unique: true });
+storeSchema.index({ tenantId: 1, code: 1 }, { unique: true });
+storeSchema.index({ tenantId: 1, name: 1 });
 
 storeSchema.index({ location: "2dsphere" });
 
 export type StoreType = InferSchemaType<typeof storeSchema>;
-export type AddressType = InferSchemaType<typeof addressSchema>;
 
-export default mongoose.model("Store", storeSchema);
+const StoreModel = mongoose.model("Store", storeSchema);
+export default StoreModel;
