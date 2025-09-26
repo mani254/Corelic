@@ -1,5 +1,5 @@
 // models/brand.model.js
-import mongoose from "mongoose";
+import mongoose, { InferSchemaType } from "mongoose";
 import slugify from "slugify";
 import {
   AuditSchema,
@@ -65,3 +65,7 @@ brandSchema.pre("validate", function (next) {
 });
 
 export const Brand = model("Brand", brandSchema);
+
+export type BrandDocument = InferSchemaType<typeof brandSchema> & {
+  _id: mongoose.Types.ObjectId;
+};

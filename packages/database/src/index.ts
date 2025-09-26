@@ -9,3 +9,5 @@ export * from "./schemas/product";
 export * from "./schemas/role";
 export * from "./schemas/store";
 export * from "./schemas/tenent";
+export * from "./types/brand";
+export * from "./types/http";

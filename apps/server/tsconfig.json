@@ -31,7 +31,8 @@
     "resolvePackageJsonExports": true,                  /* Ensure subpath exports like '@database/types' resolve. */
     "baseUrl": ".",                                     /* Enable absolute imports */
     "paths": {
-      "@repo/database/*": ["../../packages/database/dist/*"]
+      "@repo/database": ["../../packages/database/src/index"],
+      "@repo/database/*": ["../../packages/database/src/*"]
     },                                                  /* Configure path aliases */
     // "rootDir": "./",                                  /* Specify the root folder within your source files. */
     // "moduleResolution": "node10",                     /* Specify how TypeScript looks up a file from a given module specifier. */

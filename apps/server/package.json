@@ -5,8 +5,8 @@
    "main": "server.ts",
    "scripts": {
       "test": "echo \"Error: no test specified\" && exit 1",
-      "dev": "nodemon server.ts",
-      "start": "node server.ts"
+      "dev": "nodemon --watch ./ --ext ts,js --exec ts-node --esm server.ts",
+      "start": "node --loader ts-node/esm server.ts"
    },
    "repository": {
       "type": "git",
